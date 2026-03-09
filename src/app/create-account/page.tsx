@@ -94,7 +94,7 @@ export default function CreateAccount() {
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
-            id: authData.user.id,
+            id: authData.user!.id,
             username: formData.username.toLowerCase(),
             full_name: formData.full_name,
             role: selectedRoles.join(', '),
