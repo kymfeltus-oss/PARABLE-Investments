@@ -7,7 +7,7 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import HubBackground from "@/components/HubBackground";
 
-// CSS Animations: Optimized for mobile GPU
+// CSS Animations
 const sanctuaryStyles = `
   @keyframes floatUp { 
     0% { transform: translateY(0) scale(0); opacity: 0; } 
@@ -38,38 +38,55 @@ type Sparkle = {
 
 export default function FlashPage() {
   const router = useRouter();
-  const supabase = createClient();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [mounted, setMounted] = useState(false);
   const transitioningRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleEntry = async () => {
+  const runRedirect = async () => {
     if (transitioningRef.current) return;
     transitioningRef.current = true;
     setIsTransitioning(true);
 
     try {
+      const supabase = createClient();
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      router.push(user ? "/my-sanctuary" : "/welcome");
+      if (session?.user) {
+        router.replace("/my-sanctuary");
+        return;
+      }
+
+      router.replace("/welcome");
     } catch {
-      router.push("/welcome");
+      router.replace("/welcome");
     }
+  };
+
+  const handleEntry = async () => {
+    await runRedirect();
   };
 
   useEffect(() => {
     setMounted(true);
     containerRef.current?.focus();
 
+    const timer = setTimeout(async () => {
+      await runRedirect();
+    }, 5000);
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") handleEntry();
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   const sparkles = useMemo<Sparkle[]>(() => {
@@ -98,12 +115,11 @@ export default function FlashPage() {
     >
       <style>{sanctuaryStyles}</style>
 
-      {/* BACKGROUND LAYERS */}
+      {/* BACKGROUND */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <HubBackground />
 
         <div className="absolute inset-0 z-10">
-          {/* Sparkles render only after mount to prevent hydration mismatch */}
           {mounted &&
             sparkles.map((s) => (
               <div
@@ -119,7 +135,6 @@ export default function FlashPage() {
               />
             ))}
 
-          {/* Fog */}
           <div
             className="absolute bottom-[-2vh] left-[-20%] right-[-20%] h-[35vh] bg-[#00f2ff]/20 blur-[80px] rounded-[100%]"
             style={{ animation: "fogDrift 12s ease-in-out infinite" }}

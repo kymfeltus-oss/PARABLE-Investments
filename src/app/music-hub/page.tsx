@@ -2,92 +2,74 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 type Category =
   | "Gospel Artists"
   | "Musicians"
   | "Choirs"
-  | "Worshipers/ Worship Leaders"
-  | "Producers";
+  | "Worship Leaders"
+  | "Producers"
+  | "Shed Rooms";
 
 const CATEGORIES: Category[] = [
   "Gospel Artists",
   "Musicians",
   "Choirs",
-  "Worshipers/ Worship Leaders",
+  "Worship Leaders",
   "Producers",
+  "Shed Rooms",
 ];
-
-type Card = {
-  id: string;
-  title: string;
-  subtitle: string;
-  tag: string;
-  glow?: boolean;
-};
 
 function frac(n: number) {
   return n - Math.floor(n);
 }
+
 function prand(seed: number) {
   return frac(Math.sin(seed * 9999.123) * 10000);
 }
 
-function SparklesLikeFlash() {
-  // deterministic sparkles (no hydration mismatch)
-  const sparkles = useMemo(() => {
-    return Array.from({ length: 60 }).map((_, i) => {
+function Sparkles() {
+  const sparks = useMemo(() => {
+    return Array.from({ length: 50 }).map((_, i) => {
       const r1 = prand(i + 1);
       const r2 = prand(i + 101);
       const r3 = prand(i + 1001);
-      const r4 = prand(i + 5001);
+
       return {
         id: i,
-        left: `${r1 * 100}%`,
-        top: `${r2 * 100}%`,
-        delay: r3 * 1.4,
-        dur: 4.3 + r4 * 3.4,
-        size: 1 + Math.floor((i % 3) + 1),
-        opacity: 0.28 + (i % 5) * 0.08,
+        left: `${(r1 * 100).toFixed(4)}%`,
+        top: `${(r2 * 100).toFixed(4)}%`,
+        dur: `${(4 + r3 * 4).toFixed(4)}s`,
       };
     });
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden">
-      {sparkles.map((s) => (
+    <div className="absolute inset-0 pointer-events-none">
+      {sparks.map((s) => (
         <span
           key={s.id}
-          className="absolute rounded-full bg-[#00f2fe] shadow-[0_0_14px_rgba(0,242,254,0.75)]"
+          className="absolute w-[2px] h-[2px] bg-[#00f2fe] rounded-full"
           style={{
             left: s.left,
             top: s.top,
-            width: `${s.size}px`,
-            height: `${s.size}px`,
-            opacity: s.opacity,
-            animation: `sparkFloat ${s.dur}s ease-in-out ${s.delay}s infinite`,
+            animation: `spark ${s.dur} ease-in-out infinite`,
           }}
         />
       ))}
 
       <style jsx global>{`
-        @keyframes sparkFloat {
+        @keyframes spark {
           0% {
-            transform: translate3d(0, 0, 0) scale(0.9);
+            transform: translateY(0);
             opacity: 0;
           }
-          20% {
+          40% {
             opacity: 1;
           }
-          50% {
-            transform: translate3d(0, -26px, 0) scale(1.1);
-          }
-          80% {
-            opacity: 0.6;
-          }
           100% {
-            transform: translate3d(0, -54px, 0) scale(0.7);
+            transform: translateY(-60px);
             opacity: 0;
           }
         }
@@ -96,385 +78,272 @@ function SparklesLikeFlash() {
   );
 }
 
-function Pill({
-  active,
-  children,
-  onClick,
+function LiveRoom({
+  title,
+  people,
 }: {
-  active: boolean;
-  children: React.ReactNode;
-  onClick: () => void;
+  title: string;
+  people: number;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className={[
-        "px-4 py-2 rounded-full border text-[11px] font-black uppercase tracking-[4px] transition",
-        active
-          ? "border-[#00f2fe]/35 bg-[#00f2fe]/14 text-[#00f2fe] shadow-[0_0_26px_rgba(0,242,254,0.14)]"
-          : "border-white/10 bg-white/5 text-white/55 hover:bg-white/10 hover:text-white/75",
-      ].join(" ")}
-    >
-      {children}
-    </button>
-  );
-}
-
-function StatChip({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[18px] border border-white/10 bg-black/45 px-4 py-3 backdrop-blur-xl">
-      <div className="text-[10px] font-black uppercase tracking-[4px] text-white/45">
-        {label}
+    <div className="rounded-xl border border-[#00f2fe]/20 bg-white/[0.04] px-4 py-3 flex items-center justify-between">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[3px] text-white/70">
+          {title}
+        </p>
+        <p className="text-[10px] text-[#00f2fe] font-black">
+          LIVE • {people} inside
+        </p>
       </div>
-      <div className="mt-1 text-[15px] font-black text-white/85">{value}</div>
+
+      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
     </div>
   );
 }
 
-function HubCard({ c }: { c: Card }) {
+function CategoryCard({
+  title,
+  desc,
+}: {
+  title: string;
+  desc: string;
+}) {
   return (
     <motion.div
-      whileHover={{ y: -2, scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className={[
-        "relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.045] backdrop-blur-2xl",
-        "shadow-[0_0_90px_rgba(0,242,254,0.10)]",
-      ].join(" ")}
+      whileHover={{ scale: 1.03 }}
+      className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl shadow-[0_0_60px_rgba(0,242,254,0.12)]"
     >
-      <div className="pointer-events-none absolute inset-0 opacity-[0.22] bg-[radial-gradient(circle_at_25%_25%,rgba(0,242,254,0.18),transparent_55%),radial-gradient(circle_at_85%_80%,rgba(255,255,255,0.08),transparent_60%)]" />
-      {c.glow && (
-        <div className="pointer-events-none absolute -inset-10 opacity-[0.18] blur-3xl bg-[#00f2fe]" />
-      )}
+      <h3 className="text-lg font-black text-white">{title}</h3>
+      <p className="text-sm text-white/60 mt-2">{desc}</p>
 
-      <div className="relative p-6">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3 py-2">
-          <span className="h-2 w-2 rounded-full bg-[#00f2fe] shadow-[0_0_18px_rgba(0,242,254,0.95)]" />
-          <span className="text-[10px] font-black uppercase tracking-[4px] text-white/65">
-            {c.tag}
-          </span>
-        </div>
-
-        <div className="mt-4 text-[18px] font-black tracking-tight text-white">
-          {c.title}
-        </div>
-        <div className="mt-1 text-sm text-white/60">{c.subtitle}</div>
-
-        <div className="mt-5 flex items-center justify-between">
-          <button className="rounded-[18px] border border-[#00f2fe]/25 bg-[#00f2fe]/12 px-4 py-3 text-[11px] font-black uppercase tracking-[4px] text-[#00f2fe] hover:bg-[#00f2fe]/18 transition">
-            Explore
-          </button>
-
-          <button className="rounded-[18px] border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-            Follow
-          </button>
-        </div>
-      </div>
+      <button className="mt-4 px-4 py-2 rounded-lg bg-[#00f2fe] text-black text-xs font-black uppercase tracking-[3px]">
+        Explore
+      </button>
     </motion.div>
   );
 }
 
-export default function MusicHubPage() {
-  const [q, setQ] = useState("");
+export default function MusicHub() {
   const [cat, setCat] = useState<Category>("Gospel Artists");
 
-  const cards = useMemo<Card[]>(() => {
-    const base: Record<Category, Card[]> = {
+  const categories = useMemo(
+    () => ({
       "Gospel Artists": [
         {
-          id: "ga-1",
           title: "Featured Voices",
-          subtitle: "Breakthrough worship + powerhouse leads.",
-          tag: "Spotlight",
-          glow: true,
+          desc: "Breakthrough worship artists and emerging voices.",
         },
         {
-          id: "ga-2",
-          title: "Sunday Setlists",
-          subtitle: "What churches are singing right now.",
-          tag: "Trending",
+          title: "New Gospel Releases",
+          desc: "Fresh music and live recordings.",
         },
         {
-          id: "ga-3",
-          title: "New Releases",
-          subtitle: "Fresh drops, live sessions, and remixes.",
-          tag: "New",
+          title: "Sanctuary Sessions",
+          desc: "Exclusive live worship recordings.",
         },
       ],
+
       Musicians: [
         {
-          id: "m-1",
-          title: "The Bandstand",
-          subtitle: "Drums • Keys • Bass • Guitar • MDs.",
-          tag: "Stage",
-          glow: true,
+          title: "Bandstand",
+          desc: "Drums • Keys • Bass • Guitar • MDs.",
         },
         {
-          id: "m-2",
           title: "Chops & Runs",
-          subtitle: "Micro-lessons and signature licks.",
-          tag: "Learn",
+          desc: "Signature gospel licks and breakdowns.",
         },
         {
-          id: "m-3",
           title: "Session Ready",
-          subtitle: "Charts, stems, and rehearsal packs.",
-          tag: "Toolbox",
+          desc: "Charts, stems and rehearsal packs.",
         },
       ],
+
       Choirs: [
         {
-          id: "c-1",
           title: "Choir Rooms",
-          subtitle: "Soprano to Bass — build the wall of sound.",
-          tag: "Community",
-          glow: true,
+          desc: "Section rehearsals and choir builds.",
         },
         {
-          id: "c-2",
-          title: "Anthems",
-          subtitle: "Classic gospel, modern praise, new choir flips.",
-          tag: "Catalog",
+          title: "Anthem Library",
+          desc: "Classic and modern gospel anthems.",
         },
         {
-          id: "c-3",
           title: "Director’s Corner",
-          subtitle: "Warmups, blends, and rehearsal flow.",
-          tag: "Practice",
+          desc: "Warmups, blends and choir training.",
         },
       ],
-      "Worshipers/ Worship Leaders": [
+
+      "Worship Leaders": [
         {
-          id: "w-1",
           title: "Worship Flow",
-          subtitle: "Build sets that carry the room.",
-          tag: "Setlist",
-          glow: true,
+          desc: "Build powerful worship setlists.",
         },
         {
-          id: "w-2",
-          title: "Worship Leaders",
-          subtitle: "Voices, teams, and rotations.",
-          tag: "Leaders",
-        },
-        {
-          id: "w-3",
           title: "Moments",
-          subtitle: "Spontaneous worship + transitions.",
-          tag: "Live",
+          desc: "Spontaneous worship sessions.",
+        },
+        {
+          title: "Setlist Builder",
+          desc: "Prepare Sunday worship flow.",
         },
       ],
+
       Producers: [
         {
-          id: "p-1",
-          title: "Live Mix Lab",
-          subtitle: "Capture the room. Keep it cinematic.",
-          tag: "Studio",
-          glow: true,
+          title: "Producer Lab",
+          desc: "Build the sound behind the worship.",
         },
         {
-          id: "p-2",
           title: "Sound Libraries",
-          subtitle: "Pads, risers, transitions for worship.",
-          tag: "Packs",
+          desc: "Pads, risers and transitions.",
         },
         {
-          id: "p-3",
           title: "Release Ready",
-          subtitle: "Mastering, cover art, and rollout prep.",
-          tag: "Launch",
+          desc: "Prepare songs for distribution.",
         },
       ],
-    };
 
-    const list = base[cat];
-    if (!q.trim()) return list;
-
-    const s = q.trim().toLowerCase();
-    return list.filter(
-      (x) =>
-        x.title.toLowerCase().includes(s) ||
-        x.subtitle.toLowerCase().includes(s) ||
-        x.tag.toLowerCase().includes(s)
-    );
-  }, [cat, q]);
+      "Shed Rooms": [
+        {
+          title: "Keys Shed",
+          desc: "Practice gospel chord movements.",
+        },
+        {
+          title: "Drum Shed",
+          desc: "Drum chops and groove training.",
+        },
+        {
+          title: "Full Band Shed",
+          desc: "Complete rehearsal experience.",
+        },
+      ],
+    }),
+    []
+  );
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black text-white">
-      {/* BACKDROP */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-[-30%] opacity-[0.20] blur-[90px] animate-[ocean_16s_ease-in-out_infinite] bg-[radial-gradient(circle_at_20%_20%,rgba(0,242,254,0.35),transparent_55%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.12),transparent_60%),radial-gradient(circle_at_40%_80%,rgba(0,242,254,0.18),transparent_55%)]" />
-        <div className="absolute inset-0 opacity-[0.12] [background:linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:84px_84px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.72)_58%,rgba(0,0,0,0.96)_100%)]" />
-      </div>
+    <div className="relative min-h-screen bg-black text-white overflow-hidden">
+      <Sparkles />
 
-      {/* Sparkles like Flash page (immediate) */}
-      <SparklesLikeFlash />
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 pt-10 pb-32">
+        <h1 className="text-5xl font-black leading-tight">
+          The Sound of the{" "}
+          <span className="text-[#00f2fe]">Sanctuary</span>
+        </h1>
 
-      <div className="relative z-10 mx-auto max-w-[1200px] px-4 pb-28 pt-10">
-        {/* HEADER */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-xl">
-              <span className="h-2 w-2 rounded-full bg-[#00f2fe] shadow-[0_0_18px_rgba(0,242,254,0.9)]" />
-              <span className="text-[11px] font-black uppercase tracking-[4px] text-white/70">
-                Music Hub
-              </span>
-            </div>
+        <p className="mt-4 text-white/60 max-w-xl">
+          A creative hub for gospel artists, musicians, choirs,
+          worship leaders, and producers building the next sound
+          of worship.
+        </p>
 
-            <h1 className="mt-5 text-[38px] sm:text-[52px] font-black leading-[1.02] tracking-tight">
-              The Sound of the{" "}
-              <span className="relative inline-block">
-                <span className="absolute -inset-2 blur-2xl opacity-60 bg-[radial-gradient(circle_at_30%_40%,rgba(0,242,254,0.42),transparent_60%)]" />
-                <span className="relative text-[#00f2fe] drop-shadow-[0_0_24px_rgba(0,242,254,0.55)]">
-                  Sanctuary
-                </span>
-              </span>
-            </h1>
-
-            <p className="mt-4 text-white/65 max-w-[680px] text-[15px] leading-relaxed">
-              Gospel artists and musicians aren’t “support” — they’re the pulse.
-              Discover, follow, and build your sound.
-            </p>
-          </div>
-
-          {/* mini brand tile */}
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] backdrop-blur-2xl p-5 shadow-[0_0_120px_rgba(0,242,254,0.10)]">
-            <div className="flex items-center gap-4">
-              <div className="rounded-[22px] border border-white/10 bg-black/50 px-6 py-4">
-                <Image
-                  src="/logo.svg"
-                  alt="Parable"
-                  width={160}
-                  height={42}
-                  priority
-                />
-              </div>
-              <div className="flex-1">
-                <div className="text-[10px] font-black uppercase tracking-[5px] text-white/50">
-                  LIVE • SETLISTS • COMMUNITY
-                </div>
-                <div className="mt-2 h-[2px] w-full bg-gradient-to-r from-[#00f2fe]/0 via-[#00f2fe]/35 to-[#00f2fe]/0" />
-              </div>
-            </div>
-          </div>
+        <div className="mt-10 grid md:grid-cols-3 gap-4">
+          <LiveRoom title="Global Shed Session" people={312} />
+          <LiveRoom title="Choir Rehearsal" people={104} />
+          <LiveRoom title="Producer Lab Live" people={58} />
         </div>
 
-        {/* CONTROLS */}
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-12 md:items-center">
-          <div className="md:col-span-7">
-            <div className="rounded-[28px] border border-white/10 bg-black/55 px-6 py-4 backdrop-blur-2xl shadow-[0_0_110px_rgba(0,242,254,0.10)]">
-              <div className="text-[10px] font-black uppercase tracking-[4px] text-white/45">
-                Search
-              </div>
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search rooms, artists, musicians, setlists…"
-                className="mt-2 w-full bg-transparent text-[15px] outline-none placeholder:text-white/30"
-                suppressHydrationWarning
-              />
-            </div>
-          </div>
-
-          <div className="md:col-span-5 flex flex-wrap gap-2 md:justify-end">
-            {(["Gospel Artists", "Musicians", "Choirs", "Producers"] as Category[]).map(
-              (x) => (
-                <Pill key={x} active={cat === x} onClick={() => setCat(x)}>
-                  {x}
-                </Pill>
-              )
-            )}
-          </div>
-        </div>
-
-        {/* STATS + ACTIONS */}
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-12">
-          <div className="md:col-span-8 grid grid-cols-2 gap-4">
-            <StatChip label="Live Rooms" value="Coming Online" />
-            <StatChip label="Trending Setlists" value="Updating" />
-          </div>
-
-          <div className="md:col-span-4">
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.04] backdrop-blur-2xl p-4 shadow-[0_0_110px_rgba(0,242,254,0.10)]">
-              <button className="w-full rounded-[22px] bg-[#00f2fe] py-4 font-black text-black tracking-[3px] uppercase shadow-[0_0_30px_rgba(0,242,254,0.18)]">
-                Start a Music Room
-              </button>
-              <div className="mt-3 text-[10px] font-black uppercase tracking-[4px] text-white/40 text-center">
-                (Hook this to LiveKit later)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* GRID */}
-        <div className="mt-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={cat + q}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35 }}
-              className="grid grid-cols-1 gap-6 md:grid-cols-3"
+        <div className="flex gap-3 mt-10 flex-wrap">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-[3px] border ${
+                cat === c
+                  ? "border-[#00f2fe] bg-[#00f2fe]/20"
+                  : "border-white/10"
+              }`}
             >
-              {cards.map((c) => (
-                <HubCard key={c.id} c={c} />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+              {c}
+            </button>
+          ))}
         </div>
 
-        {/* PLAYER SHELL */}
-        <div className="mt-10 rounded-[34px] border border-white/10 bg-white/[0.04] backdrop-blur-2xl p-6 shadow-[0_0_150px_rgba(0,242,254,0.12)]">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-[4px] text-white/45">
-                Now Playing
-              </div>
-              <div className="mt-2 text-[18px] font-black text-white">
-                “Sanctuary Session” (Demo Player)
-              </div>
-              <div className="mt-1 text-sm text-white/60">
-                This is a visual shell — wire it to uploads/streams when ready.
-              </div>
-            </div>
+        <div className="grid md:grid-cols-3 gap-6 mt-10">
+          {categories[cat].map((card) => (
+            <CategoryCard
+              key={card.title}
+              title={card.title}
+              desc={card.desc}
+            />
+          ))}
+        </div>
 
-            <div className="flex items-center gap-3">
-              <button className="rounded-[18px] border border-white/10 bg-black/55 px-5 py-3 text-[11px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-                Prev
-              </button>
-              <button className="rounded-[18px] bg-[#00f2fe] px-7 py-3 text-[11px] font-black uppercase tracking-[4px] text-black shadow-[0_0_28px_rgba(0,242,254,0.18)]">
-                Play
-              </button>
-              <button className="rounded-[18px] border border-white/10 bg-black/55 px-5 py-3 text-[11px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-                Next
-              </button>
-            </div>
+        <div className="mt-16">
+          <h2 className="text-2xl font-black mb-6">
+            Sunday Prep
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <CategoryCard
+              title="Trending Setlists"
+              desc="Songs churches are singing this week."
+            />
+
+            <CategoryCard
+              title="Transitions"
+              desc="Best musical transitions between songs."
+            />
+
+            <CategoryCard
+              title="Keys by Vocal Range"
+              desc="Find the best key for your voice."
+            />
           </div>
+        </div>
 
-          <div className="mt-6 h-[2px] w-full bg-gradient-to-r from-transparent via-[#00f2fe]/30 to-transparent" />
-          <div className="mt-4 flex items-center gap-3">
-            <div className="h-2 flex-1 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full w-[34%] bg-[#00f2fe]/70" />
-            </div>
-            <div className="text-[10px] font-black uppercase tracking-[3px] text-white/45">
-              01:12 / 03:18
-            </div>
+        <div className="mt-16">
+          <h2 className="text-2xl font-black mb-6">
+            Creator Tools
+          </h2>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            <CategoryCard
+              title="Setlist Builder"
+              desc="Design the perfect worship flow."
+            />
+
+            <CategoryCard
+              title="Chord Charts"
+              desc="Share and collaborate on charts."
+            />
+
+            <CategoryCard
+              title="Stem Vault"
+              desc="Access backing tracks and stems."
+            />
+
+            <CategoryCard
+              title="Release Studio"
+              desc="Prepare music releases."
+            />
+          </div>
+        </div>
+
+        <div className="mt-20 p-6 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl">
+          <p className="text-xs uppercase tracking-[3px] text-white/50">
+            Now Playing
+          </p>
+
+          <h3 className="text-lg font-black mt-1">
+            Sanctuary Session (Demo Player)
+          </h3>
+
+          <div className="flex gap-3 mt-4">
+            <button className="px-4 py-2 border border-white/10 rounded-lg">
+              Prev
+            </button>
+
+            <button className="px-6 py-2 bg-[#00f2fe] text-black font-black rounded-lg">
+              Play
+            </button>
+
+            <button className="px-4 py-2 border border-white/10 rounded-lg">
+              Next
+            </button>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes ocean {
-          0%,
-          100% {
-            transform: translate3d(0, 0, 0) rotate(0deg);
-          }
-          50% {
-            transform: translate3d(2%, -2%, 0) rotate(6deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

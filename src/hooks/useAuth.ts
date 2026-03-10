@@ -1,35 +1,68 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/client';
 
 export const useAuth = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
-  // Default to your logo SVG to prevent the "Invalid URL" crash
-  const [avatarUrl, setAvatarUrl] = useState<string>('/logo.svg'); 
+  const [avatarUrl, setAvatarUrl] = useState<string>('/logo.svg');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (data) {
-          setUserProfile(data);
-          
-          // If they have a pic, get the full Public URL from Supabase storage
-          if (data.avatar_url) {
-            const { data: urlData } = supabase.storage
-              .from('avatars') 
-              .getPublicUrl(data.avatar_url);
-            
-            // Set the full URL (e.g., https://xyz.supabase.co...)
-            setAvatarUrl(urlData.publicUrl);
-          }
-        }
+    const supabase = createClient();
+
+    const loadUser = async () => {
+      setLoading(true);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user ?? null;
+
+      if (!user) {
+        setUserProfile(null);
+        setAvatarUrl('/logo.svg');
+        setLoading(false);
+        return;
       }
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (data) {
+        setUserProfile(data);
+
+        if (data.avatar_url) {
+          const { data: urlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(data.avatar_url);
+
+          setAvatarUrl(urlData.publicUrl || '/logo.svg');
+        } else {
+          setAvatarUrl('/logo.svg');
+        }
+      } else {
+        setUserProfile(null);
+        setAvatarUrl('/logo.svg');
+      }
+
       setLoading(false);
     };
-    getUser();
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadUser();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { userProfile, avatarUrl, loading };

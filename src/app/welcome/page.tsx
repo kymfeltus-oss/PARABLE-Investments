@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import HubBackground from "@/components/HubBackground";
+import { createClient } from "@/utils/supabase/client";
 
 const styles = `
   @keyframes floatUp { 
@@ -83,7 +84,6 @@ function ComputingStatus() {
 
   return (
     <div className="mx-auto mt-3 w-full max-w-[22rem] rounded-sm border border-[#00f2ff]/18 bg-black/45 px-3 py-3 overflow-hidden">
-      {/* top row */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-[#00f2ff] shadow-[0_0_10px_#00f2ff]" />
@@ -95,7 +95,6 @@ function ComputingStatus() {
           </span>
         </div>
 
-        {/* animated dots */}
         <div className="flex items-center gap-1">
           {[0, 1, 2].map((n) => (
             <span
@@ -111,7 +110,6 @@ function ComputingStatus() {
         </div>
       </div>
 
-      {/* “computing” line */}
       <div className="mt-2 flex items-center justify-between gap-3">
         <div className="text-[10px] font-black uppercase tracking-[5px] text-white/40">
           {messages[idx]}
@@ -124,7 +122,6 @@ function ComputingStatus() {
         </div>
       </div>
 
-      {/* subtle shimmer */}
       <div className="relative mt-3 h-[2px] bg-white/10 overflow-hidden">
         <div className="absolute left-0 w-1 h-full bg-[#00f2ff]" />
         <div className="absolute right-0 w-1 h-full bg-[#00f2ff]" />
@@ -161,25 +158,14 @@ export default function WelcomePage() {
     setEntering(true);
 
     try {
-      const res = await fetch("/api/me", { cache: "no-store" });
-      if (res.ok) {
-        router.push("/my-sanctuary");
-        return;
-      }
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const returning =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem("parable:returning")
-          : null;
-
-      router.push(returning === "1" ? "/my-sanctuary" : "/create-account");
+      router.push(session?.user ? "/my-sanctuary" : "/create-account");
     } catch {
-      const returning =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem("parable:returning")
-          : null;
-
-      router.push(returning === "1" ? "/my-sanctuary" : "/create-account");
+      router.push("/create-account");
     } finally {
       setTimeout(() => setEntering(false), 650);
     }
@@ -189,11 +175,9 @@ export default function WelcomePage() {
     <div className="relative min-h-screen w-full bg-black overflow-hidden selection:bg-[#00f2ff]">
       <style>{styles}</style>
 
-      {/* BACKGROUND */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <HubBackground />
 
-        {/* drifting grid */}
         <div className="absolute inset-0 opacity-20">
           <div
             className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,242,255,0.055)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,242,255,0.055)_1px,transparent_1px)] bg-[size:56px_56px]"
@@ -201,7 +185,6 @@ export default function WelcomePage() {
           />
         </div>
 
-        {/* sparkles */}
         <div className="absolute inset-0">
           {hasMounted &&
             sparkles.map((s) => (
@@ -220,11 +203,9 @@ export default function WelcomePage() {
           <div className="absolute bottom-0 left-0 right-0 h-[34vh] bg-gradient-to-t from-[#00f2ff]/6 to-transparent blur-[120px]" />
         </div>
 
-        {/* vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,black_100%)] opacity-90" />
       </div>
 
-      {/* ✅ PHONE APP FRAME */}
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-[430px] px-4 py-10 flex items-center">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
@@ -236,13 +217,11 @@ export default function WelcomePage() {
             className="relative overflow-hidden border border-[#00f2ff]/22 bg-black/55 backdrop-blur-md rounded-sm"
             style={{ animation: "borderPulse 5s ease-in-out infinite" }}
           >
-            {/* corners */}
             <div className="absolute left-0 top-0 h-5 w-5 border-l-2 border-t-2 border-[#00f2ff]" />
             <div className="absolute right-0 top-0 h-5 w-5 border-r-2 border-t-2 border-[#00f2ff]" />
             <div className="absolute left-0 bottom-0 h-5 w-5 border-l-2 border-b-2 border-[#00f2ff]" />
             <div className="absolute right-0 bottom-0 h-5 w-5 border-r-2 border-b-2 border-[#00f2ff]" />
 
-            {/* subtle scan */}
             <div className="absolute inset-0 pointer-events-none">
               <div
                 className="absolute inset-x-0 h-44 bg-gradient-to-b from-transparent via-[#00f2ff]/10 to-transparent"
@@ -250,15 +229,12 @@ export default function WelcomePage() {
               />
             </div>
 
-            {/* ✅ HALO GLOW ONLY (no visible rings) */}
             <div className="pointer-events-none absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2">
               <div className="h-[240px] w-[240px] rounded-full bg-[#00f2ff]/10 blur-[85px]" />
               <div className="absolute inset-0 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-full bg-[#00f2ff]/5 blur-[140px]" />
             </div>
 
-            {/* CONTENT */}
             <div className="relative px-6 py-10">
-              {/* logo */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -276,7 +252,6 @@ export default function WelcomePage() {
               </motion.div>
 
               <div className="text-center space-y-7">
-                {/* headline */}
                 <div className="space-y-3">
                   <h1 className="text-2xl font-light text-white/40 uppercase tracking-[10px]">
                     The Premier
@@ -291,7 +266,6 @@ export default function WelcomePage() {
                   </h1>
                 </div>
 
-                {/* copy */}
                 <p className="text-base text-white/60 max-w-[22rem] mx-auto font-medium tracking-wide leading-relaxed">
                   Own your fellowship, unlock your{" "}
                   <span className="text-white border-b border-[#00f2ff]/50">
@@ -300,7 +274,6 @@ export default function WelcomePage() {
                   , and turn your content into an eternal legacy.
                 </p>
 
-                {/* features */}
                 <div className="flex items-center justify-center gap-8 pt-1">
                   {["STREAM", "MONETIZE", "BELIEVE"].map((text) => (
                     <span
@@ -312,17 +285,14 @@ export default function WelcomePage() {
                   ))}
                 </div>
 
-                {/* ✅ STATUS that feels alive */}
                 <ComputingStatus />
 
-                {/* ✅ BETTER ENTER BUTTON */}
                 <div className="pt-5">
                   <button
                     onClick={handleEnter}
                     disabled={entering}
                     className="group relative w-full rounded-sm border border-[#00f2ff]/30 bg-black/75 px-5 py-4 active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {/* glow + scan */}
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="absolute inset-0 bg-[#00f2ff]/10 blur-[18px]" />
                     </div>
@@ -333,7 +303,6 @@ export default function WelcomePage() {
                       />
                     </div>
 
-                    {/* clean label */}
                     <span className="relative z-10 block text-[#00f2ff] group-hover:text-white font-black text-xl uppercase tracking-[12px] transition-colors">
                       {entering ? "Entering..." : "Enter Sanctuary"}
                     </span>
@@ -343,7 +312,6 @@ export default function WelcomePage() {
                     </span>
                   </button>
 
-                  {/* subtle energy underline */}
                   <div className="relative mx-auto mt-4 w-64 h-[2px] bg-white/10 overflow-hidden">
                     <div
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-[#00f2ff] to-transparent opacity-70"
@@ -357,7 +325,6 @@ export default function WelcomePage() {
                   </div>
                 </div>
 
-                {/* optional secondary action (quiet) */}
                 <button
                   onClick={() => router.push("/create-account")}
                   className="pt-6 mx-auto block text-[10px] font-black uppercase tracking-[6px] text-white/20 hover:text-[#00f2ff] transition-colors"

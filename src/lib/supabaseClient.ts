@@ -6,6 +6,3 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
-
-// ADD THIS LINE: This creates the "supabase" object your hooks are looking for
-export const supabase = createClient()
