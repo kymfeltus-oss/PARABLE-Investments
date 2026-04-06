@@ -1,8 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Cropper from 'react-easy-crop';
+import type { Area } from 'react-easy-crop';
+import 'react-easy-crop/react-easy-crop.css';
 import { Header } from '@/components/layout/Header';
+import { saveTestimonies } from '@/lib/testimony-storage';
+import { createClient } from '@/utils/supabase/client';
 
 type TestimonyPost = {
   id: number;
@@ -23,39 +28,14 @@ type TestimonyPost = {
     dances: number;
     shouts: number;
   };
+  reactions?: Record<string, number>;
 };
 
 const TESTIMONY_STORAGE_KEY = 'parable:testimonies';
 
-const DEFAULT_FEED: TestimonyPost[] = [
-  {
-    id: 1,
-    user: 'KYM THE CEO',
-    time: 'JUST NOW',
-    tag: 'BREAKTHROUGH',
-    text: 'Today I am choosing to testify before the manifestation fully arrives. I am honoring what God has already done, what He is doing now, and what He promised will not return void.',
-    createdAt: Date.now() - 1000 * 60 * 2,
-    stats: { amens: 284, comments: 41, shares: 12, praiseBreaks: 18, claps: 14, dances: 9, shouts: 21 },
-  },
-  {
-    id: 2,
-    user: 'SANCTUARY MEDIA',
-    time: '12 MIN AGO',
-    tag: 'WORSHIP',
-    text: 'There is something powerful about a community that refuses to be silent. Every testimony becomes evidence. Every witness becomes a light for somebody still praying in the dark.',
-    createdAt: Date.now() - 1000 * 60 * 12,
-    stats: { amens: 198, comments: 27, shares: 9, praiseBreaks: 11, claps: 10, dances: 8, shouts: 12 },
-  },
-  {
-    id: 3,
-    user: 'FAITH STREAMER',
-    time: '34 MIN AGO',
-    tag: 'RESTORATION',
-    text: 'I came back to this space just to say God restored what I thought was permanently broken. Relationships, peace, vision, and even my confidence. I had to come testify.',
-    createdAt: Date.now() - 1000 * 60 * 34,
-    stats: { amens: 463, comments: 88, shares: 31, praiseBreaks: 29, claps: 18, dances: 16, shouts: 33 },
-  },
-];
+const REACTION_EMOJIS = ['🙏', '❤️', '👏', '🙌', '😭', '🔥'] as const;
+
+const DEFAULT_FEED: TestimonyPost[] = [];
 
 function formatRelativeTime(createdAt: number) {
   const diffMs = Date.now() - createdAt;
@@ -90,8 +70,40 @@ function loadStoredTestimonies(): TestimonyPost[] {
 }
 
 function saveStoredTestimonies(posts: TestimonyPost[]) {
-  window.localStorage.setItem(TESTIMONY_STORAGE_KEY, JSON.stringify(posts));
-  window.dispatchEvent(new Event('parable:testimonies-updated'));
+  saveTestimonies(posts);
+}
+
+async function getCroppedImageDataUrl(
+  imageSrc: string,
+  pixelCrop: Area
+): Promise<string> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = document.createElement('img');
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = imageSrc;
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('No canvas context');
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  return canvas.toDataURL('image/jpeg', 0.9);
 }
 
 export default function TestifyPage() {
@@ -108,6 +120,13 @@ export default function TestifyPage() {
   const [praiseBurstPostId, setPraiseBurstPostId] = useState<number | null>(null);
   const [musicPulsePostId, setMusicPulsePostId] = useState<number | null>(null);
   const [feed, setFeed] = useState<TestimonyPost[]>(DEFAULT_FEED);
+  const [currentUsername, setCurrentUsername] = useState('Guest');
+  const [cropModalImageUrl, setCropModalImageUrl] = useState<string | null>(null);
+  const [cropModalFileName, setCropModalFileName] = useState('');
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [cropBusy, setCropBusy] = useState(false);
+  const croppedAreaPixelsRef = useRef<Area | null>(null);
 
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
@@ -117,6 +136,34 @@ export default function TestifyPage() {
   useEffect(() => {
     setIsMounted(true);
     setFeed(loadStoredTestimonies());
+  }, []);
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username, full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const name =
+        profile?.username ||
+        profile?.full_name ||
+        user.user_metadata?.username ||
+        user.user_metadata?.full_name ||
+        user.email?.split('@')[0] ||
+        'Guest';
+      setCurrentUsername(String(name));
+    };
+
+    loadCurrentUser();
   }, []);
 
   useEffect(() => {
@@ -161,6 +208,10 @@ export default function TestifyPage() {
     };
   }, [selectedMediaUrl]);
 
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
+    croppedAreaPixelsRef.current = croppedAreaPixels;
+  }, []);
+
   if (!isMounted) {
     return <div className="min-h-screen bg-[#010101]" />;
   }
@@ -204,7 +255,7 @@ export default function TestifyPage() {
 
     const newPost: TestimonyPost = {
       id: createdAt,
-      user: 'KYM THE CEO',
+      user: currentUsername,
       time: 'JUST NOW',
       tag: selectedTag,
       text: trimmed || 'A new testimony has been shared.',
@@ -221,6 +272,7 @@ export default function TestifyPage() {
         dances: 0,
         shouts: 0,
       },
+      reactions: {},
     };
 
     const updated = [newPost, ...feed];
@@ -313,6 +365,14 @@ export default function TestifyPage() {
     }, 2600);
   };
 
+  const handleReaction = (id: number, emoji: string) => {
+    updatePost(id, (post) => {
+      const reactions = { ...(post.reactions || {}) };
+      reactions[emoji] = (reactions[emoji] || 0) + 1;
+      return { ...post, reactions };
+    });
+  };
+
   const handlePraiseAction = (id: number, action: 'CLAP' | 'DANCE' | 'SHOUT') => {
     updatePost(id, (post) => ({
       ...post,
@@ -393,10 +453,20 @@ export default function TestifyPage() {
       if (typeof result !== 'string') return;
 
       setSelectedFileName(file.name);
-      setSelectedMediaUrl(result);
       setSelectedMediaType(mediaType);
-      setStatusMessage(`${typeLabel} ATTACHED`);
-      focusComposer();
+
+      if (mediaType === 'image') {
+        setCropModalImageUrl(result);
+        setCropModalFileName(file.name);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        croppedAreaPixelsRef.current = null;
+        setStatusMessage('CROP YOUR IMAGE');
+      } else {
+        setSelectedMediaUrl(result);
+        setStatusMessage(`${typeLabel} ATTACHED`);
+        focusComposer();
+      }
     };
 
     reader.readAsDataURL(file);
@@ -404,16 +474,106 @@ export default function TestifyPage() {
     event.target.value = '';
   };
 
+  const handleCropCancel = () => {
+    setCropModalImageUrl(null);
+    setCropModalFileName('');
+    setStatusMessage('CROP CANCELLED');
+  };
+
+  const handleCropApply = async () => {
+    const imageUrl = cropModalImageUrl;
+    const pixels = croppedAreaPixelsRef.current;
+    if (!imageUrl || !pixels) {
+      setSelectedMediaUrl(imageUrl || '');
+      setCropModalImageUrl(null);
+      return;
+    }
+    setCropBusy(true);
+    try {
+      const dataUrl = await getCroppedImageDataUrl(imageUrl, pixels);
+      setSelectedMediaUrl(dataUrl);
+      setSelectedFileName(cropModalFileName);
+      setStatusMessage('IMAGE CROPPED');
+      focusComposer();
+    } catch {
+      setStatusMessage('CROP FAILED');
+    } finally {
+      setCropModalImageUrl(null);
+      setCropModalFileName('');
+      setCropBusy(false);
+    }
+  };
+
   const filteredFeed =
     feedFilter === 'LIVE'
       ? feed.filter((post) => post.tag === 'WORSHIP' || post.tag === 'BREAKTHROUGH' || post.tag === 'PRAYER')
       : feedFilter === 'FOLLOWING'
-      ? feed.filter((post) => post.user === 'KYM THE CEO' || post.user === 'FAITH STREAMER')
+      ? feed.filter((post) => String(post.user).toUpperCase() === String(currentUsername).toUpperCase())
       : feed;
+  const avatarInitials = String(currentUsername || 'U')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <main className="min-h-screen bg-[#010101] text-white selection:bg-[#00f2ff]/30">
       <Header title="TESTIFY" />
+
+      {/* Image crop modal */}
+      {cropModalImageUrl ? (
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#010101]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+            <p className="text-[10px] text-[#00f2ff] uppercase tracking-[6px]">
+              Drag to position · Pinch or use slider to zoom
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="px-4 py-2 rounded-full border border-white/20 text-[10px] font-black uppercase tracking-[6px] text-white/80 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleCropApply}
+                disabled={cropBusy}
+                className="px-4 py-2 rounded-full bg-[#00f2ff] text-[#010101] text-[10px] font-black uppercase tracking-[6px] disabled:opacity-50"
+              >
+                {cropBusy ? 'Applying…' : 'Use crop'}
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 relative min-h-0">
+            <Cropper
+              image={cropModalImageUrl}
+              crop={crop}
+              zoom={zoom}
+              aspect={16 / 9}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+              style={{ containerStyle: { backgroundColor: '#010101' } }}
+              classes={{}}
+            />
+          </div>
+          <div className="px-4 py-3 border-t border-white/10 flex items-center gap-4">
+            <span className="text-[10px] text-white/50 uppercase tracking-[6px]">Zoom</span>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={0.1}
+              value={zoom}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="flex-1 h-2 rounded-full appearance-none bg-white/10 accent-[#00f2ff]"
+            />
+          </div>
+        </div>
+      ) : null}
 
       <input
         ref={mediaInputRef}
@@ -519,7 +679,7 @@ export default function TestifyPage() {
               <div className="border border-[#00f2ff]/10 rounded-[1.75rem] bg-white/[0.02] p-4">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full border border-[#00f2ff]/25 bg-[#00f2ff]/10 flex items-center justify-center text-[#00f2ff] font-black italic text-sm shrink-0">
-                    KF
+                    {avatarInitials}
                   </div>
 
                   <div className="flex-1">
@@ -549,11 +709,11 @@ export default function TestifyPage() {
                         </div>
 
                         {selectedMediaType === 'image' ? (
-                          <div className="relative w-full overflow-hidden rounded-[1rem] border border-[#00f2ff]/10 bg-black/40">
+                          <div className="relative w-full overflow-hidden rounded-[1rem] border border-[#00f2ff]/10 bg-black/40 flex items-center justify-center">
                             <img
                               src={selectedMediaUrl}
                               alt={selectedFileName || 'Selected upload preview'}
-                              className="w-full max-h-[320px] object-cover"
+                              className="max-w-full max-h-[320px] w-auto h-auto object-contain"
                             />
                           </div>
                         ) : selectedMediaType === 'video' ? (
@@ -796,6 +956,24 @@ export default function TestifyPage() {
                       </div>
                     </div>
 
+                    <div className="mt-4 flex items-center gap-2 flex-wrap">
+                      {REACTION_EMOJIS.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => handleReaction(post.id, emoji)}
+                          className="text-lg p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                          title={`React with ${emoji}`}
+                        >
+                          {emoji}
+                          {(post.reactions?.[emoji] ?? 0) > 0 && (
+                            <span className="ml-0.5 text-[10px] text-white/70">
+                              {post.reactions![emoji]}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                     <div className="mt-5 flex items-center justify-between flex-wrap gap-4 border-t border-[#00f2ff]/10 pt-4">
                       <div className="flex items-center gap-5 flex-wrap">
                         <button
@@ -828,6 +1006,25 @@ export default function TestifyPage() {
                   </div>
                 </article>
               ))}
+              {filteredFeed.length === 0 && (
+                <article className="rounded-[1.75rem] border border-dashed border-[#00f2ff]/30 bg-[#00f2ff]/5 p-6">
+                  <p className="text-[10px] text-[#00f2ff] uppercase tracking-[6px] font-black">
+                    {feedFilter} feed is empty
+                  </p>
+                  <p className="mt-2 text-sm text-white/70">
+                    No testimonies here yet. Start by posting your first testimony, photo, or video.
+                  </p>
+                  <button
+                    onClick={() => {
+                      focusComposer();
+                      setStatusMessage('COMPOSER READY');
+                    }}
+                    className="mt-4 px-4 py-2 rounded-full bg-[#00f2ff] text-black text-[11px] font-black uppercase tracking-[2px]"
+                  >
+                    Create testimony
+                  </button>
+                </article>
+              )}
             </div>
           </section>
 

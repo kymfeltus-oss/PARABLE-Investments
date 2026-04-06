@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import HubBackground from "@/components/HubBackground";
+import StudyAIFlash from "./StudyAIFlash";
 
 // CSS Animations
 const sanctuaryStyles = `
@@ -37,6 +38,13 @@ type Sparkle = {
 };
 
 export default function FlashPage() {
+  if (process.env.NEXT_PUBLIC_APP_VARIANT === "parable-study-ai") {
+    return <StudyAIFlash />;
+  }
+  return <ParableFlashPage />;
+}
+
+function ParableFlashPage() {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [mounted, setMounted] = useState(false);

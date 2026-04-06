@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { fallbackAvatarOnError } from "@/lib/avatar-display";
 
 // URL matches your actual folder structure: /streamers
 const NAV_LINKS = [
@@ -15,7 +17,8 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const supabase = createClient();
-  const [displayName, setDisplayName] = useState("AUTHORIZED");
+  const { userProfile, avatarUrl } = useAuth();
+  const [displayName, setDisplayName] = useState("USER");
 
   useEffect(() => {
     getIdentity();
@@ -36,13 +39,19 @@ export default function Header() {
           .maybeSingle();
 
         // Source of truth: database username, fallback to metadata
-        const name = profile?.username || authUser.user_metadata?.username || "LEGEND";
+        const name = profile?.username || authUser.user_metadata?.username || "USER";
         setDisplayName(name.toUpperCase());
       }
     } catch (err) {
       console.error("Header Handshake Failure:", err);
     }
   };
+
+  useEffect(() => {
+    if (userProfile?.username || userProfile?.full_name) {
+      setDisplayName(String(userProfile?.username || userProfile?.full_name).toUpperCase());
+    }
+  }, [userProfile?.username, userProfile?.full_name]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[150] bg-black/80 backdrop-blur-md border-b border-white/10">
@@ -69,11 +78,23 @@ export default function Header() {
           ))}
         </div>
 
-        {/* DYNAMIC USER BADGE */}
-        <div className="px-4 py-1.5 border border-[#00f2ff]/30 rounded-full bg-[#00f2ff]/5 shadow-[0_0_10px_#00f2ff1a]">
-          <span className="text-[9px] font-black text-[#00f2ff] tracking-[2px] uppercase">
-            {displayName}
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-[#00f2ff]/35 bg-black">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={
+                avatarUrl && avatarUrl !== "/logo.svg" ? avatarUrl : "/logo.svg"
+              }
+              alt=""
+              className="h-full w-full object-cover"
+              onError={fallbackAvatarOnError}
+            />
+          </div>
+          <div className="px-4 py-1.5 border border-[#00f2ff]/30 rounded-full bg-[#00f2ff]/5 shadow-[0_0_10px_#00f2ff1a]">
+            <span className="text-[9px] font-black text-[#00f2ff] tracking-[2px] uppercase">
+              {displayName}
+            </span>
+          </div>
         </div>
       </div>
     </nav>

@@ -1,0 +1,12 @@
+{
+  "name": "Securafin-AI Showroom",
+  "short_name": "Securafin",
+  "description": "Digital showroom for Securafin-AI ready-to-use apps and custom Innovation Lab.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#050508",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "icons": []
+}

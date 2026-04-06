@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getSupabaseConfigError } from "@/utils/supabase/client";
 import Sparkles from "@/components/login/Sparkles";
 
 function frac(n: number) {
@@ -127,29 +127,55 @@ function LoginInner() {
   const nextPath = searchParams.get("next") || "/my-sanctuary";
 
   const signIn = async () => {
+    const configErr = getSupabaseConfigError();
+    if (configErr) {
+      setErr(configErr);
+      return;
+    }
     setErr(null);
     setInfo(null);
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    router.replace(nextPath);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
+      if (error) return setErr(error.message);
+      router.replace(nextPath);
+    } catch (e) {
+      setLoading(false);
+      const msg = e instanceof TypeError && e.message?.includes('fetch')
+        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
+        : e instanceof Error ? e.message : 'Sign-in failed. Try again.';
+      setErr(msg);
+    }
   };
 
   const signUp = async () => {
+    const configErr = getSupabaseConfigError();
+    if (configErr) {
+      setErr(configErr);
+      return;
+    }
     setErr(null);
     setInfo(null);
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}${nextPath}`,
-      },
-    });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    setInfo("Check your email to confirm your account.");
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}${nextPath}`,
+        },
+      });
+      setLoading(false);
+      if (error) return setErr(error.message);
+      setInfo("Check your email to confirm your account.");
+    } catch (e) {
+      setLoading(false);
+      const msg = e instanceof TypeError && e.message?.includes('fetch')
+        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
+        : e instanceof Error ? e.message : 'Sign-up failed. Try again.';
+      setErr(msg);
+    }
   };
 
   const resetPassword = async () => {
@@ -157,18 +183,28 @@ function LoginInner() {
       setErr("Enter your email address first.");
       return;
     }
-
+    const configErr = getSupabaseConfigError();
+    if (configErr) {
+      setErr(configErr);
+      return;
+    }
     setErr(null);
     setInfo(null);
     setLoading(true);
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}${nextPath}`,
-    });
-
-    setLoading(false);
-    if (error) return setErr(error.message);
-    setInfo("Password reset email sent.");
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}${nextPath}`,
+      });
+      setLoading(false);
+      if (error) return setErr(error.message);
+      setInfo("Password reset email sent.");
+    } catch (e) {
+      setLoading(false);
+      const msg = e instanceof TypeError && e.message?.includes('fetch')
+        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
+        : e instanceof Error ? e.message : 'Request failed. Try again.';
+      setErr(msg);
+    }
   };
 
   // ✅ deterministic shards (NO Math.random) + fixed formatting (NO hydration diffs)

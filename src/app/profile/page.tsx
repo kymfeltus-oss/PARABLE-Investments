@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -27,6 +27,11 @@ import {
   CalendarDays,
   Eye,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/utils/supabase/client";
+import { uploadUserAvatarFromDataUrl } from "@/lib/avatar-storage";
+import { clearPendingAvatarKeys, persistAvatarPublicUrlToProfile } from "@/lib/profile-avatar";
+import { fallbackAvatarOnError } from "@/lib/avatar-display";
 
 function frac(n: number) {
   return n - Math.floor(n);
@@ -250,6 +255,141 @@ function MediaCard({
 
 export default function ProfilePage() {
   const [selectedSupport, setSelectedSupport] = useState("Seed");
+  const { userProfile, avatarUrl, loading, applyAvatarFromUpload } = useAuth();
+  const [savingAvatar, setSavingAvatar] = useState(false);
+  const [avatarStatus, setAvatarStatus] = useState<string | null>(null);
+  const [localAvatarPreview, setLocalAvatarPreview] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const displayName =
+    userProfile?.username ||
+    userProfile?.full_name ||
+    "Your Profile";
+  const roleLabel = userProfile?.role || "Creator";
+  const supabase = createClient();
+
+  const compressImage = async (file: File): Promise<string | null> => {
+    const source = await new Promise<string | null>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(typeof reader.result === "string" ? reader.result : null);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+    if (!source) return null;
+
+    const image = await new Promise<HTMLImageElement | null>((resolve) => {
+      const img = new window.Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = source;
+    });
+    if (!image) return source;
+
+    const maxDim = 640;
+    const ratio = Math.min(1, maxDim / Math.max(image.width, image.height));
+    const width = Math.max(1, Math.round(image.width * ratio));
+    const height = Math.max(1, Math.round(image.height * ratio));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return source;
+    ctx.drawImage(image, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", 0.78);
+  };
+
+  const openAvatarPicker = () => {
+    if (!userProfile?.id) {
+      setAvatarStatus("You must be logged in before uploading a profile photo.");
+      return;
+    }
+    avatarInputRef.current?.click();
+  };
+
+  const handleChangeProfilePicture = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!userProfile?.id) {
+      setAvatarStatus("You must be logged in before uploading a profile photo.");
+      return;
+    }
+    if (!file) {
+      setAvatarStatus("No image selected.");
+      return;
+    }
+
+    const dataUrl = await compressImage(file);
+
+    if (!dataUrl) {
+      setAvatarStatus(
+        "Could not read this image. Use JPG or PNG (HEIC may not work in the browser).",
+      );
+      return;
+    }
+
+    setLocalAvatarPreview(dataUrl);
+    setAvatarStatus("Uploading profile photo...");
+    setSavingAvatar(true);
+    try {
+      const {
+        data: { user },
+        error: userErr,
+      } = await supabase.auth.getUser();
+      if (userErr || !user) {
+        setAvatarStatus("Session expired. Sign in again, then upload.");
+        return;
+      }
+
+      const uploaded = await uploadUserAvatarFromDataUrl(supabase, user.id, dataUrl);
+      if ("error" in uploaded) {
+        setAvatarStatus(
+          `Upload failed: ${uploaded.error}. In Supabase: create bucket "avatars" (public) and run SQL from supabase/storage-avatars-policies.sql.`
+        );
+        return;
+      }
+
+      const username =
+        userProfile.username ||
+        (user.user_metadata?.username as string | undefined) ||
+        user.email?.split("@")[0] ||
+        `user-${user.id.slice(0, 8)}`;
+      const fullName =
+        userProfile.full_name || (user.user_metadata?.full_name as string | undefined) || "";
+
+      const saved = await persistAvatarPublicUrlToProfile(supabase, user.id, uploaded.publicUrl, {
+        username,
+        full_name: fullName,
+      });
+
+      if (!saved.ok) {
+        setAvatarStatus(`Save failed: ${saved.error}`);
+        return;
+      }
+
+      const { error: metaErr } = await supabase.auth.updateUser({
+        data: { avatar_url: uploaded.publicUrl },
+      });
+      if (metaErr) {
+        /* profile row saved; JWT metadata is optional */
+      }
+
+      clearPendingAvatarKeys(
+        user.id,
+        user.email ? String(user.email).trim().toLowerCase() : null,
+        user.email ? `parable:pending-avatar:${String(user.email).trim().toLowerCase()}` : null
+      );
+
+      applyAvatarFromUpload(uploaded.publicUrl);
+      setLocalAvatarPreview(null);
+      setAvatarStatus("Profile photo saved.");
+      window.dispatchEvent(
+        new CustomEvent("parable:profile-updated", {
+          detail: { bumpAvatar: true },
+        }),
+      );
+    } finally {
+      setSavingAvatar(false);
+      event.target.value = "";
+    }
+  };
 
   const supportOptions = [
     {
@@ -278,26 +418,21 @@ export default function ProfilePage() {
     },
   ];
 
-  const media = [
-    {
-      title: "Latest Stream Replay",
-      subtitle: "Catch the most recent live moment, community energy, and support highlights.",
-      tag: "Replay",
-    },
-    {
-      title: "Featured Testimony Clip",
-      subtitle: "A short form testimony moment pinned for the profile audience.",
-      tag: "Testify",
-    },
-    {
-      title: "Sanctuary Session",
-      subtitle: "A featured music or worship clip spotlighted on the profile.",
-      tag: "Music",
-    },
-  ];
+  const media: { title: string; subtitle: string; tag: string }[] = [];
+
+  if (loading) {
+    return <div className="min-h-screen bg-black" />;
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleChangeProfilePicture}
+      />
       <div className="absolute inset-0">
         <div className="absolute inset-[-30%] opacity-[0.20] blur-[90px] animate-[profileOcean_18s_ease-in-out_infinite] bg-[radial-gradient(circle_at_18%_18%,rgba(0,242,254,0.34),transparent_55%),radial-gradient(circle_at_75%_68%,rgba(255,255,255,0.12),transparent_60%),radial-gradient(circle_at_46%_82%,rgba(0,242,254,0.18),transparent_55%)]" />
         <div className="absolute inset-0 opacity-[0.10] [background:linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:92px_92px]" />
@@ -319,8 +454,18 @@ export default function ProfilePage() {
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-5">
                     <div className="relative">
-                      <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-[#00f2fe]/35 bg-black/55 shadow-[0_0_34px_rgba(0,242,254,0.18)]">
-                        <User className="text-[#00f2fe]" size={40} />
+                      <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-[#00f2fe]/35 bg-black/55 shadow-[0_0_34px_rgba(0,242,254,0.18)] overflow-hidden">
+                        {(localAvatarPreview || avatarUrl) && (localAvatarPreview || avatarUrl) !== "/logo.svg" ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={localAvatarPreview || avatarUrl}
+                            alt={displayName}
+                            className="h-full w-full object-cover"
+                            onError={fallbackAvatarOnError}
+                          />
+                        ) : (
+                          <User className="text-[#00f2fe]" size={40} />
+                        )}
                       </div>
                       <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-red-500">
                         <span
@@ -334,41 +479,47 @@ export default function ProfilePage() {
                       <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
                         <BadgeCheck size={14} className="text-[#00f2fe]" />
                         <span className="text-[11px] font-black uppercase tracking-[4px] text-white/70">
-                          Verified Creator
+                          Sanctuary Member
                         </span>
                       </div>
 
                       <h1 className="mt-4 text-[38px] sm:text-[52px] font-black leading-[0.98] tracking-tight">
-                        KYM THE{" "}
-                        <span className="relative inline-block">
-                          <span className="absolute -inset-2 blur-2xl opacity-60 bg-[radial-gradient(circle_at_30%_40%,rgba(0,242,254,0.42),transparent_60%)]" />
-                          <span className="relative text-[#00f2fe] drop-shadow-[0_0_24px_rgba(0,242,254,0.55)]">
-                            CEO
-                          </span>
-                        </span>
+                        {displayName}
                       </h1>
 
                       <p className="mt-3 max-w-[760px] text-[15px] leading-relaxed text-white/65">
-                        Streamer, storyteller, builder, and visionary creating digital sanctuary experiences for community, worship, entertainment, and impact.
+                        This is your profile space. Add highlights, update your bio, and shape how your sanctuary appears to the community.
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <button className="rounded-[20px] bg-[#00f2fe] px-5 py-4 text-[10px] font-black uppercase tracking-[4px] text-black shadow-[0_0_30px_rgba(0,242,254,0.18)]">
-                      Follow
+                    <button
+                      type="button"
+                      onClick={openAvatarPicker}
+                      disabled={savingAvatar}
+                      className="rounded-[20px] bg-[#00f2fe] px-5 py-4 text-[10px] font-black uppercase tracking-[4px] text-black shadow-[0_0_30px_rgba(0,242,254,0.18)] disabled:opacity-70"
+                    >
+                      {savingAvatar ? "Uploading..." : "Upload Photo"}
                     </button>
                     <button className="rounded-[20px] border border-white/10 bg-black/50 px-5 py-4 text-[10px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-                      Message
+                      Customize
                     </button>
                     <button className="rounded-[20px] border border-white/10 bg-black/50 px-5 py-4 text-[10px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-                      Watch Live
+                      Add Media
                     </button>
                     <button className="rounded-[20px] border border-white/10 bg-black/50 px-5 py-4 text-[10px] font-black uppercase tracking-[4px] text-white/70 hover:bg-white/10 transition">
-                      Support
+                      Share
                     </button>
                   </div>
                 </div>
+                {avatarStatus ? (
+                  <p className="mt-3 text-[11px] text-white/65">{avatarStatus}</p>
+                ) : null}
+                <label className="mt-2 inline-flex cursor-pointer text-[10px] uppercase tracking-[3px] text-white/45 hover:text-[#00f2fe]">
+                  <input type="file" accept="image/*" className="hidden" onChange={handleChangeProfilePicture} />
+                  Upload from device (fallback)
+                </label>
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <SocialButton label="Instagram" icon={<Instagram size={14} />} />
@@ -381,10 +532,10 @@ export default function ProfilePage() {
           </div>
 
           <div className="xl:col-span-4 grid grid-cols-2 gap-4">
-            <StatCard label="Followers" value="24.8K" icon={<Users size={18} />} />
-            <StatCard label="Live Viewers" value="3.2K" icon={<Eye size={18} />} />
-            <StatCard label="Streams" value="128" icon={<Radio size={18} />} />
-            <StatCard label="Top Rank" value="Top 12" icon={<Star size={18} />} />
+            <StatCard label="Followers" value="0" icon={<Users size={18} />} />
+            <StatCard label="Live Viewers" value="0" icon={<Eye size={18} />} />
+            <StatCard label="Streams" value="0" icon={<Radio size={18} />} />
+            <StatCard label="Role" value={roleLabel} icon={<Star size={18} />} />
           </div>
         </div>
 
@@ -454,6 +605,16 @@ export default function ProfilePage() {
                     tag={item.tag}
                   />
                 ))}
+                {media.length === 0 && (
+                  <div className="md:col-span-3 rounded-[22px] border border-dashed border-[#00f2fe]/35 bg-[#00f2fe]/6 p-6">
+                    <p className="text-[11px] font-black uppercase tracking-[4px] text-[#00f2fe]">
+                      No highlights yet
+                    </p>
+                    <p className="mt-2 text-sm text-white/65">
+                      Start posting from Testify and your clips can be added here as profile highlights.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -488,7 +649,7 @@ export default function ProfilePage() {
                   <div className="mt-3 space-y-3 text-sm text-white/60">
                     <div className="flex items-center justify-between">
                       <span>Creator Type</span>
-                      <span className="font-black text-white/80">Streamer + Builder</span>
+                      <span className="font-black text-white/80">{roleLabel}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Joined</span>

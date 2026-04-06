@@ -7,20 +7,67 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Loader2, Plus, ArrowRight, ShieldCheck, Check } from "lucide-react";
 import Image from "next/image"; 
 import HubBackground from "@/components/HubBackground";
+import { uploadUserAvatarFromDataUrl } from "@/lib/avatar-storage";
+import { pendingAvatarOnlyStorageKey } from "@/lib/profile-avatar";
 
 const CALLINGS = [
   "Pastor/Preacher", "Musician", "Artist", "Podcaster", 
   "Influencer", "Gamer", "Streamer", "Member"
 ];
 
+/** Maps Supabase Auth errors to copy that explains what to do (esp. rate limits). */
+function formatSignupError(raw: string): string {
+  const m = raw.toLowerCase();
+  if (m.includes("rate limit") || m.includes("too many requests") || m.includes("email rate")) {
+    return [
+      "EMAIL RATE LIMIT — SUPABASE CAPS HOW MANY CONFIRMATION EMAILS YOUR PROJECT CAN SEND PER HOUR (BUILT-IN MAILER).",
+      "WAIT AN HOUR AND TRY AGAIN, OR IN SUPABASE: AUTHENTICATION → RATE LIMITS, OR CONNECT CUSTOM SMTP.",
+      "FOR LOCAL DEV: AUTHENTICATION → PROVIDERS → EMAIL → TURN OFF “CONFIRM EMAIL”.",
+    ].join(" ");
+  }
+  return raw.toUpperCase();
+}
+
 const InputField = ({ name, placeholder, type = 'text', value, onChange }: any) => (
   <motion.div whileTap={{ scale: 0.98 }} className="w-full">
     <input 
       name={name} type={type} value={value || ""} onChange={onChange} placeholder={placeholder} 
+      suppressHydrationWarning
       className="w-full bg-black/60 border border-white/10 p-5 text-[10px] font-black uppercase tracking-[3px] text-white outline-none focus:border-[#00f2ff] placeholder:text-gray-600 rounded-3xl transition-all focus:bg-white/5 shadow-2xl" 
     />
   </motion.div>
 );
+
+async function compressImageToDataUrl(file: File): Promise<string | null> {
+  const source = await new Promise<string | null>((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+  if (!source) return null;
+
+  const image = await new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new window.Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = source;
+  });
+  if (!image) return source;
+
+  const maxDim = 640;
+  const ratio = Math.min(1, maxDim / Math.max(image.width, image.height));
+  const width = Math.max(1, Math.round(image.width * ratio));
+  const height = Math.max(1, Math.round(image.height * ratio));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return source;
+  ctx.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL('image/jpeg', 0.78);
+}
 
 export default function CreateAccount() {
   const supabase = createClient();
@@ -31,6 +78,8 @@ export default function CreateAccount() {
   const [successMsg, setSuccessMsg] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [imageProcessing, setImageProcessing] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
@@ -47,7 +96,15 @@ export default function CreateAccount() {
     const file = e.target.files?.[0]; 
     if (file) {
       setImageFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      setImageProcessing(true);
+      compressImageToDataUrl(file).then((result) => {
+        if (typeof result === 'string') {
+          setImageDataUrl(result);
+          setPreviewUrl(result);
+        }
+      }).finally(() => {
+        setImageProcessing(false);
+      });
     }
   };
 
@@ -60,7 +117,15 @@ export default function CreateAccount() {
     setLoading(true);
     setErrorMsg("");
 
-    const finalFileName = "KymFeltus.jpg"; 
+    let avatarValue = imageDataUrl || null;
+    // If user submits immediately after selecting a photo, ensure we still produce avatar data.
+    if (!avatarValue && imageFile) {
+      setImageProcessing(true);
+      avatarValue = await compressImageToDataUrl(imageFile);
+      setImageDataUrl(avatarValue);
+      setPreviewUrl(avatarValue);
+      setImageProcessing(false);
+    }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: formData.email,
@@ -68,37 +133,73 @@ export default function CreateAccount() {
       options: { 
         data: { 
           full_name: formData.full_name, 
-          username: formData.username.toLowerCase(),
-          avatar_url: finalFileName 
+          username: formData.username.toLowerCase()
         },
-        emailRedirectTo: `${window.location.origin}/streamers`
+        // Exchange auth code through callback first, then land in sanctuary.
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/my-sanctuary`
       }
     });
 
     if (authError) {
-      setErrorMsg(authError.message.toUpperCase());
+      setErrorMsg(formatSignupError(authError.message));
       setLoading(false);
       return;
     }
 
     if (authData.user) {
       setSuccessMsg("VERIFICATION PENDING. PLEASE CHECK YOUR ZOHO INBOX.");
-      
-      if (imageFile) {
-        await supabase.storage
-          .from('avatars')
-          .upload(finalFileName, imageFile, { upsert: true });
+      if (formData.email) {
+        try {
+          const emailKey = formData.email.trim().toLowerCase();
+          const payload = JSON.stringify({
+            username: formData.username.trim().toLowerCase(),
+            full_name: formData.full_name.trim(),
+            role: selectedRoles.join(', '),
+            avatar_url: avatarValue || null,
+          });
+          window.localStorage.setItem(
+            `parable:pending-profile:${emailKey}`,
+            payload
+          );
+          if (authData.user?.id) {
+            window.localStorage.setItem(`parable:pending-profile-id:${authData.user.id}`, payload);
+          }
+          if (authData.user?.id && avatarValue?.startsWith("data:")) {
+            try {
+              window.localStorage.setItem(
+                pendingAvatarOnlyStorageKey(authData.user.id),
+                avatarValue
+              );
+            } catch {
+              /* quota — full JSON may also fail; user can re-upload on profile */
+            }
+          }
+        } catch {
+          // ignore localStorage write issues
+        }
       }
-
+      
       const createProfile = async (attempt = 1): Promise<any> => {
+        let avatarForDb = avatarValue;
+        if (
+          avatarValue?.startsWith('data:') &&
+          authData.session
+        ) {
+          const uploaded = await uploadUserAvatarFromDataUrl(
+            supabase,
+            authData.user!.id,
+            avatarValue
+          );
+          if (!('error' in uploaded)) avatarForDb = uploaded.publicUrl;
+        }
+
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: authData.user!.id,
             username: formData.username.toLowerCase(),
             full_name: formData.full_name,
-            role: selectedRoles.join(', '),
-            avatar_url: finalFileName,
+            avatar_url: avatarForDb,
             onboarding_complete: true
           });
 
@@ -149,7 +250,7 @@ export default function CreateAccount() {
                     <Camera className="text-[#00f2ff]/40 w-10 h-10 group-hover:text-[#00f2ff]" />
                   )}
                 </div>
-                <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
+                <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" suppressHydrationWarning />
                 <div className="absolute -bottom-1 -right-1 bg-[#00f2ff] p-2.5 rounded-full text-black shadow-lg">
                   <Plus size={16} strokeWidth={4} />
                 </div>
@@ -170,6 +271,7 @@ export default function CreateAccount() {
                     <button
                       key={role} type="button"
                       onClick={() => toggleRole(role)}
+                      suppressHydrationWarning
                       className={`py-3 px-2 rounded-2xl text-[8px] font-black uppercase tracking-[2px] border transition-all flex items-center justify-center gap-2 ${
                         active ? "bg-[#00f2ff] text-black border-[#00f2ff] shadow-[0_0_15px_#00f2ff44]" : "bg-white/5 border-white/10 text-gray-500 hover:border-white/30"
                       }`}
@@ -212,10 +314,11 @@ export default function CreateAccount() {
 </AnimatePresence>
 
             <button 
-              type="submit" disabled={loading}
+              type="submit" disabled={loading || imageProcessing}
+              suppressHydrationWarning
               className="w-full py-6 bg-[#00f2ff] text-black text-[10px] font-black uppercase tracking-[6px] rounded-3xl shadow-[0_20px_40px_rgba(0,242,255,0.2)] flex items-center justify-center gap-4 active:scale-95 transition-all disabled:opacity-50"
             >
-              {loading ? (
+              {loading || imageProcessing ? (
                 <><Loader2 className="animate-spin" size={18} /><span>SYNCING_SOUL...</span></>
               ) : (
                 <><span className="ml-4">INITIALIZE_ACCOUNT</span><ArrowRight size={18} /></>
@@ -226,6 +329,16 @@ export default function CreateAccount() {
           <div className="mt-8 flex items-center justify-center gap-3">
             <ShieldCheck size={14} className="text-[#00f2ff]" />
             <p className="text-[7px] text-gray-600 font-bold uppercase tracking-[2px]">Encrypted by Sanctuary Protocol</p>
+          </div>
+          <div className="mt-5 text-center">
+            <button
+              type="button"
+              onClick={() => router.push('/login')}
+              suppressHydrationWarning
+              className="text-[9px] font-black uppercase tracking-[4px] text-white/45 hover:text-[#00f2ff] transition-colors"
+            >
+              Already have an account? Log in
+            </button>
           </div>
         </motion.div>
       </div>

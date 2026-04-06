@@ -35,6 +35,8 @@ import { createClient } from "@/utils/supabase/client";
 import HubBackground from "@/components/HubBackground";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { fallbackAvatarOnError } from "@/lib/avatar-display";
 
 const MODES = [
   { id: "broadcast", label: "Live Broadcast", icon: <Radio size={16} />, color: "#00f2ff" },
@@ -163,18 +165,13 @@ type StreamCard = {
 };
 
 export default function StreamerHub() {
-  const supabase = createClient();
   const router = useRouter();
+  const { userProfile, avatarUrl, loading: authLoading } = useAuth();
 
   const [activeMode, setActiveMode] = useState<(typeof MODES)[number]["id"]>("broadcast");
   const [isLive, setIsLive] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [analytics] = useState({ support: "$2,450", active: "1.2k", praise: "1.28M", prayer: "32" });
-
-  const [user, setUser] = useState<{ name: string; profilePic: string | null }>({
-    name: "",
-    profilePic: null,
-  });
+  const displayName = userProfile?.username || userProfile?.full_name || "User";
 
   const [query, setQuery] = useState("");
   const [activeRow, setActiveRow] = useState<"ForYou" | "Trending" | "New" | "Following">("ForYou");
@@ -245,37 +242,6 @@ export default function StreamerHub() {
     ],
     [STREAMS]
   );
-
-  useEffect(() => {
-    const fetchIdentity = async () => {
-      try {
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser();
-
-        if (authUser) {
-          const metadataName = authUser.user_metadata?.display_name || authUser.user_metadata?.full_name;
-          const metadataAvatar = authUser.user_metadata?.avatar_url;
-
-          let finalPic: string | null = null;
-          if (metadataAvatar) {
-            const { data } = supabase.storage.from("avatars").getPublicUrl(metadataAvatar);
-            finalPic = `${data.publicUrl}?t=${Date.now()}`;
-          }
-
-          setUser({
-            name: metadataName || "Authorized Legend",
-            profilePic: finalPic,
-          });
-        }
-      } catch (err) {
-        console.error("Identity Sync Failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchIdentity();
-  }, [supabase]);
 
   useEffect(() => {
     if (!teleprompterOpen || !telePlaying) return;
@@ -413,10 +379,15 @@ export default function StreamerHub() {
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <div className="w-14 h-14 rounded-full border-2 border-[#00f2ff]/45 overflow-hidden bg-black flex items-center justify-center shadow-[0_0_18px_rgba(0,242,255,0.18)]">
-                        {loading ? (
+                        {authLoading ? (
                           <Loader2 className="animate-spin text-[#00f2ff]" size={18} />
-                        ) : user.profilePic ? (
-                          <img src={user.profilePic} alt="Profile" className="w-full h-full object-cover" />
+                        ) : avatarUrl && avatarUrl !== "/logo.svg" ? (
+                          <img
+                            src={avatarUrl}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                            onError={fallbackAvatarOnError}
+                          />
                         ) : (
                           <Users className="text-white/25" size={24} />
                         )}
@@ -428,7 +399,7 @@ export default function StreamerHub() {
 
                     <div>
                       <p className="text-[11px] font-black italic uppercase tracking-[2px] text-white">
-                        {loading ? "SYNCING..." : user.name}
+                        {authLoading ? "SYNCING..." : displayName}
                       </p>
                       <p className="text-[9px] font-black uppercase tracking-[3px] text-[#00f2ff] mt-1">
                         Premium Creator

@@ -4,25 +4,34 @@ import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const IS_STUDY_AI = process.env.NEXT_PUBLIC_APP_VARIANT === "parable-study-ai";
+
 type NavItem = {
   label: string;
   href: string;
   icon: (active: boolean) => React.ReactNode;
 };
 
+const STUDY_AI_ACCENT_ACTIVE = "bg-amber-500/15 border-amber-500/30 shadow-[0_0_22px_rgba(234,179,8,0.2)]";
+const STUDY_AI_ACCENT_TEXT = "text-amber-400";
+const PARABLE_ACCENT_ACTIVE = "bg-[#00f2fe]/15 border border-[#00f2fe]/25 shadow-[0_0_22px_rgba(0,242,254,0.18)]";
+const PARABLE_ACCENT_TEXT = "text-[#00f2fe]";
+
 function IconWrap({
   active,
   children,
+  studyAi,
 }: {
   active: boolean;
   children: React.ReactNode;
+  studyAi?: boolean;
 }) {
   return (
     <div
       className={[
         "h-10 w-10 rounded-2xl flex items-center justify-center transition",
         active
-          ? "bg-[#00f2fe]/15 border border-[#00f2fe]/25 shadow-[0_0_22px_rgba(0,242,254,0.18)]"
+          ? studyAi ? STUDY_AI_ACCENT_ACTIVE : PARABLE_ACCENT_ACTIVE
           : "bg-white/5 border border-white/10 hover:bg-white/7",
       ].join(" ")}
     >
@@ -31,10 +40,83 @@ function IconWrap({
   );
 }
 
+const STUDY_AI_NAV: NavItem[] = [
+  {
+    label: "Sanctuary",
+    href: "/sanctuary-reader",
+    icon: (active) => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className={active ? STUDY_AI_ACCENT_TEXT : "text-white/70"}>
+        <path d="M4 19V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v13" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M6 18h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M8 8h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M8 12h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Table",
+    href: "/table",
+    icon: (active) => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className={active ? STUDY_AI_ACCENT_TEXT : "text-white/70"}>
+        <path d="M16 11a4 4 0 1 0-8 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M3 21a7 7 0 0 1 18 0" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Lab",
+    href: "/lab",
+    icon: (active) => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className={active ? STUDY_AI_ACCENT_TEXT : "text-white/70"}>
+        <path d="M9 18a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M20 16a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M9 18V6l11-2v12" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: (active) => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className={active ? STUDY_AI_ACCENT_TEXT : "text-white/70"}>
+        <path d="M20 21a8 8 0 1 0-16 0" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M12 13a4 4 0 1 0-4-4a4 4 0 0 0 4 4Z" stroke="currentColor" strokeWidth="2"/>
+      </svg>
+    ),
+  },
+];
+
 export default function BottomNav() {
   const pathname = usePathname();
 
-  const items: NavItem[] = [
+  if (IS_STUDY_AI) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <div className="pointer-events-none absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-black to-transparent" />
+        <div className="mx-auto max-w-[1100px] px-4 pb-4">
+          <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-black/55 backdrop-blur-2xl shadow-[0_0_80px_rgba(234,179,8,0.08)]">
+            <nav className="relative flex items-center justify-around px-4 py-3">
+              {STUDY_AI_NAV.map((item) => {
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname?.startsWith(item.href + "/"));
+                return (
+                  <Link key={item.href} href={item.href} className="flex flex-col items-center gap-2 min-w-[64px]">
+                    <IconWrap active={active} studyAi>{item.icon(active)}</IconWrap>
+                    <span className={["text-[10px] font-black uppercase tracking-[3px] transition", active ? "text-amber-400" : "text-white/45"].join(" ")}>
+                      {item.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const parableNav: NavItem[] = [
     {
       label: "My Sanctuary",
       href: "/my-sanctuary",
@@ -128,6 +210,8 @@ export default function BottomNav() {
       ),
     },
   ];
+
+  const items = IS_STUDY_AI ? STUDY_AI_NAV : parableNav;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">

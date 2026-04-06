@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { fallbackAvatarOnError } from '@/lib/avatar-display';
 
 export const Header = ({ title }: { title?: string }) => {
   const router = useRouter();
@@ -22,10 +23,14 @@ export const Header = ({ title }: { title?: string }) => {
 
       <div className="flex items-center gap-5 cursor-pointer" onClick={() => router.push('/my-sanctuary')}>
         <div className="text-right">
-          <p className="text-[#00f2ff] text-lg font-black italic uppercase tracking-[-0.08em]">{userProfile?.username || "KYM THE CEO"}</p>
+          <p className="text-[#00f2ff] text-lg font-black italic uppercase tracking-[-0.08em]">
+            {userProfile?.username || userProfile?.full_name || "USER"}
+          </p>
           <p className="text-[10px] tracking-[10px] text-white/40 uppercase mt-1 mr-[-10px]">ONLINE</p>
         </div>
-        <div className="w-14 h-14 rounded-full border-2 border-[#00f2ff] p-1 bg-black"><img src={avatarUrl || '/logo.svg'} className="w-full h-full rounded-full object-cover" alt="CEO" /></div>
+        <div className="w-14 h-14 rounded-full border-2 border-[#00f2ff] p-1 bg-black">
+          <img src={avatarUrl || '/logo.svg'} className="w-full h-full rounded-full object-cover" alt="Profile" onError={fallbackAvatarOnError} />
+        </div>
       </div>
     </header>
   );

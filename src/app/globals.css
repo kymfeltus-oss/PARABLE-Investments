@@ -6,6 +6,17 @@
   --font-parable: "Inter", system-ui, sans-serif;
 }
 
+/* PARABLE Study AI: different accent when body has .variant-study-ai */
+.variant-study-ai {
+  --color-cyber: #eab308;
+  --color-cyber-muted: rgba(234, 179, 8, 0.15);
+  --color-cyber-border: rgba(234, 179, 8, 0.35);
+}
+.variant-study-ai::selection {
+  background: #eab308;
+  color: #000;
+}
+
 :root {
   background-color: var(--color-sanctuary);
 }

@@ -327,12 +327,20 @@ export default function WelcomePage() {
                 </div>
 
                 <div className="flex items-center justify-center md:justify-between pt-4 md:pt-6 text-[10px] sm:text-[11px] text-white/30">
-                  <button
-                    onClick={() => router.push("/create-account")}
-                    className="font-black uppercase tracking-[6px] hover:text-[#00f2ff] transition-colors"
-                  >
-                    Create Account
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => router.push("/create-account")}
+                      className="font-black uppercase tracking-[6px] hover:text-[#00f2ff] transition-colors"
+                    >
+                      Create Account
+                    </button>
+                    <button
+                      onClick={() => router.push("/login")}
+                      className="font-black uppercase tracking-[6px] text-white/60 hover:text-[#00f2ff] transition-colors"
+                    >
+                      Log In
+                    </button>
+                  </div>
                   <span className="hidden md:inline">
                     Already have an account? You’ll go straight to My Sanctuary.
                   </span>

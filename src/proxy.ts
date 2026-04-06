@@ -27,6 +27,7 @@ function isPublic(pathname: string) {
   if (pathname.startsWith("/login")) return true;
   if (pathname.startsWith("/create-account")) return true;
   if (pathname.startsWith("/welcome")) return true;
+  if (pathname.startsWith("/logout")) return true;
 
   // public creator pages (logged-out users can view)
   if (pathname.startsWith("/creator")) return true;
