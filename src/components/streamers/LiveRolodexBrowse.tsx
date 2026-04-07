@@ -82,7 +82,7 @@ export function LiveRolodexBrowse({ items, onWatch }: Props) {
         </div>
 
         <div
-          className="relative mt-8 flex items-center justify-center gap-2 sm:gap-6 min-h-[min(72vw,320px)] sm:min-h-[340px]"
+          className="relative mt-8 flex min-h-[260px] w-full min-w-0 items-center justify-center gap-2 sm:min-h-[300px] sm:gap-6 md:min-h-[320px]"
           style={{ perspective: '1200px' }}
         >
           <button
@@ -94,7 +94,7 @@ export function LiveRolodexBrowse({ items, onWatch }: Props) {
             <ChevronLeft size={22} />
           </button>
 
-          <div className="relative flex-1 flex items-center justify-center max-w-[min(100%,420px)] mx-auto">
+          <div className="relative mx-auto flex min-w-0 max-w-full flex-1 items-center justify-center sm:max-w-[min(100%,420px)]">
             {/* Back-left */}
             {prevItem ? (
               <motion.button

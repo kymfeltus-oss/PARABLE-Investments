@@ -49,9 +49,9 @@ export default function RootLayout({
         <AuthProvider>
           {useAppShell ? (
             <>
-              <div className="flex min-h-screen justify-center bg-[#070708]">
+              <div className="flex min-h-screen justify-center overflow-x-hidden bg-[#070708]">
                 <div
-                  className="relative w-full min-w-0 max-w-[430px] min-h-screen border-x border-white/[0.07] bg-[#050506] shadow-[0_0_80px_rgba(0,0,0,0.55)] md:max-w-[480px]"
+                  className="relative w-full min-w-0 max-w-[430px] min-h-screen overflow-x-hidden border-x border-white/[0.07] bg-[#050506] shadow-[0_0_80px_rgba(0,0,0,0.55)] md:max-w-[480px]"
                   data-parable-app-shell
                 >
                   {children}

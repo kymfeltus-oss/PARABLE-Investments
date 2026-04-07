@@ -269,7 +269,7 @@ export default function StreamerHub() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#08080a] text-white selection:bg-[#00f2ff]/30">
+    <div className="relative min-h-screen w-full min-w-0 max-w-full overflow-x-hidden bg-[#08080a] text-white selection:bg-[#00f2ff]/30">
       <div className="fixed inset-0 z-0 pointer-events-none">
         <HubBackground />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
@@ -277,7 +277,65 @@ export default function StreamerHub() {
 
       <Header />
 
-      <main className="relative z-10 w-full min-w-0 pb-parable-bottom pt-parable-header">
+      <main className="relative z-10 w-full min-w-0 max-w-full overflow-x-hidden pb-parable-bottom pt-parable-header">
+        <div className="border-b border-red-500/20 bg-gradient-to-b from-red-950/40 via-[#08080a] to-[#08080a] backdrop-blur-md">
+          <div className="mx-auto flex w-full min-w-0 max-w-full flex-col gap-5 px-4 py-5">
+            <div className="min-w-0 w-full space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/35 bg-red-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-red-200/90">
+                <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+                Broadcast
+              </div>
+              <div>
+                <h1 className="break-words text-xl font-bold tracking-tight text-white sm:text-2xl">
+                  Go live — your room, your ministry
+                </h1>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55">
+                  Jump into Live Studio to start a session with camera and mic. Listeners find you from this hub; pair with
+                  teleprompter or AI tools when you are ready.
+                </p>
+              </div>
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/45">
+                <li className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#00f2ff]/25 bg-[#00f2ff]/10">
+                    <Video className="h-3.5 w-3.5 text-[#00f2ff]" strokeWidth={2} />
+                  </span>
+                  HD Live Studio
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#00f2ff]/25 bg-[#00f2ff]/10">
+                    <Radio className="h-3.5 w-3.5 text-[#00f2ff]" strokeWidth={2} />
+                  </span>
+                  On-air status here
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#00f2ff]/25 bg-[#00f2ff]/10">
+                    <Wand2 className="h-3.5 w-3.5 text-[#00f2ff]" strokeWidth={2} />
+                  </span>
+                  AI & sermon tools
+                </li>
+              </ul>
+            </div>
+            <div className="flex w-full min-w-0 shrink-0 flex-col gap-2">
+              <button
+                type="button"
+                onClick={goGoLive}
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 text-sm font-bold text-white shadow-[0_0_28px_rgba(220,38,38,0.4)] transition hover:bg-red-500 hover:shadow-[0_0_36px_rgba(248,113,113,0.45)]"
+              >
+                <Radio className="h-5 w-5 shrink-0" strokeWidth={2.25} />
+                Go live
+              </button>
+              <button
+                type="button"
+                onClick={goTeleprompter}
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/85 transition hover:border-white/25 hover:bg-white/[0.1]"
+              >
+                <FileText className="h-4 w-4 shrink-0 text-[#00f2ff]" />
+                Prep teleprompter
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="border-b border-white/[0.06] bg-black/30 backdrop-blur-md">
           <div className="mx-auto flex w-full min-w-0 max-w-full flex-col gap-3 px-4 py-4">
             <p className="min-w-0 break-words text-sm leading-snug text-white/70">
