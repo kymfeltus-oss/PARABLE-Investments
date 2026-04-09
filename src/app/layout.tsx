@@ -45,6 +45,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={`${inter.className} bg-black text-white antialiased ${isStudyAI ? "variant-study-ai" : "selection:bg-[#00f2ff] selection:text-black"}`}
+        data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         <AuthProvider>
           {useAppShell ? (
