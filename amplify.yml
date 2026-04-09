@@ -7,8 +7,6 @@ frontend:
     build:
       commands:
         - export NODE_OPTIONS=--max_old_space_size=6144
-        # Baked into client bundle so you can verify prod matches Git (DevTools → Elements → search data-git-sha on body)
-        - export NEXT_PUBLIC_GIT_SHA="${AWS_COMMIT_ID:-unknown}"
         - npm run build
   artifacts:
     baseDirectory: .next

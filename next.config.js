@@ -1,7 +1,33 @@
 const path = require('path');
+const { execSync } = require('child_process');
+
+/**
+ * One identity string for local dev, GitHub Actions, and Amplify:
+ * CI sets AWS_COMMIT_ID / VERCEL_* ; locally we use `git rev-parse HEAD`.
+ * Inlined as NEXT_PUBLIC_GIT_SHA on the client (see layout.tsx data-git-sha).
+ */
+function resolveGitSha() {
+  const fromEnv =
+    process.env.NEXT_PUBLIC_GIT_SHA ||
+    process.env.AWS_COMMIT_ID ||
+    process.env.VERCEL_GIT_COMMIT_SHA ||
+    process.env.CODEBUILD_RESOLVED_SOURCE_VERSION;
+  if (fromEnv && String(fromEnv).trim()) return String(fromEnv).trim();
+  try {
+    return execSync('git rev-parse HEAD', {
+      encoding: 'utf-8',
+      cwd: __dirname,
+    }).trim();
+  } catch {
+    return '';
+  }
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_GIT_SHA: resolveGitSha(),
+  },
   async headers() {
     return [
       {
