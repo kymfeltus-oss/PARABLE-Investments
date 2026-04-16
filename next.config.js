@@ -27,6 +27,20 @@ function resolveGitSha() {
 const nextConfig = {
   env: {
     NEXT_PUBLIC_GIT_SHA: resolveGitSha(),
+    // Ensure browser bundle gets Supabase URL/key after .env.local loads (avoids stale/empty NEXT_PUBLIC_* in dev).
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+  },
+  async rewrites() {
+    const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!base || !String(base).startsWith('https://')) return [];
+    const origin = String(base).replace(/\/$/, '');
+    return [
+      {
+        source: '/supabase-proxy/:path*',
+        destination: `${origin}/:path*`,
+      },
+    ];
   },
   async headers() {
     return [

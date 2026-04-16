@@ -154,7 +154,7 @@ function LoginInner() {
     } catch (e) {
       setLoading(false);
       const msg = e instanceof TypeError && e.message?.includes('fetch')
-        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
+        ? 'Cannot reach Supabase (network or blocked request). Confirm NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local, stop dev, delete the .next folder, run npm run dev again, and try a private/incognito window (extensions sometimes block *.supabase.co).'
         : e instanceof Error ? e.message : 'Sign-in failed. Try again.';
       setErr(msg);
     }
@@ -183,7 +183,7 @@ function LoginInner() {
     } catch (e) {
       setLoading(false);
       const msg = e instanceof TypeError && e.message?.includes('fetch')
-        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
+        ? 'Cannot reach Supabase (network or blocked request). Confirm NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local, stop dev, delete the .next folder, run npm run dev again, and try a private/incognito window (extensions sometimes block *.supabase.co).'
         : e instanceof Error ? e.message : 'Sign-up failed. Try again.';
       setErr(msg);
     }

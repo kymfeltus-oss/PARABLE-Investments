@@ -10,14 +10,14 @@ function minsAgo(m: number): number {
 
 /**
  * When to show seeded “community” posts (fake users) so the feed feels alive.
- * - Default: on in development, off in production.
- * - Override: `NEXT_PUBLIC_TESTIFY_DEMO_FEED=true` | `false`
+ * Default is off everywhere so local `next dev` matches production unless you opt in.
+ * Set `NEXT_PUBLIC_TESTIFY_DEMO_FEED=true` in `.env.local` (or Amplify) to enable.
  */
 export function shouldIncludeDemoFeed(): boolean {
   const v = process.env.NEXT_PUBLIC_TESTIFY_DEMO_FEED;
   if (v === 'false' || v === '0') return false;
   if (v === 'true' || v === '1') return true;
-  return process.env.NODE_ENV === 'development';
+  return false;
 }
 
 export function isDemoPostId(id: string | number): boolean {
