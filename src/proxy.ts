@@ -33,6 +33,10 @@ function isPublic(pathname: string) {
   // public creator pages (logged-out users can view)
   if (pathname.startsWith("/creator")) return true;
 
+  if (pathname.startsWith("/parables")) return true;
+  if (pathname.startsWith("/writers-hub")) return true;
+  if (pathname.startsWith("/studio-hub")) return true;
+
   return false;
 }
 

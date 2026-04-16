@@ -110,6 +110,18 @@ export const HUB_DEFINITIONS: Record<HubId, HubDefinition> = {
         href: '/testify',
         badge: 'Clips',
       },
+      {
+        title: 'Writer Studio',
+        description: 'AI scripts & character bibles for Parable stories.',
+        href: '/writers-hub',
+        badge: 'Write',
+      },
+      {
+        title: 'Creator Studio',
+        description: 'Script collaborate, casting room, storyboard grid.',
+        href: '/studio-hub',
+        badge: 'Pro',
+      },
     ],
   },
   base: {

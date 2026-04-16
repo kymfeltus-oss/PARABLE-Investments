@@ -229,6 +229,8 @@ export default function BottomNav() {
               const active =
                 pathname === item.href ||
                 (item.href !== "/" && pathname?.startsWith(item.href + "/")) ||
+                (item.href === "/parables" &&
+                  (pathname === "/writers-hub" || pathname === "/studio-hub")) ||
                 (item.href === "/play" &&
                   (pathname?.startsWith("/gaming") || pathname?.startsWith("/imago") || pathname?.startsWith("/voices-of-praise")));
 

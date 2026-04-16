@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Play,
@@ -533,6 +534,25 @@ export default function ParablePage() {
       <CinemaSparkles />
 
       <div className="relative z-10 mx-auto w-full min-w-0 max-w-full px-4 pb-28 pt-10">
+        <Link
+          href="/studio-hub"
+          className="relative mb-6 flex w-full flex-col gap-4 overflow-hidden rounded-[28px] border border-amber-500/25 bg-gradient-to-br from-zinc-950 via-black to-zinc-900 p-[1px] shadow-[0_0_64px_rgba(251,191,36,0.12)] transition hover:shadow-[0_0_80px_rgba(251,191,36,0.18)] sm:flex-row sm:items-stretch"
+        >
+          <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-[radial-gradient(circle_at_20%_30%,rgba(251,191,36,0.15),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(0,242,255,0.08),transparent_50%)] opacity-90" />
+          <div className="relative flex flex-1 flex-col justify-center gap-2 px-6 py-6 sm:px-8">
+            <span className="w-fit rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-[0.35em] text-amber-200/90">
+              Pro
+            </span>
+            <span className="text-xl font-black tracking-tight text-white sm:text-2xl">Parable Creator Studio</span>
+            <span className="max-w-xl text-sm leading-relaxed text-white/55">
+              Script architect, hybrid casting room, and storyboard grid — production workflow in one hub.
+            </span>
+          </div>
+          <div className="relative flex shrink-0 items-center justify-center border-t border-white/10 bg-black/40 px-6 py-5 sm:border-l sm:border-t-0 sm:px-10">
+            <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#00f2ff]">Open studio →</span>
+          </div>
+        </Link>
+
         <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04] backdrop-blur-2xl">
           <div
             className="flex min-w-max gap-4 px-4 py-3"
@@ -595,6 +615,22 @@ export default function ParablePage() {
                         <Plus size={14} /> Add to Watchlist
                       </button>
                     </div>
+
+                    <Link
+                      href="/writers-hub"
+                      className="mt-6 flex w-full flex-col gap-3 rounded-[22px] border border-[#00f2ff]/25 bg-gradient-to-br from-[#00f2ff]/12 via-black/40 to-amber-500/10 p-5 text-left shadow-[0_0_48px_rgba(0,242,254,0.08)] transition hover:border-[#00f2ff]/40 hover:shadow-[0_0_64px_rgba(0,242,254,0.12)] sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00f2ff]/80">For writers</p>
+                        <p className="mt-2 text-base font-black text-white sm:text-lg">Writer Studio</p>
+                        <p className="mt-1 text-sm text-white/60">
+                          AI script modes (outline, beats, scene, dialogue, rewrite) and character tools — autosaves on your device.
+                        </p>
+                      </div>
+                      <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-2xl bg-[#00f2ff]/15 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff] sm:self-center">
+                        Open hub <ArrowRight size={14} />
+                      </span>
+                    </Link>
                   </div>
 
                   <div className="rounded-[28px] border border-[#00f2fe]/14 bg-black/45 p-5">
