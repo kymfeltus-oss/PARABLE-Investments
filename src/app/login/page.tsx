@@ -118,6 +118,25 @@ function emailConfirmRedirectUrl(nextPath: string) {
   return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
 }
 
+/** Supabase client expected JSON but got HTML (wrong base URL, broken /supabase-proxy rewrite, or 404 page). */
+function formatAuthNetworkError(e: unknown): string {
+  const raw = e instanceof Error ? e.message : String(e);
+  if (/Unexpected token|not valid JSON|<!DOCTYPE/i.test(raw)) {
+    return (
+      "Could not reach Supabase (the response was a web page, not JSON). " +
+      "Confirm NEXT_PUBLIC_SUPABASE_URL is your https://…supabase.co project URL in .env.local, restart the dev server, " +
+      "and leave NEXT_PUBLIC_SUPABASE_BROWSER_RELAY off unless you use the proxy on purpose."
+    );
+  }
+  if (e instanceof TypeError && e.message?.includes("fetch")) {
+    return (
+      "Cannot reach Supabase (network or blocked request). Confirm NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local, " +
+      "stop dev, delete the .next folder, run npm run dev again, and try a private/incognito window (extensions sometimes block *.supabase.co)."
+    );
+  }
+  return e instanceof Error ? e.message : "Request failed. Try again.";
+}
+
 function LoginInner() {
   const supabase = createClient();
   const router = useRouter();
@@ -134,7 +153,12 @@ function LoginInner() {
 
   useEffect(() => {
     const q = searchParams.get("error");
-    if (q) setErr(q);
+    if (q) {
+      setErr(q);
+      return;
+    }
+    const cfg = getSupabaseConfigError();
+    if (cfg) setErr(cfg);
   }, [searchParams]);
 
   const signIn = async () => {
@@ -153,10 +177,7 @@ function LoginInner() {
       router.replace(nextPath);
     } catch (e) {
       setLoading(false);
-      const msg = e instanceof TypeError && e.message?.includes('fetch')
-        ? 'Cannot reach Supabase (network or blocked request). Confirm NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local, stop dev, delete the .next folder, run npm run dev again, and try a private/incognito window (extensions sometimes block *.supabase.co).'
-        : e instanceof Error ? e.message : 'Sign-in failed. Try again.';
-      setErr(msg);
+      setErr(formatAuthNetworkError(e));
     }
   };
 
@@ -182,10 +203,7 @@ function LoginInner() {
       setInfo("Check your email to confirm your account.");
     } catch (e) {
       setLoading(false);
-      const msg = e instanceof TypeError && e.message?.includes('fetch')
-        ? 'Cannot reach Supabase (network or blocked request). Confirm NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local, stop dev, delete the .next folder, run npm run dev again, and try a private/incognito window (extensions sometimes block *.supabase.co).'
-        : e instanceof Error ? e.message : 'Sign-up failed. Try again.';
-      setErr(msg);
+      setErr(formatAuthNetworkError(e));
     }
   };
 
@@ -211,10 +229,7 @@ function LoginInner() {
       setInfo("Password reset email sent.");
     } catch (e) {
       setLoading(false);
-      const msg = e instanceof TypeError && e.message?.includes('fetch')
-        ? 'Cannot reach the server. Check your connection and that Supabase URL/key are set in .env.local.'
-        : e instanceof Error ? e.message : 'Request failed. Try again.';
-      setErr(msg);
+      setErr(formatAuthNetworkError(e));
     }
   };
 

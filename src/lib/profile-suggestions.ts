@@ -40,7 +40,7 @@ export type RegisteredSuggestionsResult = {
 
 /**
  * Loads other rows from `public.profiles` (excludes JWT user).
- * Uses `getUser()` so we never depend on React state lagging behind the session.
+ * Uses `getSession()` (local session) then one batched `profiles` query — avoids an extra `getUser()` round trip.
  * Requires `profiles-discovery-policy.sql` RLS so authenticated users can read peers.
  */
 export async function fetchRegisteredProfileSuggestions(
@@ -48,9 +48,11 @@ export async function fetchRegisteredProfileSuggestions(
 ): Promise<RegisteredSuggestionsResult> {
   const supabase = createClient();
   const {
-    data: { user },
+    data: { session },
     error: authErr,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+
+  const user = session?.user ?? null;
 
   if (authErr || !user) {
     return {

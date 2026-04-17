@@ -33,13 +33,18 @@ function resolveAvatarDisplayUrl(raw: string | null | undefined): string {
 export function ChannelAvatar({
   c,
   className = 'h-12 w-12 rounded-xl',
+  loadRemoteImage = true,
 }: {
   c: SanctuaryChannel;
   className?: string;
+  /** When false, skip remote `<img>` (initials only) — bandwidth / post-flow stabilization. */
+  loadRemoteImage?: boolean;
 }) {
   const [imgOk, setImgOk] = useState(true);
   const resolved = useMemo(() => resolveAvatarDisplayUrl(c.avatarUrl), [c.avatarUrl]);
-  const showImg = Boolean(resolved && (resolved.startsWith('http') || resolved.startsWith('data:')));
+  const showImg = Boolean(
+    loadRemoteImage && resolved && (resolved.startsWith('http') || resolved.startsWith('data:')),
+  );
 
   return (
     <div className={`overflow-hidden border border-white/10 shrink-0 bg-black ${className}`}>
@@ -71,6 +76,8 @@ type DiscoverProps = {
   /** When false, omit outer intro line (e.g. Following page has its own header) */
   showIntro?: boolean;
   className?: string;
+  /** Passed through to {@link ChannelAvatar} for registered rows. */
+  loadRemoteAvatarImages?: boolean;
 };
 
 export function SanctuaryDiscoverSection({
@@ -82,6 +89,7 @@ export function SanctuaryDiscoverSection({
   onOpenStreamers,
   showIntro = true,
   className = '',
+  loadRemoteAvatarImages = true,
 }: DiscoverProps) {
   const curatedDiscover = useMemo(
     () => RECOMMENDED_SANCTUARY_CHANNELS.filter((c) => !followingIds.includes(c.id)),
@@ -146,7 +154,7 @@ export function SanctuaryDiscoverSection({
                 key={c.id}
                 className="flex items-center gap-3 rounded-xl border border-[#00f2ff]/15 bg-[#00f2ff]/[0.04] p-3"
               >
-                <ChannelAvatar c={c} />
+                <ChannelAvatar c={c} loadRemoteImage={loadRemoteAvatarImages} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold truncate">{c.name}</p>
                   <p className="text-xs text-white/50 truncate">{c.tagline || c.handle}</p>

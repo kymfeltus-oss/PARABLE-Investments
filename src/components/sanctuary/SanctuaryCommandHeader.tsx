@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Gamepad2, Heart, Mic, Music, Palette, Sparkles, Church } from 'lucide-react';
 import { fallbackAvatarOnError } from '@/lib/avatar-display';
+import { domSafeSupabaseImageSrc } from '@/lib/supabase-storage-image';
 import { kingdomXpToLevel, readKingdomXp } from '@/lib/kingdom-xp';
 import {
   auraFromStreak,
@@ -75,6 +77,15 @@ export default function SanctuaryCommandHeader({
   const shortName =
     displayName.length > 18 ? `${displayName.slice(0, 16).trim()}…` : displayName;
 
+  const safeAvatar = useMemo(() => {
+    if (!avatarUrl || avatarUrl === '/logo.svg') return '/logo.svg';
+    return domSafeSupabaseImageSrc('SanctuaryCommandHeader.avatar', avatarUrl, {
+      width: 104,
+      quality: 78,
+      format: 'webp',
+    });
+  }, [avatarUrl]);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 14 }}
@@ -95,7 +106,7 @@ export default function SanctuaryCommandHeader({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={avatarUrl && avatarUrl !== '/logo.svg' ? avatarUrl : '/logo.svg'}
+              src={safeAvatar}
               alt=""
               className="h-full w-full object-cover"
               onError={fallbackAvatarOnError}

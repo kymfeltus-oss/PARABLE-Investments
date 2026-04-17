@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+:root {
+  --accent-cyan: #00f2ff;
+  --accent-violet: #8b5cf6;
+  --bg-sanctuary: #010101;
+  --foreground: #f4f4f5;
+  --parable-frost: rgba(255, 255, 255, 0.06);
+  --parable-edge: rgba(255, 255, 255, 0.1);
+  --parable-mist: rgba(255, 255, 255, 0.55);
+  --parable-glow: rgba(0, 242, 255, 0.14);
+}
+
+@theme inline {
+  --color-background: var(--bg-sanctuary);
+  --color-foreground: #f4f4f5;
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-violet: var(--accent-violet);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-inter: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6.25rem;
+}
+
+body {
+  background-color: var(--bg-sanctuary);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Main section titles — heavy italic, tight tracking (Inter italic + black) */
+.marketing-heading {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+
+/* Nav + microcopy — airy wide tracking */
+.marketing-track-wide {
+  letter-spacing: 0.22em;
+}
+
+.marketing-nav-link {
+  letter-spacing: 0.18em;
+}
+
+/* Ambient wash — cyber cyan + violet */
+.parable-ambient {
+  background:
+    radial-gradient(1200px 600px at 12% -8%, color-mix(in srgb, var(--accent-cyan) 18%, transparent), transparent 58%),
+    radial-gradient(900px 520px at 88% 4%, color-mix(in srgb, var(--accent-violet) 14%, transparent), transparent 52%),
+    var(--bg-sanctuary);
+}
+
+.glass-panel {
+  border: 1px solid var(--parable-edge);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 24px 80px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+}
+
+/* Hero logo — cyan-forward glow + violet halo (matches app “Cyber”) */
+.hero-logo-glow {
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent-cyan) 55%, transparent))
+    drop-shadow(0 0 36px color-mix(in srgb, var(--accent-violet) 35%, transparent))
+    drop-shadow(0 0 64px color-mix(in srgb, var(--accent-cyan) 22%, transparent));
+}
+
+/* If a raster logo ships with a dark matte, toggle blend on the wrapper */
+.hero-logo-blend {
+  mix-blend-mode: screen;
+}
+
+/* Primary CTA — cyan + violet bloom (replaces violet-only) */
+.cta-cyber-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-cyan) 22%, transparent),
+    0 12px 40px rgba(0, 0, 0, 0.45);
+  transition:
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta-cyber-glow:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-cyan) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--accent-violet) 25%, transparent) inset,
+    0 0 48px -10px color-mix(in srgb, var(--accent-cyan) 55%, transparent),
+    0 0 88px -22px color-mix(in srgb, var(--accent-violet) 42%, transparent),
+    0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+/* Investor deck — subtle gold edge + lift */
+.cta-deck-premium {
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.22),
+    0 16px 48px rgba(0, 0, 0, 0.55);
+  transition:
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta-deck-premium:hover {
+  border-color: rgba(234, 211, 150, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(234, 211, 150, 0.35),
+    0 0 48px -10px rgba(212, 175, 55, 0.35),
+    0 22px 60px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+@keyframes timeline-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-cyan) 0%, transparent);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow:
+      0 0 22px 2px color-mix(in srgb, var(--accent-cyan) 38%, transparent),
+      0 0 36px 4px color-mix(in srgb, var(--accent-violet) 28%, transparent);
+  }
+}
+
+.timeline-dot {
+  animation: timeline-dot-pulse 3.2s ease-in-out infinite;
+}

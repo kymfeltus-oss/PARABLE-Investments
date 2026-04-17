@@ -67,7 +67,7 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  let res = NextResponse.next();
+  const res = NextResponse.next();
 
   try {
     const supabase = createServerClient(url, anon, {

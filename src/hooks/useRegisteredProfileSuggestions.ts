@@ -5,7 +5,10 @@ import { createClient } from '@/utils/supabase/client';
 import type { SanctuaryChannel } from '@/lib/sanctuary-following';
 import { fetchRegisteredProfileSuggestions } from '@/lib/profile-suggestions';
 
-export function useRegisteredProfileSuggestions() {
+/**
+ * @param fetchEnabled When false, skips the Supabase `profiles` query (saves bandwidth until the gate opens).
+ */
+export function useRegisteredProfileSuggestions(fetchEnabled = true) {
   const [channels, setChannels] = useState<SanctuaryChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -15,6 +18,15 @@ export function useRegisteredProfileSuggestions() {
     let cancelled = false;
 
     const load = async () => {
+      if (!fetchEnabled) {
+        if (!cancelled) {
+          setChannels([]);
+          setErrorMessage(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       setLoading(true);
       setErrorMessage(null);
 
@@ -39,19 +51,19 @@ export function useRegisteredProfileSuggestions() {
       }
     };
 
-    load();
+    void load();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
-      load();
+      void load();
     });
 
     return () => {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchEnabled]);
 
   return {
     registeredChannels: channels,

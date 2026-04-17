@@ -24,7 +24,16 @@ function isUuid(id: string) {
  * Merges curated + registered + custom channels and loads Supabase profiles for
  * followed UUIDs that are not yet in the merged list (so Following tab always lists real people).
  */
-export function useSanctuaryFollowGraph(registeredChannels: SanctuaryChannel[]) {
+type FollowGraphOptions = {
+  /** When true, skips Supabase `.in('id', …)` hydration for followed UUIDs not in the merged list. */
+  deferRemoteHydration?: boolean;
+};
+
+export function useSanctuaryFollowGraph(
+  registeredChannels: SanctuaryChannel[],
+  options?: FollowGraphOptions,
+) {
+  const deferRemoteHydration = options?.deferRemoteHydration === true;
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [customFollowers, setCustomFollowers] = useState<SanctuaryChannel[]>([]);
   const [orphanFollowed, setOrphanFollowed] = useState<SanctuaryChannel[]>([]);
@@ -93,6 +102,11 @@ export function useSanctuaryFollowGraph(registeredChannels: SanctuaryChannel[]) 
   const knownIds = useMemo(() => new Set(baseMerged.keys()), [baseMerged]);
 
   useEffect(() => {
+    if (deferRemoteHydration) {
+      setOrphanFollowed([]);
+      return;
+    }
+
     const missing = followingIds.filter((id) => isUuid(id) && !knownIds.has(id));
     if (missing.length === 0) {
       setOrphanFollowed([]);
@@ -129,7 +143,7 @@ export function useSanctuaryFollowGraph(registeredChannels: SanctuaryChannel[]) 
     return () => {
       cancelled = true;
     };
-  }, [followingIds, knownIds]);
+  }, [followingIds, knownIds, deferRemoteHydration]);
 
   const allFollowers = useMemo(() => {
     const merged = new Map<string, SanctuaryChannel>(baseMerged);

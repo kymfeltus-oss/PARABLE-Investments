@@ -46,7 +46,8 @@ function saveScript(s: string) {
   }
 }
 
-export default function ParableStudioHub() {
+export default function ParableStudioHub({ variant = "page" }: { variant?: "page" | "dashboard" }) {
+  const isDash = variant === "dashboard";
   const [script, setScript] = useState("");
   const [collabLoading, setCollabLoading] = useState(false);
   const [boardLoading, setBoardLoading] = useState(false);
@@ -133,17 +134,22 @@ export default function ParableStudioHub() {
   };
 
   const moduleShell = (n: string, title: string, subtitle: string, children: React.ReactNode) => (
-    <section className="rounded-[28px] border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-black/50 p-5 shadow-[0_0_60px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6">
+    <section
+      className={[
+        "rounded-[28px] border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-black/50 shadow-[0_0_60px_rgba(0,0,0,0.45)] backdrop-blur-xl",
+        isDash ? "p-4" : "p-5 sm:p-6",
+      ].join(" ")}
+    >
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-[11px] font-black text-amber-200/90">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-[10px] font-black text-amber-200/90 sm:h-9 sm:w-9 sm:text-[11px]">
           {n}
         </span>
-        <div>
-          <h2 className="text-lg font-black tracking-tight text-white sm:text-xl">{title}</h2>
-          <p className="mt-1 text-sm text-white/50">{subtitle}</p>
+        <div className="min-w-0">
+          <h2 className="text-base font-black tracking-tight text-white sm:text-lg lg:text-xl">{title}</h2>
+          <p className="mt-1 text-xs text-white/50 sm:text-sm">{subtitle}</p>
         </div>
       </div>
-      <div className="mt-6">{children}</div>
+      <div className={isDash ? "mt-4" : "mt-6"}>{children}</div>
     </section>
   );
 
@@ -175,26 +181,41 @@ export default function ParableStudioHub() {
   );
 
   return (
-    <div className="space-y-8 pb-8">
-      <header className="relative overflow-hidden rounded-[28px] border border-amber-500/20 bg-gradient-to-br from-zinc-900 via-black to-zinc-950 p-6 shadow-[0_0_80px_rgba(251,191,36,0.08)]">
-        <div className="pointer-events-none absolute -right-8 -top-12 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-16 left-1/4 h-32 w-64 rounded-full bg-[#00f2ff]/10 blur-3xl" />
-        <div className="relative flex flex-wrap items-end justify-between gap-4">
+    <div className={isDash ? "max-w-full space-y-4 pb-2" : "mx-auto w-full max-w-5xl space-y-8 pb-8"}>
+      {isDash ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-500/20 bg-black/40 px-4 py-3">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-amber-200/70">Premium production</p>
-            <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">Creator Studio</h1>
-            <p className="mt-2 max-w-md text-sm text-white/55">
-              Script collaboration, casting workflow, and storyboard beats — tuned for fast iteration. Nothing heavy is stored except your draft text on this device.
-            </p>
+            <p className="text-[9px] font-black uppercase tracking-[0.25em] text-amber-200/70">Pro panel</p>
+            <p className="text-sm font-black text-white">Creator Studio</p>
           </div>
           <Link
-            href="/writers-hub"
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white/70 hover:bg-white/10"
+            href="/studio-hub"
+            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-white/80 transition hover:border-[#00f2ff]/30 hover:bg-[#00f2ff]/10 lg:text-[10px]"
           >
-            Deep writer tools
+            Full layout
           </Link>
         </div>
-      </header>
+      ) : (
+        <header className="relative overflow-hidden rounded-[28px] border border-amber-500/20 bg-gradient-to-br from-zinc-900 via-black to-zinc-950 p-6 shadow-[0_0_80px_rgba(251,191,36,0.08)] transition hover:shadow-[0_0_100px_rgba(251,191,36,0.1)]">
+          <div className="pointer-events-none absolute -right-8 -top-12 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 left-1/4 h-32 w-64 rounded-full bg-[#00f2ff]/10 blur-3xl" />
+          <div className="relative flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-amber-200/70">Premium production</p>
+              <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">Creator Studio</h1>
+              <p className="mt-2 max-w-md text-sm text-white/55">
+                Script collaboration, casting workflow, and storyboard beats — tuned for fast iteration. Draft text stays on this device.
+              </p>
+            </div>
+            <Link
+              href="/writers-hub"
+              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white/70 transition hover:border-[#00f2ff]/25 hover:bg-white/10"
+            >
+              Deep writer tools
+            </Link>
+          </div>
+        </header>
+      )}
 
       {err && (
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100/90">{err}</div>
@@ -210,7 +231,7 @@ export default function ParableStudioHub() {
               value={script}
               onChange={(e) => onScriptChange(e.target.value)}
               placeholder={"INT. STUDIO - DAY\n\nWriter adjusts a beat card.\n\nWRITER\nWe open cold.\n"}
-              className="min-h-[220px] w-full resize-y bg-transparent px-4 py-4 text-[13px] text-white/90 outline-none placeholder:text-white/25"
+              className={`w-full resize-y bg-transparent px-4 py-4 text-[13px] text-white/90 outline-none placeholder:text-white/25 ${isDash ? "min-h-[140px] max-w-full" : "min-h-[220px] max-w-3xl"}`}
               spellCheck={false}
             />
           </div>
@@ -313,7 +334,7 @@ export default function ParableStudioHub() {
               No frames yet — generate from script.
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className={`mt-6 grid gap-3 ${isDash ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3"}`}>
               {shots.map((s, i) => (
                 <div
                   key={s.id}

@@ -1,5 +1,10 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+
+type CookieStoreWithAll = {
+  getAll?: () => { name: string; value: string }[];
+  set?: (name: string, value: string, options: CookieOptions) => void;
+};
 
 export function createClient() {
   const cookieStore = cookies();
@@ -11,10 +16,10 @@ export function createClient() {
       cookies: {
         // ✅ Works across Next versions: if getAll() exists use it, otherwise manually enumerate
         getAll() {
-          const anyStore = cookieStore as any;
+          const store = cookieStore as CookieStoreWithAll;
 
-          if (typeof anyStore.getAll === "function") {
-            return anyStore.getAll();
+          if (typeof store.getAll === "function") {
+            return store.getAll();
           }
 
           // Fallback: try common shapes
@@ -25,12 +30,12 @@ export function createClient() {
         },
 
         setAll(cookiesToSet) {
-          const anyStore = cookieStore as any;
+          const store = cookieStore as CookieStoreWithAll;
 
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              if (typeof anyStore.set === "function") {
-                anyStore.set(name, value, options);
+              if (typeof store.set === "function") {
+                store.set(name, value, options);
               }
             });
           } catch {

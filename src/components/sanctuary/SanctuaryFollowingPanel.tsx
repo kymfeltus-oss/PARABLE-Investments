@@ -31,6 +31,8 @@ type Props = {
   onAddCustom: (name: string, handle: string) => void;
   onRemoveCustomChannel: (id: string) => void;
   onOpenStreamers: () => void;
+  /** When false, fellowship/discover avatars skip remote image URLs (initials only). */
+  loadRemoteAvatarImages?: boolean;
 };
 
 export function SanctuaryFollowingPanel({
@@ -43,6 +45,7 @@ export function SanctuaryFollowingPanel({
   onAddCustom,
   onRemoveCustomChannel,
   onOpenStreamers,
+  loadRemoteAvatarImages = true,
 }: Props) {
   const [mode, setMode] = useState<'following' | 'discover'>('following');
   const [query, setQuery] = useState('');
@@ -143,7 +146,11 @@ export function SanctuaryFollowingPanel({
                   }`}
                 >
                   <div className="h-14 w-14 rounded-full bg-black border-2 border-black overflow-hidden">
-                    <ChannelAvatar c={c} className="h-full w-full rounded-full border-0" />
+                    <ChannelAvatar
+                      c={c}
+                      className="h-full w-full rounded-full border-0"
+                      loadRemoteImage={loadRemoteAvatarImages}
+                    />
                   </div>
                   {c.isLive && (
                     <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg">
@@ -228,7 +235,11 @@ export function SanctuaryFollowingPanel({
                       className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/50 p-3 hover:border-[#00f2ff]/25 transition-colors"
                     >
                       <div className="relative shrink-0">
-                        <ChannelAvatar c={c} className="h-11 w-11 rounded-full" />
+                        <ChannelAvatar
+                          c={c}
+                          className="h-11 w-11 rounded-full"
+                          loadRemoteImage={loadRemoteAvatarImages}
+                        />
                         {c.isLive && (
                           <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-black animate-pulse" />
                         )}
@@ -334,6 +345,7 @@ export function SanctuaryFollowingPanel({
             registeredError={registeredError}
             onToggleFollow={onToggleFollow}
             onOpenStreamers={onOpenStreamers}
+            loadRemoteAvatarImages={loadRemoteAvatarImages}
           />
         )}
       </div>

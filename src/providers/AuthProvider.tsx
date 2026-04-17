@@ -19,10 +19,13 @@ import {
   clearPendingAvatarKeys,
   pendingAvatarOnlyStorageKey,
 } from "@/lib/profile-avatar";
+import { optimizeSupabaseAvatarUrl } from "@/lib/supabase-storage-image";
 
 export type AuthContextValue = {
   userProfile: any;
-  /** URL safe for <img src> — includes cache-bust for remote avatars */
+  /** Supabase auth user id when signed in */
+  authUserId: string | null;
+  /** URL safe for <img src> — render-transformed for Supabase storage; cache-bust for remote avatars */
   avatarUrl: string;
   loading: boolean;
   /** Call after a successful upload so headers update immediately */
@@ -88,15 +91,25 @@ function withImgCacheBust(url: string, rev: number): string {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [canonicalAvatarUrl, setCanonicalAvatarUrl] =
     useState<string>("/logo.svg");
   const [avatarRev, setAvatarRev] = useState(0);
   const [loading, setLoading] = useState(true);
   const loadGenRef = useRef(0);
 
+  const displayReadyAvatar = useMemo(() => {
+    const u = canonicalAvatarUrl;
+    if (!u || u === "/logo.svg" || u.startsWith("data:")) return u;
+    if (u.startsWith("http://") || u.startsWith("https://")) {
+      return optimizeSupabaseAvatarUrl(u, 96);
+    }
+    return u;
+  }, [canonicalAvatarUrl]);
+
   const avatarUrl = useMemo(
-    () => withImgCacheBust(canonicalAvatarUrl, avatarRev),
-    [canonicalAvatarUrl, avatarRev],
+    () => withImgCacheBust(displayReadyAvatar, avatarRev),
+    [displayReadyAvatar, avatarRev],
   );
 
   const bumpAvatar = useCallback(() => {
@@ -280,10 +293,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user.user_metadata?.avatar_url as string | undefined,
       );
 
-      if (displayUrl === "/logo.svg") {
-        const discovered = await discoverStoredAvatarPublicUrl(supabase, user.id);
-        if (discovered) {
-          displayUrl = discovered;
+      // Always prefer the canonical avatar object at {userId}/avatar.{ext} when it exists.
+      // This prevents stale/wrong avatar URLs from winning over the current user's file.
+      const discovered = await discoverStoredAvatarPublicUrl(supabase, user.id);
+      if (discovered) {
+        displayUrl = discovered;
+        if ((data?.avatar_url as string | undefined) !== discovered) {
           await supabase
             .from("profiles")
             .update({
@@ -457,6 +472,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       userProfile,
+      authUserId,
       avatarUrl,
       loading,
       applyAvatarFromUpload,
@@ -464,6 +480,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       userProfile,
+      authUserId,
       avatarUrl,
       loading,
       applyAvatarFromUpload,

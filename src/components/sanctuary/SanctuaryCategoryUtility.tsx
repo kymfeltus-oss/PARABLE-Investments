@@ -136,28 +136,6 @@ export default function SanctuaryCategoryUtility({ role, router }: Props) {
         </div>
       )}
 
-      {!p.includes('musician') &&
-        !p.includes('pastor') &&
-        !p.includes('preacher') &&
-        !p.includes('gamer') &&
-        !p.includes('streamer') &&
-        !p.includes('podcaster') &&
-        !p.includes('artist') &&
-        !p.includes('influencer') && (
-          <div className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4">
-            <p className="text-sm font-semibold text-white">Faith journey home</p>
-            <p className="mt-1 text-xs text-white/50">
-              Streaks, outreach ops, and badges will surface here as your Kingdom Path advances.
-            </p>
-            <button
-              type="button"
-              onClick={() => router.push('/hubs')}
-              className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-[#00f2ff] hover:underline"
-            >
-              Open hub portal <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        )}
     </motion.section>
   );
 }
