@@ -6,6 +6,7 @@
     "dev": "next dev -p 3003",
     "build": "next build",
     "start": "next start -p 3003",
+    "deploy:local": "npm run build && npm run start",
     "lint": "eslint src"
   },
   "dependencies": {

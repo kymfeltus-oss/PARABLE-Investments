@@ -30,11 +30,14 @@ export function ParableLogoVideo({
   }
 
   return (
-    <div
-      className={`relative mx-auto w-full ${maxWidthClass} ${className}`}
-    >
+    <div className={`relative mx-auto w-full ${maxWidthClass} ${className}`}>
+      {/* Plate behind the video so blend isn’t composited only against page black (Framer/motion stacking). */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(ellipse_80%_85%_at_50%_42%,rgba(0,242,255,0.2)_0%,rgba(18,22,32,0.92)_52%,#060708_100%)]"
+        aria-hidden
+      />
       <video
-        className="h-auto w-full object-contain drop-shadow-[0_0_30px_rgba(0,242,255,0.55)]"
+        className="relative h-auto w-full object-contain mix-blend-lighten drop-shadow-[0_0_28px_rgba(0,242,255,0.4)]"
         autoPlay
         muted
         loop

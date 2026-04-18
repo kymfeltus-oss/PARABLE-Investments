@@ -1,15 +1,18 @@
 ---
-description: After completing user-requested code or asset changes, deploy to production remote.
+description: After code changes, verify locally; deploy to GitHub only when asked.
 alwaysApply: true
 ---
 
-# Deploy after changes
+# Deploy / verify after changes
 
 When you finish implementing requested changes in this repo:
 
 1. Run `npm run lint` (and `npm run build` if the change is non-trivial).
-2. Stage relevant files (do not commit junk dumps or local-only scratch files unless the user asked).
-3. Commit with a clear message.
-4. Push to **`investments`** remote branch **`main`**: `git push investments main` (triggers Vercel for PARABLE-Investments).
+2. **Local production (default — no GitHub):** run **`npm run deploy:local`**  
+   - Runs `next build` then serves **`http://localhost:3003`** like production.  
+   - Stop the server with **Ctrl+C** in the terminal.
+3. **Day-to-day dev (hot reload):** `npm run dev` — same port **3003**.
 
-If there is nothing to commit, say so instead of pushing empty commits unless the user explicitly asked for a redeploy bump.
+**Push to GitHub / Vercel** only when the user explicitly asks (e.g. “push”, “deploy to Vercel”). Then: stage, commit, `git push investments main`.
+
+Do not commit junk dumps or local-only scratch files unless the user asked.

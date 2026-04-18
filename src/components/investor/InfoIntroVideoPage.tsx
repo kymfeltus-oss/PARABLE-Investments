@@ -18,7 +18,7 @@ export function InfoIntroVideoPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
+    <div className="flex min-h-screen flex-col bg-[#060708] text-white">
       <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <Link href="/start" className="parable-eyebrow text-xs hover:text-[#00f2ff]">
           ← Choice hub
@@ -34,10 +34,14 @@ export function InfoIntroVideoPage() {
         </div>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center p-4">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden p-4">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(0,242,255,0.12)_0%,#060708_70%)]"
+          aria-hidden
+        />
         <video
           ref={videoRef}
-          className="max-h-[min(72dvh,720px)] max-w-full rounded-lg object-contain shadow-2xl"
+          className="relative z-10 max-h-[min(72dvh,720px)] max-w-full rounded-lg object-contain mix-blend-lighten shadow-2xl"
           src={VIDEO_SRC}
           autoPlay
           playsInline
