@@ -1,5 +1,5 @@
-/** localStorage key — bump suffix if NDA text materially changes. */
-export const INVESTOR_NDA_STORAGE_KEY = 'parable_investor_nda_accepted_v1';
+/** localStorage key — bump suffix if NDA / non-compete text materially changes. */
+export const INVESTOR_NDA_STORAGE_KEY = 'parable_investor_nda_accepted_v2';
 
 export function getInvestorNdaAccepted(): boolean {
   if (typeof window === 'undefined') return false;

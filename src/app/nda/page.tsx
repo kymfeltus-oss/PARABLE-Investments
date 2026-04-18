@@ -1,11 +1,12 @@
 'use client';
 
-import { Suspense, useCallback, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { getInvestorAgreementPlainText } from '@/lib/investor-agreement-text';
 import {
   getInvestorNdaAccepted,
   sanitizeNextPath,
@@ -17,12 +18,52 @@ function NdaForm() {
   const searchParams = useSearchParams();
   const nextPath = sanitizeNextPath(searchParams.get('next'));
   const [agreed, setAgreed] = useState(() => getInvestorNdaAccepted());
+  const [printedName, setPrintedName] = useState('');
+  const [signature, setSignature] = useState('');
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onContinue = useCallback(() => {
-    if (!agreed) return;
-    setInvestorNdaAccepted();
-    router.push(nextPath);
-  }, [agreed, nextPath, router]);
+  const paragraphs = useMemo(() => {
+    return getInvestorAgreementPlainText()
+      .split(/\n\n+/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+  }, []);
+
+  const canSubmit =
+    agreed &&
+    printedName.trim().length >= 2 &&
+    signature.trim().length >= 2 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  const onContinue = useCallback(async () => {
+    if (!canSubmit || submitting) return;
+    setError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/investor/agreement', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          printedName: printedName.trim(),
+          signature: signature.trim(),
+          email: email.trim().toLowerCase(),
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      setInvestorNdaAccepted();
+      router.push(nextPath);
+    } catch {
+      setError('Network error. Check your connection and try again.');
+      setSubmitting(false);
+    }
+  }, [canSubmit, submitting, printedName, signature, email, nextPath, router]);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -37,37 +78,62 @@ function NdaForm() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <p className="parable-eyebrow mb-3 text-center">Step 2 of 3</p>
           <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00f2ff] md:text-2xl md:tracking-[0.22em]">
-            Non-disclosure agreement
+            Confidentiality &amp; non-compete
           </h1>
           <p className="mb-10 text-center text-sm text-white/45">
-            Please read and accept before accessing investor materials or sessions.
+            Read the terms, print and sign electronically below, then continue to investor materials.
           </p>
         </motion.div>
 
-        <div className="parable-glass-panel max-h-[min(52vh,480px)] overflow-y-auto px-5 py-6 text-left text-sm leading-relaxed text-white/65 md:px-8 md:py-8 md:text-[15px]">
-          <p className="font-semibold text-white/90">Mutual confidentiality (summary)</p>
-          <p className="mt-4">
-            Parable (“Discloser”) may share confidential information—including product plans, financial projections,
-            metrics, and roadmap details—with you (“Recipient”) solely so you can evaluate a potential investment or
-            strategic relationship.
-          </p>
-          <p className="mt-4">
-            Recipient agrees to hold all non-public information in strict confidence, use it only for that evaluation,
-            not disclose it to third parties without prior written consent, and protect it with reasonable care. This
-            obligation survives even if no investment occurs.
-          </p>
-          <p className="mt-4">
-            Information is not confidential if it was already public through no fault of Recipient, was rightfully known
-            beforehand, or is independently developed. Recipient may share with professional advisors who are bound by
-            confidentiality.
-          </p>
-          <p className="mt-4 text-white/45">
-            This summary is for convenience. A full definitive agreement may supersede it where signed. Consult your
-            counsel; by proceeding you confirm you understand these obligations.
-          </p>
+        <div className="parable-glass-panel max-h-[min(56vh,520px)] overflow-y-auto px-5 py-6 text-left text-sm leading-relaxed text-white/65 md:px-8 md:py-8 md:text-[15px]">
+          {paragraphs.map((block, i) => (
+            <p key={i} className={block.startsWith('Disclaimer:') ? 'mt-4 text-white/45' : i === 0 ? 'font-semibold text-white/90' : 'mt-4'}>
+              {block}
+            </p>
+          ))}
         </div>
 
-        <label className="mt-8 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/40 px-4 py-4 md:px-5">
+        <div className="mt-8 space-y-4 rounded-xl border border-white/10 bg-black/40 px-4 py-5 md:px-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Your acknowledgment</p>
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-white/55">Full legal name (print)</span>
+            <input
+              type="text"
+              name="printedName"
+              autoComplete="name"
+              value={printedName}
+              onChange={(e) => setPrintedName(e.target.value)}
+              placeholder="Jane Q. Investor"
+              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-white/55">Electronic signature (type your full legal name)</span>
+            <input
+              type="text"
+              name="signature"
+              autoComplete="off"
+              value={signature}
+              onChange={(e) => setSignature(e.target.value)}
+              placeholder="Same as printed name, typed as signature"
+              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-white/55">Email address</span>
+            <input
+              type="email"
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@company.com"
+              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+            />
+          </label>
+        </div>
+
+        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/40 px-4 py-4 md:px-5">
           <input
             type="checkbox"
             checked={agreed}
@@ -75,18 +141,30 @@ function NdaForm() {
             className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
           />
           <span className="text-left text-sm text-white/70">
-            I have read and agree to treat Parable’s shared information as confidential under the terms described above.
+            I have read and agree to the confidentiality, restricted use, and non-competition terms above, including
+            electronic signature and record-keeping, and I confirm I have authority to enter this acknowledgment.
           </span>
         </label>
 
+        {error ? (
+          <p className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm text-red-200/90">
+            {error}
+          </p>
+        ) : null}
+
         <button
           type="button"
-          disabled={!agreed}
+          disabled={!canSubmit || submitting}
           onClick={onContinue}
           className="mt-8 w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.12)] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
         >
-          Agree &amp; continue
+          {submitting ? 'Saving…' : 'Sign & continue'}
         </button>
+
+        <p className="mt-4 text-center text-[10px] leading-relaxed text-white/30">
+          Submissions are stored securely for our records. This template is not legal advice—have counsel review. Server
+          storage requires Supabase env vars in production.
+        </p>
 
         <p className="mt-6 text-center text-[10px] uppercase tracking-[0.2em] text-white/25">
           Step 3 — your choices (meeting, materials, requests)
