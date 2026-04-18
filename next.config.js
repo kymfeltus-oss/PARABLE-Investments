@@ -1,4 +1,3 @@
-const path = require('path');
 const { execSync } = require('child_process');
 
 function resolveGitSha() {
@@ -15,12 +14,6 @@ function resolveGitSha() {
 const nextConfig = {
   env: {
     NEXT_PUBLIC_GIT_SHA: resolveGitSha(),
-  },
-  turbopack: {
-    root: __dirname,
-    resolveAlias: {
-      tailwindcss: path.join(__dirname, 'node_modules', 'tailwindcss'),
-    },
   },
   reactStrictMode: false,
 };
