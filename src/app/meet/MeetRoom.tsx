@@ -7,15 +7,19 @@ import {
   VideoConference,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
+import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 
 type Props = {
   serverUrl: string;
   /** Without `investor-` prefix; e.g. `feb-deck` → room `investor-feb-deck`. */
   initialRoomSuffix?: string;
+  /** Require email + room to match `meeting_nda_evidence` and confirmation room suffix. */
+  scheduledVerification?: boolean;
 };
 
-export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
+export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   const [displayName, setDisplayName] = useState('');
+  const [workEmail, setWorkEmail] = useState('');
   const [roomSlug, setRoomSlug] = useState(() => {
     const raw = initialRoomSuffix?.trim();
     if (!raw) return 'team-call';
@@ -31,12 +35,38 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
     setError(null);
     setConnecting(true);
     try {
+      let participantName = displayName.trim() || 'Guest';
+
+      if (scheduledVerification) {
+        const em = workEmail.trim().toLowerCase();
+        if (!isValidInvestorEmail(em)) {
+          setError('Enter the same work email from your meeting confirmation.');
+          setConnecting(false);
+          return;
+        }
+        const verifyRes = await fetch('/api/meeting/verify-join', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: em,
+            roomSuffix: roomSlug.replace(/^investor-/i, ''),
+          }),
+        });
+        const verifyData = (await verifyRes.json()) as { error?: string; participantName?: string };
+        if (!verifyRes.ok) {
+          setError(verifyData.error ?? 'Could not verify your booking.');
+          setConnecting(false);
+          return;
+        }
+        participantName = verifyData.participantName?.trim() || 'Guest';
+      }
+
       const res = await fetch('/api/livekit/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomName: fullRoomName,
-          participantName: displayName.trim() || 'Guest',
+          participantName,
         }),
       });
       const data = (await res.json()) as { token?: string; error?: string };
@@ -54,12 +84,17 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
     } finally {
       setConnecting(false);
     }
-  }, [displayName, fullRoomName]);
+  }, [displayName, fullRoomName, roomSlug, scheduledVerification, workEmail]);
 
   const leave = useCallback(() => {
     setToken(null);
     setError(null);
   }, []);
+
+  const canJoinScheduled =
+    scheduledVerification && isValidInvestorEmail(workEmail.trim()) && roomSlug.trim().length > 0;
+  const canJoinOpen = !scheduledVerification && roomSlug.trim().length > 0;
+  const canJoin = scheduledVerification ? canJoinScheduled : canJoinOpen;
 
   if (!serverUrl) {
     return (
@@ -107,16 +142,37 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
   return (
     <div className="parable-glass-panel mx-auto w-full max-w-md space-y-5 px-6 py-8">
       <p className="parable-eyebrow text-center !tracking-[0.2em] text-white/50">Join investor call</p>
-      <label className="block text-left">
-        <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Your name</span>
-        <input
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Jane Investor"
-          className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50"
-        />
-      </label>
-      <label className="block text-left">
+
+      {scheduledVerification ? (
+        <label className="block text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-white/40">
+            Work email (must match booking)
+          </span>
+          <input
+            type="email"
+            value={workEmail}
+            onChange={(e) => setWorkEmail(e.target.value)}
+            autoComplete="email"
+            placeholder="you@firm.com"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50"
+          />
+          <p className="mt-2 text-[10px] text-white/35">
+            Checked against your Parable meeting registration before a room token is issued.
+          </p>
+        </label>
+      ) : (
+        <label className="block text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Your name</span>
+          <input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Jane Investor"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50"
+          />
+        </label>
+      )}
+
+      <div className="block text-left">
         <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Room (suffix)</span>
         <div className="mt-2 flex items-center gap-2">
           <span className="shrink-0 rounded-lg border border-[#00f2ff]/30 bg-black/40 px-3 py-3 font-mono text-xs text-[#00f2ff]">
@@ -124,15 +180,34 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
           </span>
           <input
             value={roomSlug.replace(/^investor-/, '')}
-            onChange={(e) => setRoomSlug(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+            onChange={(e) => {
+              if (scheduledVerification) return;
+              setRoomSlug(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''));
+            }}
+            readOnly={scheduledVerification}
             placeholder="team-call"
-            className="min-w-0 flex-1 rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00f2ff]/50"
+            className={`min-w-0 flex-1 rounded-xl border px-4 py-3 font-mono text-sm outline-none ${
+              scheduledVerification
+                ? 'cursor-not-allowed border-white/10 bg-black/50 text-white/80'
+                : 'border-white/15 bg-black/60 text-white focus:border-[#00f2ff]/50'
+            }`}
           />
         </div>
         <p className="mt-2 text-[10px] text-white/35">
-          Everyone uses the same suffix for one meeting (e.g. <code className="text-white/50">investor-deck-rehearsal</code>).
+          {scheduledVerification ? (
+            <>
+              Locked to your confirmation link (
+              <code className="text-white/50">investor-{roomSlug.replace(/^investor-/, '')}</code>).
+            </>
+          ) : (
+            <>
+              Everyone uses the same suffix for one meeting (e.g.{' '}
+              <code className="text-white/50">investor-deck-rehearsal</code>).
+            </>
+          )}
         </p>
-      </label>
+      </div>
+
       {error ? (
         <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-xs text-red-200">
           {error}
@@ -141,7 +216,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
       <button
         type="button"
         onClick={() => void join()}
-        disabled={connecting || !roomSlug.trim()}
+        disabled={connecting || !canJoin}
         className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40"
       >
         {connecting ? 'Connecting…' : 'Join with camera & mic'}

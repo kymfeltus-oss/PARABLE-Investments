@@ -13,16 +13,23 @@ export default async function MeetPage({ searchParams }: PageProps) {
   const roomParam = typeof sp.room === 'string' ? sp.room : '';
   const scheduledSuffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() ?? '';
 
+  const isScheduled = join === 'scheduled';
+
+  /** Same suffix as confirmation emails; do not allow a different `room` query to bypass checks. */
   let initialRoomSuffix: string | undefined;
-  if (join === 'scheduled') {
-    initialRoomSuffix = roomParam || scheduledSuffix || 'scheduled-call';
+  if (isScheduled) {
+    initialRoomSuffix = scheduledSuffix || 'scheduled-call';
   } else if (roomParam) {
     initialRoomSuffix = roomParam;
   }
 
   return (
     <NdaGate>
-      <MeetClient serverUrl={serverUrl} initialRoomSuffix={initialRoomSuffix} />
+      <MeetClient
+        serverUrl={serverUrl}
+        initialRoomSuffix={initialRoomSuffix}
+        scheduledVerification={isScheduled}
+      />
     </NdaGate>
   );
 }

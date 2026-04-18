@@ -8,9 +8,11 @@ import MeetRoom from './MeetRoom';
 type Props = {
   serverUrl: string;
   initialRoomSuffix?: string;
+  /** /meet?join=scheduled — email + room must match booking confirmation. */
+  scheduledVerification?: boolean;
 };
 
-export default function MeetClient({ serverUrl, initialRoomSuffix }: Props) {
+export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
       <InvestorAtmosphere />
@@ -25,12 +27,26 @@ export default function MeetClient({ serverUrl, initialRoomSuffix }: Props) {
           Investor video room
         </h1>
         <p className="mb-10 max-w-lg text-center text-sm text-white/50">
-          Same LiveKit stack as the PARABLE app for real-time video. Share the room suffix; everyone joins{' '}
-          <code className="text-[#00f2ff]/90">investor-…</code>.
+          {scheduledVerification ? (
+            <>
+              Use the <strong className="text-white/75">same work email</strong> you used on{' '}
+              <strong className="text-white/75">Book a meeting</strong>. The room matches your confirmation; your display
+              name is taken from that registration.
+            </>
+          ) : (
+            <>
+              Same LiveKit stack as the PARABLE app for real-time video. Share the room suffix; everyone joins{' '}
+              <code className="text-[#00f2ff]/90">investor-…</code>.
+            </>
+          )}
         </p>
 
         <div className="w-full">
-          <MeetRoom serverUrl={serverUrl} initialRoomSuffix={initialRoomSuffix} />
+          <MeetRoom
+            serverUrl={serverUrl}
+            initialRoomSuffix={initialRoomSuffix}
+            scheduledVerification={scheduledVerification}
+          />
         </div>
       </div>
     </div>

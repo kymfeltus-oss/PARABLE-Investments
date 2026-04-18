@@ -25,6 +25,8 @@ Set in the host’s environment:
 
 Room names are restricted to `investor-*` (e.g. `investor-team-call`). The static cover does not require LiveKit.
 
+**Scheduled URL (`/meet?join=scheduled`):** the room suffix is fixed to **`NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX`** (same as confirmation emails). Users enter the **work email** from **Book a meeting**; `POST /api/meeting/verify-join` checks **`meeting_nda_evidence`** and issues the LiveKit token with the registered display name. Other `/meet` links keep the editable name + room fields.
+
 ### Supabase (Legal Gate + `/nda`)
 
 1. Create a Supabase project (or use an existing one).
