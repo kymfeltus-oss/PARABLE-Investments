@@ -24,7 +24,7 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
         </Link>
 
         <h1 className="mb-3 text-center text-lg font-black uppercase tracking-[0.25em] text-[#00f2ff] drop-shadow-[0_0_12px_rgba(0,242,255,0.35)] md:text-xl md:tracking-[0.35em]">
-          Investor video room
+          Parable meeting
         </h1>
         <p className="mb-10 max-w-lg text-center text-sm text-white/50">
           {scheduledVerification ? (
@@ -35,8 +35,8 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
             </>
           ) : (
             <>
-              Same LiveKit stack as the PARABLE app for real-time video. Share the room suffix; everyone joins{' '}
-              <code className="text-[#00f2ff]/90">investor-…</code>.
+              Enter your name and the room suffix for this call, then continue to the welcome screen before joining the
+              room.
             </>
           )}
         </p>

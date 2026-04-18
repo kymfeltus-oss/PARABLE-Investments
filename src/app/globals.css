@@ -89,3 +89,51 @@ body {
   --lk-control-bg: rgba(0, 242, 255, 0.08);
   --lk-control-hover-bg: rgba(0, 242, 255, 0.15);
 }
+
+/* Investor /meet — Zoom/Teams-like conference chrome */
+.investor-meeting-shell {
+  --meet-chrome: #2d2d30;
+  --meet-stage: #1b1b1d;
+  --lk-accent-fg: #e8e8e8;
+  --lk-control-bg: rgba(255, 255, 255, 0.12);
+  --lk-control-hover-bg: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  min-height: min(100dvh, 900px);
+  max-height: 100dvh;
+  background: var(--meet-stage);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.investor-meeting-shell .investor-meeting-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--meet-stage);
+}
+
+.investor-meeting-shell .investor-meeting-stage .lk-video-conference {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  background: var(--meet-stage);
+}
+
+.investor-meeting-shell .lk-participant-tile {
+  border-radius: 0.5rem;
+}
+
+@keyframes investor-welcome-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.investor-welcome-progress-bar {
+  animation: investor-welcome-progress 3.2s linear forwards;
+}
