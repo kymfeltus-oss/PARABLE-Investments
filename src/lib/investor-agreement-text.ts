@@ -4,6 +4,19 @@
  */
 export const INVESTOR_AGREEMENT_VERSION = '2026-03-nda-nc-v1';
 
+/** Exact hero line for Legal Gate / NDA UI (must stay in sync with version). */
+export const LEGAL_GATE_DISPLAY_TITLE =
+  'PARABLE — Mutual Confidentiality, Restricted Use, and Non-Competition (Version: 2026-03-nda-nc-v1)';
+
+/** Body only — Legal Gate shows `LEGAL_GATE_DISPLAY_TITLE` above; uses same source as full plain-text export. */
+export function getInvestorAgreementBodyParagraphs(): string[] {
+  const parts = getInvestorAgreementPlainText()
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return parts.slice(2);
+}
+
 /** Plain-text snapshot for database storage (must match what the user sees on screen). */
 export function getInvestorAgreementPlainText(): string {
   return [

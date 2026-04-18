@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'Agreement storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY on the server, and run supabase/schema-investor-agreements.sql.',
+          'Agreement storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY, and run supabase/schema-investor-agreements.sql.',
       },
       { status: 503 }
     );
