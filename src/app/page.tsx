@@ -38,55 +38,63 @@ export default function InvestorLandingPage() {
       <LandingHeroBackgroundVideo />
       <InvestorAtmosphere overVideo />
 
-      <section className="relative flex min-h-[100dvh] min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-10 md:py-12">
-        <motion.div
-          className="relative z-20 flex w-full max-w-lg flex-col items-center px-2 text-center md:max-w-2xl"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: 'easeOut' }}
-        >
-          <p className="parable-eyebrow mb-6 md:mb-8">Confidential · Investor introduction</p>
+      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8">
+        {/* Top: label only — breathing room from sound pill */}
+        <header className="shrink-0 pt-6 text-center md:pt-10">
+          <p className="parable-eyebrow">Confidential · Investor introduction</p>
+        </header>
 
-          {reduceMotion ? (
-            <ParableLogoMark className="mb-8 max-w-xs md:mb-12 md:max-w-md" maxWidthClass="max-w-md" />
-          ) : null}
+        {/* Center: optional static logo (reduced motion) + main lines — spaced, not stacked tight */}
+        <div className="flex flex-1 flex-col items-center justify-center py-10 md:py-16">
+          <div className="flex w-full max-w-xl flex-col items-center gap-8 text-center md:max-w-2xl md:gap-10">
+            {reduceMotion ? (
+              <ParableLogoMark
+                className="shrink-0"
+                maxWidthClass="max-w-[min(20rem,85vw)] md:max-w-md"
+              />
+            ) : null}
 
-          <p className="parable-tagline mb-2 text-[2.5vw] md:text-base">
-            Streaming · Creating · Believing
-          </p>
+            <div className="flex w-full flex-col gap-4 md:gap-5">
+              <p className="text-base font-semibold leading-snug tracking-[0.12em] text-white/95 md:text-lg md:tracking-[0.14em]">
+                Streaming · Creating · Believing
+              </p>
+              <p className="mx-auto max-w-md text-[10px] font-black uppercase leading-relaxed tracking-[0.32em] text-white/45 md:max-w-lg md:text-[11px] md:tracking-[0.36em]">
+                Faith-forward streaming &amp; creator infrastructure
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <p className="mb-8 max-w-sm text-[9px] font-black uppercase tracking-[0.35em] text-white/40 md:mb-10 md:text-[10px] md:tracking-[0.4em]">
-            Faith-forward streaming &amp; creator infrastructure
-          </p>
-
+        {/* Bottom: CTA block + divider + site link — own band so not crushed */}
+        <footer className="shrink-0 flex flex-col items-center gap-10 pb-6 md:gap-12 md:pb-10">
           <motion.div
-            className="flex w-full max-w-sm flex-col items-center"
-            animate={{ opacity: [0.35, 1, 0.35] }}
+            className="flex w-full max-w-sm flex-col items-center gap-5"
+            animate={{ opacity: [0.4, 1, 0.4] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <p className="mb-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/40 md:text-[10px] md:tracking-[0.35em]">
+            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45 md:text-[11px] md:tracking-[0.32em]">
               Tap below or press Enter to continue
             </p>
             <Link
               href={continueHref}
               suppressHydrationWarning
-              className="pointer-events-auto inline-block rounded-xl border border-[#00f2ff]/30 bg-black/40 px-10 py-4 shadow-[0_0_20px_rgba(0,242,255,0.1)] backdrop-blur-md transition hover:border-[#00f2ff]/50 hover:bg-black/55 md:px-6 md:py-2.5"
+              className="pointer-events-auto inline-flex min-h-[48px] min-w-[200px] items-center justify-center rounded-xl border border-[#00f2ff]/35 bg-black/45 px-10 py-3.5 text-center shadow-[0_0_24px_rgba(0,242,255,0.12)] backdrop-blur-md transition hover:border-[#00f2ff]/55 hover:bg-black/60 md:min-w-[220px] md:px-12 md:py-3"
             >
-              <span className="text-base font-black tracking-[0.35em] text-[#00f2ff] md:text-sm md:tracking-[0.4em]">
+              <span className="text-sm font-black tracking-[0.32em] text-[#00f2ff] md:text-base md:tracking-[0.36em]">
                 CONTINUE
               </span>
             </Link>
           </motion.div>
 
-          <div className="mt-10 h-px w-24 bg-gradient-to-r from-transparent via-[#00f2ff]/45 to-transparent md:mt-14 md:w-32" />
+          <div className="h-px w-28 bg-gradient-to-r from-transparent via-[#00f2ff]/50 to-transparent md:w-36" />
 
           <a
             href={INVESTOR_SITE_URL}
-            className="mt-8 text-[10px] font-semibold tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff] md:text-[11px]"
+            className="text-[11px] font-semibold tracking-[0.22em] text-[#00f2ff]/80 transition hover:text-[#00f2ff] md:text-xs"
           >
             parableinvestments.com
           </a>
-        </motion.div>
+        </footer>
       </section>
     </div>
   );

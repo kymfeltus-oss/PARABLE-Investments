@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 
@@ -15,9 +16,20 @@ export const PARABLE_LOGO_VIDEO_SRC =
 
 /**
  * Full-viewport looping background for the investor landing (under sparkles + copy).
+ * Starts muted for autoplay; user taps "Turn sound on" to unmute (browser policy).
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [soundOn, setSoundOn] = useState(false);
+
+  const enableSound = useCallback(() => {
+    setSoundOn(true);
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = false;
+    void el.play().catch(() => {});
+  }, []);
 
   if (reduceMotion) {
     return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
@@ -26,21 +38,30 @@ export function LandingHeroBackgroundVideo() {
   return (
     <div className="fixed inset-0 z-0 overflow-hidden">
       <video
+        ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
-        muted
+        muted={!soundOn}
         loop
         playsInline
         preload="auto"
-        aria-hidden
+        aria-label="PARABLE background"
       >
         <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
       </video>
-      {/* Readability for text + UI layered above */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
         aria-hidden
       />
+      {!soundOn ? (
+        <button
+          type="button"
+          onClick={enableSound}
+          className="fixed bottom-[max(6.5rem,env(safe-area-inset-bottom))] left-4 z-[25] rounded-full border border-[#00f2ff]/35 bg-black/50 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] backdrop-blur-md transition hover:border-[#00f2ff]/55 hover:bg-black/65 sm:left-6 sm:px-5 sm:text-[11px] md:bottom-40"
+        >
+          Turn sound on
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -63,7 +84,6 @@ export function ParableLogoVideo({
 
   return (
     <div className={`relative mx-auto w-full ${maxWidthClass} ${className}`}>
-      {/* Plate behind the video so blend isn’t composited only against page black (Framer/motion stacking). */}
       <div
         className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(ellipse_80%_85%_at_50%_42%,rgba(0,242,255,0.2)_0%,rgba(18,22,32,0.92)_52%,#060708_100%)]"
         aria-hidden
