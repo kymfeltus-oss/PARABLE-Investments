@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
@@ -9,12 +9,10 @@ import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 
 type Props = {
-  meetUrl: string;
-  roomLabel: string;
   embedSrc: string | null;
 };
 
-export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
+export function BookMeetingWizard({ embedSrc }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ack, setAck] = useState(false);
@@ -26,15 +24,7 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
   const canRegister =
     name.trim().length >= 2 && isValidInvestorEmail(email.trim()) && ack && !submitting;
 
-  const copyMeet = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(meetUrl);
-    } catch {
-      /* ignore */
-    }
-  }, [meetUrl]);
-
-  const onRegister = useCallback(async () => {
+  const onRegister = async () => {
     if (!canRegister) return;
     setError(null);
     setSubmitting(true);
@@ -61,7 +51,7 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
     } finally {
       setSubmitting(false);
     }
-  }, [canRegister, name, email]);
+  };
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -81,8 +71,8 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
             Book a meeting
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
-            Confirm who you are (for our NDA records), receive email with the video room link, then choose a time in the
-            calendar.
+            Confirm who you are for our records, then check your email for confirmation. After that, choose a time in the
+            calendar when it appears below.
           </p>
         </div>
 
@@ -94,8 +84,8 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
           >
             <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 1 — Register</h2>
             <p className="mt-2 text-sm text-white/50">
-              We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> as
-              scheduling evidence, then email you meeting access details.
+              We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
+              records, then send confirmation by email.
             </p>
             <div className="mt-6 space-y-4">
               <label className="block text-left">
@@ -146,18 +136,14 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-10">
             <div className="rounded-2xl border border-[#00f2ff]/25 bg-[#00f2ff]/[0.06] px-5 py-6 text-center md:px-8">
-              <p className="font-serif text-lg text-white md:text-xl">Check your inbox</p>
+              <p className="font-serif text-lg text-white md:text-xl">Check your email</p>
               {emailSent ? (
                 <p className="mt-3 text-sm text-white/55">
-                  We sent meeting confirmation and video login details to{' '}
-                  <span className="text-[#00f2ff]/90">{email}</span>, including your NDA scheduling record and LiveKit
-                  room link.
+                  We sent a confirmation message. Please check your inbox (and spam) for next steps.
                 </p>
               ) : (
                 <p className="mt-3 text-sm text-white/55">
-                  Your registration was saved. Configure <code className="text-[#00f2ff]/85">RESEND_API_KEY</code> and{' '}
-                  <code className="text-[#00f2ff]/85">RESEND_FROM_EMAIL</code> to enable confirmation emails. Video link is
-                  below.
+                  Your registration was saved. Confirmation email will arrive once delivery is enabled on our side.
                 </p>
               )}
             </div>
@@ -180,13 +166,10 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
               </section>
             ) : (
               <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 px-5 py-5 text-center text-sm text-amber-100/90">
-                Calendar embed is not configured. Set <code className="text-[#00f2ff]/90">NEXT_PUBLIC_SCHEDULING_URL</code>{' '}
-                (Cal.com) or <code className="text-[#00f2ff]/90">NEXT_PUBLIC_SCHEDULING_EMBED_URL</code> in the host
-                environment.
+                The scheduling calendar isn&apos;t available here right now. Check your email for confirmation and how to book
+                a time.
               </div>
             )}
-
-            <MeetLinkPanel meetUrl={meetUrl} roomLabel={roomLabel} onCopy={copyMeet} />
 
             <Link
               href="/start"
@@ -197,34 +180,6 @@ export function BookMeetingWizard({ meetUrl, roomLabel, embedSrc }: Props) {
           </motion.div>
         )}
       </div>
-    </div>
-  );
-}
-
-function MeetLinkPanel({
-  meetUrl,
-  roomLabel,
-  onCopy,
-}: {
-  meetUrl: string;
-  roomLabel: string;
-  onCopy: () => void;
-}) {
-  return (
-    <div className="rounded-xl border border-[#00f2ff]/20 bg-[#00f2ff]/[0.06] px-4 py-4 text-left">
-      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00f2ff]/75">Video room (LiveKit)</p>
-      <p className="mt-2 break-all font-mono text-xs text-[#00f2ff]/90">{meetUrl}</p>
-      <p className="mt-2 text-[11px] text-white/45">
-        Room: <span className="text-white/70">{roomLabel}</span> — at the meeting time, open the link, enter your display
-        name, then connect.
-      </p>
-      <button
-        type="button"
-        onClick={onCopy}
-        className="mt-4 text-[11px] font-bold uppercase tracking-wider text-[#00f2ff] hover:underline"
-      >
-        Copy video link
-      </button>
     </div>
   );
 }

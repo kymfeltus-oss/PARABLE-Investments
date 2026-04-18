@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { InvestorHubContinueLink } from '@/components/investor/InvestorHubContinueLink';
 import { InvestorPage2Actions } from '@/components/investor/InvestorPage2Actions';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
@@ -28,20 +29,7 @@ export default async function InvestorPage2() {
           You passed the legal gate. Continue to the full NDA step and investor hub when you are ready.
         </p>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link
-            href="/nda?next=/start"
-            className="rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-6 py-3.5 text-center text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20"
-          >
-            Continue to NDA
-          </Link>
-          <Link
-            href="/start"
-            className="rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-center text-sm font-semibold uppercase tracking-[0.18em] text-white/75 transition hover:bg-white/10"
-          >
-            Skip to hub
-          </Link>
-        </div>
+        <InvestorHubContinueLink />
 
         <div className="mt-12 flex justify-center border-t border-white/10 pt-10">
           <InvestorPage2Actions />

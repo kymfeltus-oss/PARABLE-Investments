@@ -18,8 +18,8 @@ export default function StartPageBody() {
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere />
       <div className="relative z-20 mx-auto flex min-h-screen max-w-lg flex-col px-4 py-10 md:max-w-xl md:py-14">
-        <Link href="/nda" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
-          ← NDA
+        <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
+          ← Landing
         </Link>
 
         <ParableLogoMark className="mb-8 w-full max-w-xs opacity-90 md:max-w-sm" />

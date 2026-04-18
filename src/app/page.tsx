@@ -1,20 +1,30 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
+import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
+
+function subscribeNop() {
+  return () => {};
+}
 
 export default function InvestorLandingPage() {
   const router = useRouter();
+  const continueHref = useSyncExternalStore(
+    subscribeNop,
+    () => (getInvestorNdaAccepted() ? '/start' : '/nda?next=/start'),
+    () => '/nda?next=/start'
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
-        router.push('/nda?next=/start');
+        router.push(getInvestorNdaAccepted() ? '/start' : '/nda?next=/start');
       }
     };
     window.addEventListener('keydown', onKey);
@@ -53,7 +63,8 @@ export default function InvestorLandingPage() {
               Tap below or press Enter to continue
             </p>
             <Link
-              href="/nda?next=/start"
+              href={continueHref}
+              suppressHydrationWarning
               className="pointer-events-auto inline-block rounded-xl border border-[#00f2ff]/30 bg-black/40 px-10 py-4 shadow-[0_0_20px_rgba(0,242,255,0.1)] backdrop-blur-md transition hover:border-[#00f2ff]/50 hover:bg-black/55 md:px-6 md:py-2.5"
             >
               <span className="text-base font-black tracking-[0.35em] text-[#00f2ff] md:text-sm md:tracking-[0.4em]">

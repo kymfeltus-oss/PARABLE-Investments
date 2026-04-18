@@ -5,8 +5,7 @@ export function RequestMeetingBlock() {
     <div className="parable-glass-panel px-6 py-8 md:px-8 md:py-10">
       <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[#00f2ff]/80">Request a meeting</h3>
       <p className="mt-3 text-sm leading-relaxed text-white/50">
-        Register for our records (NDA scheduling evidence), receive email confirmation with the LiveKit video link, then
-        pick a time in the embedded calendar.
+        Register for our records, check your email for confirmation, then pick a time in the calendar when it appears.
       </p>
 
       <Link
