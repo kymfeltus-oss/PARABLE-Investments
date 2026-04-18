@@ -26,10 +26,15 @@ function prand(seed: number) {
 
 type Sparkle = { id: number; left: string; top: string; delay: string };
 
+type Props = {
+  /** When true, sits above a full-screen video (transparent HubBackground, higher z-index). */
+  overVideo?: boolean;
+};
+
 /**
  * Same layered background as the main app investor flash: HubBackground, sparkles, cyan fog.
  */
-export function InvestorAtmosphere() {
+export function InvestorAtmosphere({ overVideo = false }: Props) {
   const sparkles = useMemo<Sparkle[]>(() => {
     return Array.from({ length: 40 }).map((_, i) => {
       const r1 = prand(i + 1);
@@ -47,8 +52,10 @@ export function InvestorAtmosphere() {
   return (
     <>
       <style>{sanctuaryStyles}</style>
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <HubBackground />
+      <div
+        className={`fixed inset-0 pointer-events-none ${overVideo ? "z-[8]" : "z-0"}`}
+      >
+        <HubBackground variant={overVideo ? "overVideo" : "default"} />
         <div className="absolute inset-0 z-10">
           {sparkles.map((s) => (
             <div

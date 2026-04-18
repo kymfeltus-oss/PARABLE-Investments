@@ -2,10 +2,11 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import { ParableLogoVideo } from '@/components/brand/ParableLogoVideo';
+import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
+import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -15,6 +16,7 @@ function subscribeNop() {
 
 export default function InvestorLandingPage() {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const continueHref = useSyncExternalStore(
     subscribeNop,
     () => (getInvestorNdaAccepted() ? '/start' : '/nda?next=/start'),
@@ -33,9 +35,10 @@ export default function InvestorLandingPage() {
 
   return (
     <div id="top" className="relative w-full bg-black text-white">
-      <section className="relative flex min-h-[100dvh] min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-10 md:py-12">
-        <InvestorAtmosphere />
+      <LandingHeroBackgroundVideo />
+      <InvestorAtmosphere overVideo />
 
+      <section className="relative flex min-h-[100dvh] min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-10 md:py-12">
         <motion.div
           className="relative z-20 flex w-full max-w-lg flex-col items-center px-2 text-center md:max-w-2xl"
           initial={{ opacity: 0, y: 14 }}
@@ -44,7 +47,9 @@ export default function InvestorLandingPage() {
         >
           <p className="parable-eyebrow mb-6 md:mb-8">Confidential · Investor introduction</p>
 
-          <ParableLogoVideo className="mb-6 md:mb-12" />
+          {reduceMotion ? (
+            <ParableLogoMark className="mb-8 max-w-xs md:mb-12 md:max-w-md" maxWidthClass="max-w-md" />
+          ) : null}
 
           <p className="parable-tagline mb-2 text-[2.5vw] md:text-base">
             Streaming · Creating · Believing

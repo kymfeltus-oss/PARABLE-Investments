@@ -14,7 +14,39 @@ export const PARABLE_LOGO_VIDEO_SRC =
   '/videos/' + encodeURIComponent('PARABLE Logo.mp4');
 
 /**
- * Animated logo for hero / first screen. Falls back to {@link ParableLogoMark}
+ * Full-viewport looping background for the investor landing (under sparkles + copy).
+ */
+export function LandingHeroBackgroundVideo() {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
+  }
+
+  return (
+    <div className="fixed inset-0 z-0 overflow-hidden">
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden
+      >
+        <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
+      </video>
+      {/* Readability for text + UI layered above */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55"
+        aria-hidden
+      />
+    </div>
+  );
+}
+
+/**
+ * Inline animated logo (e.g. reduced-motion areas). Falls back to {@link ParableLogoMark}
  * when the user prefers reduced motion.
  */
 export function ParableLogoVideo({
