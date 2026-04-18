@@ -50,7 +50,7 @@ export default function StartPageBody() {
           </Link>
 
           <Link
-            href="/info"
+            href="/info/intro"
             className="parable-glass-panel group block px-6 py-6 text-left transition hover:border-[#00f2ff]/45 hover:shadow-[0_0_32px_rgba(0,242,255,0.12)] md:px-8 md:py-7"
           >
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00f2ff]/85">
