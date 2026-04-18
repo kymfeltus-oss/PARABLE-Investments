@@ -10,11 +10,17 @@ import '@livekit/components-styles';
 
 type Props = {
   serverUrl: string;
+  /** Without `investor-` prefix; e.g. `feb-deck` → room `investor-feb-deck`. */
+  initialRoomSuffix?: string;
 };
 
-export default function MeetRoom({ serverUrl }: Props) {
+export default function MeetRoom({ serverUrl, initialRoomSuffix }: Props) {
   const [displayName, setDisplayName] = useState('');
-  const [roomSlug, setRoomSlug] = useState('team-call');
+  const [roomSlug, setRoomSlug] = useState(() => {
+    const raw = initialRoomSuffix?.trim();
+    if (!raw) return 'team-call';
+    return raw.replace(/^investor-/i, '');
+  });
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);

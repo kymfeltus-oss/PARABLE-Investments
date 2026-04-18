@@ -1,6 +1,6 @@
 # Parable Investments
 
-Static investor presentation site (Next.js). **No app backend, auth, or Supabase**—only the cover page at `/`.
+Static investor site (Next.js). **Routes:** `/` landing flash → **`/start`** (join meeting · review materials · request meeting) → **`/info`** (full intro copy) and **`/meet`** (LiveKit).
 
 ## Run locally
 
@@ -24,3 +24,9 @@ Set in the host’s environment:
 - `LIVEKIT_API_SECRET` — server API secret
 
 Room names are restricted to `investor-*` (e.g. `investor-team-call`). The static cover does not require LiveKit.
+
+### Optional env (see `.env.example`)
+
+- `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` — default room suffix for “scheduled session” links from `/start`.
+- `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL` — mailto target for “Request a meeting”.
+- `NEXT_PUBLIC_SCHEDULING_URL` — optional Cal.com / Calendly button on `/start`.
