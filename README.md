@@ -1,6 +1,6 @@
 # Parable Investments
 
-Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate: agreement + email + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (full e-sign + `investor_agreements`) → **`/start`** (hub) → **`/info`** and **`/meet`** (LiveKit).
+Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/book`** (book a meeting: embedded Cal.com-style calendar + manual request with **.ics** + email) → **`/info`** and **`/meet`** (LiveKit).
 
 ## Run locally
 
@@ -39,8 +39,14 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 
 **NDA step (`/nda`):** inserts **`investor_agreements`** (printed name, signature, email, document snapshot, etc.). Have counsel review `src/lib/investor-agreement-text.ts` before relying on it.
 
+### Booking (`/book`)
+
+- **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com (or similar) booking link. If the host is `cal.com`, the app adds `?embed=true` and shows a **live calendar iframe** on `/book`, plus the manual booking path below it.
+- **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional; full iframe `src` if you use Calendly or a custom embed URL.
+- **`NEXT_PUBLIC_SITE_URL`** — canonical public URL (used in confirmation emails and meeting links). On Vercel, `VERCEL_URL` is a fallback when this is unset.
+- **`RESEND_API_KEY`** + **`RESEND_FROM_EMAIL`** — when both are set, `POST /api/meeting/schedule` emails the guest a confirmation with the **LiveKit join URL** and an **.ics** attachment, and notifies `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`. Without Resend, the success screen still offers **Download .ics** and shows the video link.
+
 ### Optional env (see `.env.example`)
 
-- `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` — default room suffix for “scheduled session” links from `/start`.
-- `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL` — mailto target for “Request a meeting”.
-- `NEXT_PUBLIC_SCHEDULING_URL` — optional Cal.com / Calendly button on `/start`.
+- `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` — default room suffix for scheduled `/meet` links (full room = `investor-<suffix>`).
+- `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL` — mailto target and internal booking notifications.

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvestorAgreementPlainText, INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
+import { validateNdaFields } from '@/lib/investor-agreement-validation';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function trimField(v: unknown, max: number): string {
   if (typeof v !== 'string') return '';
@@ -32,14 +31,11 @@ export async function POST(req: NextRequest) {
   const signature = trimField(body.signature, 200);
   const email = trimField(body.email, 320).toLowerCase();
 
-  if (printedName.length < 2) {
-    return NextResponse.json({ error: 'Please enter your full printed legal name.' }, { status: 400 });
-  }
-  if (signature.length < 2) {
-    return NextResponse.json({ error: 'Please enter your electronic signature (your full name).' }, { status: 400 });
-  }
-  if (!email || !EMAIL_RE.test(email)) {
-    return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+  const fieldErrors = validateNdaFields(printedName, signature, email);
+  if (Object.keys(fieldErrors).length > 0) {
+    const first =
+      fieldErrors.printedName ?? fieldErrors.signature ?? fieldErrors.email ?? 'Invalid input.';
+    return NextResponse.json({ error: first, fields: fieldErrors }, { status: 400 });
   }
 
   const documentSnapshot = getInvestorAgreementPlainText();

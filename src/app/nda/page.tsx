@@ -8,6 +8,11 @@ import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { getInvestorAgreementPlainText } from '@/lib/investor-agreement-text';
 import {
+  ndaFieldsAreValid,
+  validateNdaFields,
+  type NdaFieldErrors,
+} from '@/lib/investor-agreement-validation';
+import {
   getInvestorNdaAccepted,
   sanitizeNextPath,
   setInvestorNdaAccepted,
@@ -23,6 +28,7 @@ function NdaForm() {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showFieldErrors, setShowFieldErrors] = useState(false);
 
   const paragraphs = useMemo(() => {
     return getInvestorAgreementPlainText()
@@ -31,14 +37,23 @@ function NdaForm() {
       .filter(Boolean);
   }, []);
 
-  const canSubmit =
-    agreed &&
-    printedName.trim().length >= 2 &&
-    signature.trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const fieldErrors = useMemo((): NdaFieldErrors => {
+    return validateNdaFields(printedName.trim(), signature.trim(), email.trim());
+  }, [printedName, signature, email]);
+
+  const canSubmit = agreed && ndaFieldsAreValid(printedName.trim(), signature.trim(), email.trim());
 
   const onContinue = useCallback(async () => {
-    if (!canSubmit || submitting) return;
+    setShowFieldErrors(true);
+    if (!agreed) {
+      setError('Please confirm that you have read and agree to the terms.');
+      return;
+    }
+    if (!ndaFieldsAreValid(printedName.trim(), signature.trim(), email.trim())) {
+      setError(null);
+      return;
+    }
+    if (submitting) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -51,8 +66,12 @@ function NdaForm() {
           email: email.trim().toLowerCase(),
         }),
       });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        fields?: NdaFieldErrors;
+      };
       if (!res.ok) {
+        setShowFieldErrors(true);
         setError(data.error || 'Something went wrong. Please try again.');
         setSubmitting(false);
         return;
@@ -63,7 +82,7 @@ function NdaForm() {
       setError('Network error. Check your connection and try again.');
       setSubmitting(false);
     }
-  }, [canSubmit, submitting, printedName, signature, email, nextPath, router]);
+  }, [agreed, submitting, printedName, signature, email, nextPath, router]);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -104,8 +123,16 @@ function NdaForm() {
               value={printedName}
               onChange={(e) => setPrintedName(e.target.value)}
               placeholder="Jane Q. Investor"
-              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+              aria-invalid={showFieldErrors && Boolean(fieldErrors.printedName)}
+              className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
+                showFieldErrors && fieldErrors.printedName
+                  ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
+                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+              }`}
             />
+            {showFieldErrors && fieldErrors.printedName ? (
+              <p className="mt-1.5 text-xs text-red-300/95">{fieldErrors.printedName}</p>
+            ) : null}
           </label>
           <label className="block">
             <span className="mb-1.5 block text-xs text-white/55">Electronic signature (type your full legal name)</span>
@@ -115,9 +142,17 @@ function NdaForm() {
               autoComplete="off"
               value={signature}
               onChange={(e) => setSignature(e.target.value)}
-              placeholder="Same as printed name, typed as signature"
-              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+              placeholder="Must match printed name exactly (spacing and capitalization can differ)"
+              aria-invalid={showFieldErrors && Boolean(fieldErrors.signature)}
+              className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
+                showFieldErrors && fieldErrors.signature
+                  ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
+                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+              }`}
             />
+            {showFieldErrors && fieldErrors.signature ? (
+              <p className="mt-1.5 text-xs text-red-300/95">{fieldErrors.signature}</p>
+            ) : null}
           </label>
           <label className="block">
             <span className="mb-1.5 block text-xs text-white/55">Email address</span>
@@ -125,11 +160,20 @@ function NdaForm() {
               type="email"
               name="email"
               autoComplete="email"
+              inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/30"
+              aria-invalid={showFieldErrors && Boolean(fieldErrors.email)}
+              className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
+                showFieldErrors && fieldErrors.email
+                  ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
+                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+              }`}
             />
+            {showFieldErrors && fieldErrors.email ? (
+              <p className="mt-1.5 text-xs text-red-300/95">{fieldErrors.email}</p>
+            ) : null}
           </label>
         </div>
 
@@ -154,9 +198,11 @@ function NdaForm() {
 
         <button
           type="button"
-          disabled={!canSubmit || submitting}
+          disabled={submitting}
           onClick={onContinue}
-          className="mt-8 w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.12)] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
+          className={`mt-8 w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.12)] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35 ${
+            !canSubmit && !submitting ? 'opacity-55' : ''
+          }`}
         >
           {submitting ? 'Saving…' : 'Sign & continue'}
         </button>
