@@ -75,6 +75,42 @@ body {
   }
 }
 
+/* Landing `/` — larger, viewport-scaled hero lines (same colors / voice as `.parable-*`) */
+.parable-landing-eyebrow {
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(0, 242, 255, 0.7);
+  font-size: clamp(11px, 3.4vw, 16px);
+}
+
+@media (min-width: 768px) {
+  .parable-landing-eyebrow {
+    font-size: clamp(12px, 1.35vw, 17px);
+    letter-spacing: 0.38em;
+  }
+}
+
+.parable-landing-tagline {
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: clamp(0.26em, 1.4vw, 0.42em);
+  text-transform: uppercase;
+  color: #00f2ff;
+  text-shadow:
+    0 0 12px #00f2ff,
+    0 0 28px rgba(0, 242, 255, 0.35);
+  font-size: clamp(0.95rem, 6vw, 1.85rem);
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .parable-landing-tagline {
+    font-size: clamp(1.15rem, 2.5vw, 2rem);
+    letter-spacing: 0.4em;
+  }
+}
+
 .parable-glass-panel {
   border-radius: 1rem;
   border: 1px solid rgba(0, 242, 255, 0.25);
