@@ -36,7 +36,7 @@ type Props = {
  */
 export function InvestorAtmosphere({ overVideo = false }: Props) {
   const sparkles = useMemo<Sparkle[]>(() => {
-    return Array.from({ length: 40 }).map((_, i) => {
+    return Array.from({ length: 96 }).map((_, i) => {
       const r1 = prand(i + 1);
       const r2 = prand(i + 101);
       const r3 = prand(i + 1001);
