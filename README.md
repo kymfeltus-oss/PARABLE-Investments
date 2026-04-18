@@ -1,6 +1,6 @@
 # Parable Investments
 
-Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/book`** (book a meeting: embedded Cal.com-style calendar + manual request with **.ics** + email) → **`/info`** and **`/meet`** (LiveKit).
+Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/book`** (register name/email + NDA acknowledgment → **email confirmation** with video link → embedded **Cal.com** calendar) → **`/info`** and **`/meet`** (LiveKit).
 
 ## Run locally
 
@@ -28,7 +28,7 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 ### Supabase (Legal Gate + `/nda`)
 
 1. Create a Supabase project (or use an existing one).
-2. Run **`supabase/schema-legal-signatures.sql`** and **`supabase/schema-investor-agreements.sql`** in the SQL editor.
+2. Run **`supabase/schema-legal-signatures.sql`**, **`supabase/schema-investor-agreements.sql`**, and **`supabase/schema-meeting-nda-evidence.sql`** in the SQL editor.
 3. **Auth → URL configuration:** set **Site URL** to your production origin (e.g. `https://parableinvestments.com`). Under **Redirect URLs**, add `https://your-domain.com/auth/callback` (and `http://localhost:3003/auth/callback` for local dev).
 4. In Vercel (and `.env.local`), set:
    - **`NEXT_PUBLIC_SUPABASE_URL`**
@@ -41,10 +41,11 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 
 ### Booking (`/book`)
 
-- **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com (or similar) booking link. If the host is `cal.com`, the app adds `?embed=true` and shows a **live calendar iframe** on `/book`, plus the manual booking path below it.
-- **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional; full iframe `src` if you use Calendly or a custom embed URL.
-- **`NEXT_PUBLIC_SITE_URL`** — canonical public URL (used in confirmation emails and meeting links). On Vercel, `VERCEL_URL` is a fallback when this is unset.
-- **`RESEND_API_KEY`** + **`RESEND_FROM_EMAIL`** — when both are set, `POST /api/meeting/schedule` emails the guest a confirmation with the **LiveKit join URL** and an **.ics** attachment, and notifies `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`. Without Resend, the success screen still offers **Download .ics** and shows the video link.
+1. User enters **name + email** and confirms the scheduling request is under their **NDA** obligations.
+2. **`POST /api/meeting/register`** inserts **`meeting_nda_evidence`** (name, email, `nda_version`, IP/UA) and, when **Resend** is configured, emails a **confirmation** with the **LiveKit join URL**, room name, and NDA version reference (supplemental evidence alongside `investor_agreements`). A copy can go to **`NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`**.
+3. **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com booking link: if the host is `cal.com`, the app adds `?embed=true` and shows the **embedded calendar** for choosing a time (your calendar provider may email the slot separately).
+4. **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional full iframe `src` (e.g. Calendly embed).
+5. **`NEXT_PUBLIC_SITE_URL`** — canonical URL for links (Vercel `VERCEL_URL` is a fallback).
 
 ### Optional env (see `.env.example`)
 
