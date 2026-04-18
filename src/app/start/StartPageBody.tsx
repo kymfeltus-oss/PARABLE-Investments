@@ -29,7 +29,7 @@ export default function StartPageBody() {
           How would you like to continue?
         </h1>
         <p className="mb-10 text-center text-sm text-white/45">
-          Join our scheduled LiveKit session, review materials on your own, or request a new time.
+          Join the live meeting, review materials on your own, or request a new time.
         </p>
 
         <div className="flex flex-col gap-4">
@@ -42,7 +42,7 @@ export default function StartPageBody() {
             </span>
             <span className="mt-2 block text-base font-semibold text-white">Join the live meeting</span>
             <span className="mt-2 block text-sm leading-relaxed text-white/45">
-              Opens the investor video room. Use the same room suffix we shared for this calendar invite.
+              Opens the Parable meeting room.
             </span>
             <span className="mt-4 inline-block text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff]/70 group-hover:text-[#00f2ff]">
               Enter video room →

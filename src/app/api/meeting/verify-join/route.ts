@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { getDefaultScheduledRoomSuffix } from '@/lib/meeting-links';
@@ -10,7 +11,47 @@ function normalizeSuffix(raw: string): string {
     .replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
+function isMeetingMasterKeyValid(provided: string): boolean {
+  const expected = process.env.MEETING_MASTER_KEY?.trim();
+  if (!expected || !provided) return false;
+  try {
+    const a = Buffer.from(provided, 'utf8');
+    const b = Buffer.from(expected, 'utf8');
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
+  let body: {
+    email?: string;
+    roomSuffix?: string;
+    masterKey?: string;
+    participantName?: string;
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
+  }
+
+  const roomSuffix = typeof body.roomSuffix === 'string' ? normalizeSuffix(body.roomSuffix) : '';
+  const masterKey = typeof body.masterKey === 'string' ? body.masterKey : '';
+  const masterName =
+    typeof body.participantName === 'string' ? body.participantName.trim().slice(0, 80) : '';
+
+  if (isMeetingMasterKeyValid(masterKey)) {
+    if (!roomSuffix) {
+      return NextResponse.json({ error: 'Room is missing.' }, { status: 400 });
+    }
+    if (!masterName) {
+      return NextResponse.json({ error: 'Enter your display name for the call.' }, { status: 400 });
+    }
+    return NextResponse.json({ ok: true, participantName: masterName });
+  }
+
   const admin = getSupabaseAdmin();
   if (!admin) {
     return NextResponse.json(
@@ -19,15 +60,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { email?: string; roomSuffix?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
-  }
-
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-  const roomSuffix = typeof body.roomSuffix === 'string' ? normalizeSuffix(body.roomSuffix) : '';
 
   if (!isValidInvestorEmail(email)) {
     return NextResponse.json(

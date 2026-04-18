@@ -26,20 +26,13 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
         <h1 className="mb-3 text-center text-lg font-black uppercase tracking-[0.25em] text-[#00f2ff] drop-shadow-[0_0_12px_rgba(0,242,255,0.35)] md:text-xl md:tracking-[0.35em]">
           Parable meeting
         </h1>
-        <p className="mb-10 max-w-lg text-center text-sm text-white/50">
-          {scheduledVerification ? (
-            <>
-              Use the <strong className="text-white/75">same work email</strong> you used on{' '}
-              <strong className="text-white/75">Book a meeting</strong>. The room matches your confirmation; your display
-              name is taken from that registration.
-            </>
-          ) : (
-            <>
-              Enter your name and the room suffix for this call, then continue to the welcome screen before joining the
-              room.
-            </>
-          )}
-        </p>
+        {!scheduledVerification ? (
+          <p className="mb-10 max-w-lg text-center text-sm text-white/50">
+            Enter your name and the room suffix for this call, then continue to the welcome screen before joining the room.
+          </p>
+        ) : (
+          <div className="mb-10" aria-hidden />
+        )}
 
         <div className="w-full">
           <MeetRoom
