@@ -1,56 +1,35 @@
-"use client";
-
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ClientRootLayout from "@/components/ClientRootLayout";
-import { AuthProvider } from "@/providers/AuthProvider";
+import { INVESTOR_SITE_URL } from "@/lib/investor-site";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const APP_TITLE =
-  process.env.NEXT_PUBLIC_APP_VARIANT === "parable-study-ai"
-    ? "PARABLE Study AI"
-    : "PARABLE";
+const canonical = new URL("/", INVESTOR_SITE_URL);
 
-// Note: Metadata must be handled differently in Client Components or 
-// defined in a separate 'metadata.ts' file if needed for SEO.
+export const metadata: Metadata = {
+  metadataBase: new URL(INVESTOR_SITE_URL),
+  title: "Parable Investments",
+  description: "Confidential investment overview for Parable.",
+  alternates: { canonical: canonical.href },
+  openGraph: {
+    type: "website",
+    url: canonical.href,
+    siteName: "Parable Investments",
+    title: "Parable Investments",
+    description: "Confidential investment overview for Parable.",
+  },
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-
-  // LIST OF PROTECTED PATHS: No menu allowed here
-  const entryPages = [
-    "/",               // Flash / Landing Page
-    "/welcome",        // Welcome Page
-    "/login",          // Login Page
-    "/create-account", // Create Account Page
-    "/invest",         // Investor deck (standalone, no app chrome)
-  ];
-
-  const shouldHideNav = entryPages.includes(pathname ?? "");
-  const useAppShell = !shouldHideNav;
-
-  useEffect(() => {
-    document.title = APP_TITLE;
-  }, []);
-
-  const isStudyAI = process.env.NEXT_PUBLIC_APP_VARIANT === "parable-study-ai";
-
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.className} bg-black text-white antialiased ${isStudyAI ? "variant-study-ai" : "selection:bg-[#00f2ff] selection:text-black"}`}
+        className={`${inter.className} text-white antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
-        <AuthProvider>
-          {useAppShell ? <ClientRootLayout>{children}</ClientRootLayout> : children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );

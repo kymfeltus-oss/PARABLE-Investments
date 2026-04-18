@@ -38,8 +38,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "tax-optimizer",
-    "parable-marketing"
+    "node_modules"
   ]
 }

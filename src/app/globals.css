@@ -1,125 +1,91 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sanctuary: #010101;
   --color-cyber: #00f2ff;
+  --color-sanctuary: #010101;
+  --color-shell: #070708;
   --font-parable: "Inter", system-ui, sans-serif;
 }
 
-/* PARABLE Study AI: different accent when body has .variant-study-ai */
-.variant-study-ai {
-  --color-cyber: #eab308;
-  --color-cyber-muted: rgba(234, 179, 8, 0.15);
-  --color-cyber-border: rgba(234, 179, 8, 0.35);
-}
-.variant-study-ai::selection {
-  background: #eab308;
-  color: #000;
+/* Match main PARABLE app shell + flash */
+html {
+  scroll-behavior: smooth;
 }
 
 :root {
-  background-color: var(--color-sanctuary);
+  background-color: var(--color-shell);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-sanctuary);
+  background-color: var(--color-shell);
   color: white;
-  overflow-y: auto; 
+  overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
   width: 100%;
   max-width: 100%;
   -webkit-font-smoothing: antialiased;
+  font-family: var(--font-parable);
 }
 
-/* Standard in-app column (~phone logical width) — matches BottomNav + layout shell */
-:root {
-  --parable-app-max: 430px;
-  --parable-app-max-md: 480px;
-  /* Fixed 2-row Header total height + breathing room */
-  --parable-header-pt: 7.35rem;
-  /* Fixed 2-row BottomNav + safe area */
-  --parable-bottom-inset: calc(10.75rem + env(safe-area-inset-bottom, 0px));
+::selection {
+  background-color: #00f2ff;
+  color: #000;
 }
 
-@media (min-width: 768px) {
-  :root {
-    --parable-header-pt: 7.5rem;
-  }
-}
-
-/* Use on <main> immediately after <Header /> */
-.pt-parable-header {
-  padding-top: var(--parable-header-pt);
-}
-
-.pb-parable-bottom {
-  padding-bottom: var(--parable-bottom-inset);
-}
-
-@media (min-width: 768px) {
-  :root {
-    --parable-app-max: 480px;
-  }
-}
-
-/* --- PARABLE IDENTITY RULES --- */
+/* PARABLE identity — same language as main app headers */
 .parable-header {
   font-family: var(--font-parable);
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.08em;
   text-transform: uppercase;
-  color: var(--color-cyber);
+  color: #00f2ff;
 }
 
-.parable-sublabel {
-  font-size: 10px;
+.parable-eyebrow {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.35em;
   text-transform: uppercase;
-  letter-spacing: 10px;
-  color: rgba(0, 242, 255, 0.6);
+  color: rgba(0, 242, 255, 0.7);
 }
 
-/* --- 3D INTERACTIVE CARDS --- */
-.flip-card { perspective: 1500px; }
-.flip-card-inner {
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
-  transform-style: preserve-3d;
-}
-.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
-.flip-card-front, .flip-card-back {
-  backface-visibility: hidden;
-  position: absolute;
-  inset: 0;
-  border-radius: 2.5rem; 
-}
-.flip-card-back { transform: rotateY(180deg); }
-
-/* Testify — Praise Break beta (screen shake + partners with gold overlay in component) */
-@keyframes praise-shake {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  15% {
-    transform: translate3d(-3px, 2px, 0);
-  }
-  30% {
-    transform: translate3d(3px, -2px, 0);
-  }
-  45% {
-    transform: translate3d(-2px, -2px, 0);
-  }
-  60% {
-    transform: translate3d(2px, 1px, 0);
-  }
-  75% {
-    transform: translate3d(-1px, 2px, 0);
+@media (min-width: 768px) {
+  .parable-eyebrow {
+    font-size: 10px;
   }
 }
 
-.animate-praise-shake {
-  animation: praise-shake 0.45s ease-in-out infinite;
+.parable-tagline {
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #00f2ff;
+  text-shadow: 0 0 10px #00f2ff;
+}
+
+@media (min-width: 768px) {
+  .parable-tagline {
+    font-size: 14px;
+    letter-spacing: 0.4em;
+  }
+}
+
+.parable-glass-panel {
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 242, 255, 0.25);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 40px rgba(0, 242, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+/* LiveKit — nudge UI toward PARABLE cyan (components use lk-* classes) */
+.parable-livekit-root {
+  --lk-accent-fg: #00f2ff;
+  --lk-control-bg: rgba(0, 242, 255, 0.08);
+  --lk-control-hover-bg: rgba(0, 242, 255, 0.15);
 }

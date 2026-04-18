@@ -1,80 +1,65 @@
-import { NextResponse } from "next/server";
-// Aliasing prevents "defined multiple times" errors in Next.js 16/Turbopack
-import { AccessToken as LiveKitAccessToken } from "livekit-server-sdk";
-import { createClient } from "@supabase/supabase-js";
+import { AccessToken } from 'livekit-server-sdk';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = "nodejs";
+/** Room names must start with this prefix (e.g. investor-jan-2026). */
+const ROOM_PREFIX = 'investor-';
 
-function jsonError(message: string, status = 400) {
-  return NextResponse.json({ error: message }, { status });
-}
-
-export async function POST(req: Request) {
-  try {
-    // 1. Load Environment Variables
-    const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY;
-    const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET;
-    const LIVEKIT_URL = process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL;
-
-    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    // 2. Validate Config
-    if (!LIVEKIT_API_KEY || !LIVEKIT_API_SECRET || !LIVEKIT_URL) {
-      return jsonError("Missing LiveKit environment variables.", 500);
-    }
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return jsonError("Missing Supabase environment variables.", 500);
-    }
-
-    // 3. Authenticate Supabase User
-    const authHeader = req.headers.get("authorization") || "";
-    const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-
-    if (!jwt) {
-      return jsonError("Unauthorized: Missing token.", 401);
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data, error } = await supabase.auth.getUser(jwt);
-
-    if (error || !data?.user) {
-      return jsonError("Unauthorized: Invalid session.", 401);
-    }
-
-    const user = data.user;
-
-    // 4. Prepare Token Data
-    const body = await req.json().catch(() => ({}));
-    const room = (body?.room || "parable-live").toString();
-    const identity = user.id;
-    const name = user.user_metadata?.display_name || user.email || "Creator";
-
-    // 5. Generate LiveKit Token
-    const at = new LiveKitAccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-      identity,
-      name,
-      ttl: "2h",
-    });
-
-    at.addGrant({
-      roomJoin: true,
-      room,
-      canPublish: true,
-      canSubscribe: true,
-    });
-
-    const token = await at.toJwt();
-
-    return NextResponse.json({
-      token,
-      url: LIVEKIT_URL,
-      room,
-      identity,
-      name,
-    });
-  } catch (e: any) {
-    console.error("Token Error:", e);
-    return jsonError(e?.message || "Token mint failed.", 500);
+export async function POST(req: NextRequest) {
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  if (!apiKey || !apiSecret) {
+    return NextResponse.json(
+      { error: 'LiveKit is not configured. Set LIVEKIT_API_KEY and LIVEKIT_API_SECRET on the server.' },
+      { status: 503 }
+    );
   }
+
+  let body: { roomName?: string; participantName?: string } = {};
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
+  }
+
+  const roomName = typeof body.roomName === 'string' ? body.roomName.trim() : '';
+  const participantName =
+    typeof body.participantName === 'string' && body.participantName.trim()
+      ? body.participantName.trim().slice(0, 80)
+      : 'Guest';
+
+  if (!roomName || roomName.length > 128) {
+    return NextResponse.json({ error: 'roomName is required' }, { status: 400 });
+  }
+
+  if (!roomName.startsWith(ROOM_PREFIX)) {
+    return NextResponse.json(
+      {
+        error: `Room must start with "${ROOM_PREFIX}" (e.g. investor-team-call).`,
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!/^investor-[a-zA-Z0-9_-]+$/.test(roomName)) {
+    return NextResponse.json(
+      { error: 'Room name may only contain letters, numbers, hyphens, and underscores after the prefix.' },
+      { status: 400 }
+    );
+  }
+
+  const token = new AccessToken(apiKey, apiSecret, {
+    identity: `inv-${crypto.randomUUID()}`,
+    name: participantName,
+  });
+
+  token.addGrant({
+    room: roomName,
+    roomJoin: true,
+    canPublish: true,
+    canSubscribe: true,
+    canPublishData: true,
+  });
+
+  const jwt = await token.toJwt();
+  return NextResponse.json({ token: jwt });
 }

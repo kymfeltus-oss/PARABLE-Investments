@@ -11,7 +11,6 @@ export default defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "tax-optimizer/**",
     "**/my-sanctuary-page-bundle.txt",
   ]),
 ]);
