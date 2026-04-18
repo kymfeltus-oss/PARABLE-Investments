@@ -152,8 +152,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
               <section className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4 shadow-[0_8px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-6">
                 <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 2 — Choose a time</h2>
                 <p className="mt-2 text-sm text-white/50">
-                  Pick an open slot. Your calendar app will usually send a separate time confirmation—use the Parable
-                  video link from our email at that time.
+                  Pick an open slot. Your calendar app may send a separate confirmation for the time.
                 </p>
                 <div className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-black/40">
                   <iframe
@@ -164,12 +163,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
                   />
                 </div>
               </section>
-            ) : (
-              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 px-5 py-5 text-center text-sm text-amber-100/90">
-                The scheduling calendar isn&apos;t available here right now. Check your email for confirmation and how to book
-                a time.
-              </div>
-            )}
+            ) : null}
 
             <Link
               href="/start"
