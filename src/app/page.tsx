@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ParableLogoVideo } from '@/components/brand/ParableLogoVideo';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -44,7 +44,7 @@ export default function InvestorLandingPage() {
         >
           <p className="parable-eyebrow mb-6 md:mb-8">Confidential · Investor introduction</p>
 
-          <ParableLogoMark className="mb-6 md:mb-12" />
+          <ParableLogoVideo className="mb-6 md:mb-12" />
 
           <p className="parable-tagline mb-2 text-[2.5vw] md:text-base">
             Streaming · Creating · Believing
