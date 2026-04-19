@@ -12,6 +12,9 @@ type Props = {
   embedSrc: string | null;
 };
 
+const SUPPORT_EMAIL =
+  process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL?.trim() || 'investors@parableinvestments.com';
+
 export function BookMeetingWizard({ embedSrc }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -142,8 +145,16 @@ export function BookMeetingWizard({ embedSrc }: Props) {
                   We sent a confirmation message. Please check your inbox (and spam) for next steps.
                 </p>
               ) : (
-                <p className="mt-3 text-sm text-white/55">
-                  Your registration was saved. Confirmation email will arrive once delivery is enabled on our side.
+                <p className="mt-3 text-sm leading-relaxed text-white/55">
+                  Your registration was saved. You might not get an automated confirmation email yet—check spam, use
+                  the calendar below if it&apos;s available, or reach us at{' '}
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}`}
+                    className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
+                  >
+                    {SUPPORT_EMAIL}
+                  </a>
+                  .
                 </p>
               )}
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 
@@ -20,14 +20,41 @@ export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
 
 /**
  * Full-viewport looping background for the investor landing (under sparkles + copy).
- * Starts muted so autoplay succeeds; unmutes on first user gesture (tap/click/key).
+ * Prefers unmuted playback so sound plays when the browser allows; if autoplay with sound is
+ * blocked, falls back to muted playback and unmutes on first user gesture (tap/click/key).
  * Mobile: `PARABLE Mobile logo.mp4` + `object-contain` so the full frame fits (logo not blown up).
  * md+: `PARABLE Logo.mp4` + `object-cover` for full-bleed hero.
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
+
+  const tryPlayPreferSound = useCallback(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.volume = 1;
+    el.muted = false;
+    setMuted(false);
+    void el.play().catch(() => {
+      el.muted = true;
+      setMuted(true);
+      void el.play().catch(() => {});
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+
+    const onReady = () => tryPlayPreferSound();
+    if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) onReady();
+    else el.addEventListener('canplay', onReady, { once: true });
+
+    return () => {
+      el.removeEventListener('canplay', onReady);
+    };
+  }, [tryPlayPreferSound]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -56,11 +83,11 @@ export function LandingHeroBackgroundVideo() {
     const mq = window.matchMedia('(max-width: 767px)');
     const onChange = () => {
       el.load();
-      void el.play().catch(() => {});
+      el.addEventListener('canplay', () => tryPlayPreferSound(), { once: true });
     };
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
-  }, []);
+  }, [tryPlayPreferSound]);
 
   if (reduceMotion) {
     return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;

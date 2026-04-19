@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const VIDEO_SRC = '/videos/Welcome.mp4';
 
@@ -16,6 +16,23 @@ export function InfoIntroVideoPage() {
   const goToMaterials = useCallback(() => {
     router.push('/info');
   }, [router]);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+
+    const tryPlay = () => {
+      el.volume = 1;
+      el.muted = false;
+      void el.play().catch(() => {
+        el.muted = true;
+        void el.play().catch(() => {});
+      });
+    };
+
+    if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) tryPlay();
+    else el.addEventListener('canplay', tryPlay, { once: true });
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#060708] text-white">
@@ -43,9 +60,7 @@ export function InfoIntroVideoPage() {
           ref={videoRef}
           className="relative z-10 max-h-[min(72dvh,720px)] max-w-full rounded-lg object-contain mix-blend-lighten shadow-2xl"
           src={VIDEO_SRC}
-          autoPlay
           playsInline
-          muted
           preload="auto"
           onEnded={goToMaterials}
         />

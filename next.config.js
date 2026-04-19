@@ -1,4 +1,5 @@
 const { execSync } = require('child_process');
+const path = require('path');
 
 function resolveGitSha() {
   const fromEnv = process.env.NEXT_PUBLIC_GIT_SHA || process.env.VERCEL_GIT_COMMIT_SHA;
@@ -16,6 +17,10 @@ const nextConfig = {
     NEXT_PUBLIC_GIT_SHA: resolveGitSha(),
   },
   reactStrictMode: false,
+  // Prefer this app root when another lockfile exists higher in the tree (e.g. user home).
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
 };
 
 module.exports = nextConfig;
