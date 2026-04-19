@@ -71,6 +71,19 @@ export async function POST(req: NextRequest) {
   const roomSuffix = getDefaultScheduledRoomSuffix();
   const meetUrl = getScheduledMeetUrl(roomSuffix);
   const roomLabel = `investor-${roomSuffix.replace(/^investor-/i, '')}`;
+  const meetingHostKey = process.env.MEETING_MASTER_KEY?.trim() ?? '';
+  const hostKeySection =
+    meetingHostKey.length > 0
+      ? `
+      <p style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f6f8fa;border:1px solid #e1e4e8;border-radius:8px;font-size:13px;color:#222">
+        <strong>Parable team — scheduled video call</strong><br/>
+        <span style="color:#444">Room suffix (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomSuffix.replace(/^investor-/i, ''))}</code>
+        <span style="color:#444">Host key (choose &quot;Parable team&quot; on the meeting page):</span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(meetingHostKey)}</code>
+        <span style="font-size:11px;color:#666">Treat the host key like a password. Do not forward to people outside Parable.</span>
+      </p>`
+      : '';
 
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:560px;line-height:1.5;color:#111">
@@ -79,9 +92,12 @@ export async function POST(req: NextRequest) {
       <p>This email confirms your <strong>investor meeting scheduling registration</strong> and serves as a record tied to our confidentiality process.</p>
       <p><strong>NDA / acknowledgment version on file:</strong> ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p>
       <p>After you pick a time in the Parable booking calendar, your calendar provider may send a <em>separate</em> message with the specific date and time.</p>
-      <p><strong>Video room (LiveKit) — use at the meeting time:</strong><br/>
+      <p><strong>Investors — join the call</strong><br/>
+      Open the link below at meeting time. On the next page, choose <strong>Investor</strong> and enter the <strong>same work email</strong> you used when booking.</p>
+      <p><strong>Video room link:</strong><br/>
       <a href="${meetUrl}">${meetUrl}</a></p>
-      <p style="font-size:13px;color:#444"><strong>Room:</strong> ${escapeHtml(roomLabel)} — open the link, enter your display name, then join.</p>
+      <p style="font-size:13px;color:#444"><strong>Room name:</strong> ${escapeHtml(roomLabel)}</p>
+      ${hostKeySection}
       <p style="font-size:12px;color:#555">This scheduling request is retained as supplemental evidence alongside your investor NDA / electronic acknowledgment. Not legal advice.</p>
       <p style="font-size:12px;color:#666">— Parable</p>
     </div>
@@ -108,7 +124,11 @@ export async function POST(req: NextRequest) {
           from,
           to: CONTACT,
           subject: `[Meeting + NDA evidence] ${name}`,
-          html: `<p><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(email)}&gt;</p><p>NDA version: ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p><p><a href="${meetUrl}">Room</a></p>`,
+          html: `<p><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(email)}&gt;</p><p>NDA version: ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p><p>Room: ${escapeHtml(roomLabel)}</p><p><a href="${meetUrl}">Join link</a></p>${
+            meetingHostKey
+              ? `<p>Host key (internal): <code>${escapeHtml(meetingHostKey)}</code></p>`
+              : ''
+          }`,
         });
       } catch (e) {
         console.error('[meeting/register] team notify', e);

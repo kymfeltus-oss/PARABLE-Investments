@@ -52,14 +52,15 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   const [connecting, setConnecting] = useState(false);
   const [welcomeStage, setWelcomeStage] = useState(false);
   const [masterKey, setMasterKey] = useState('');
-  const [hostAccess, setHostAccess] = useState(false);
+  /** Scheduled /meet?join=scheduled: investors use work email; Parable team uses MEETING_MASTER_KEY from confirmation email. */
+  const [scheduledJoinMode, setScheduledJoinMode] = useState<'investor' | 'team'>('investor');
   const [participantLabel, setParticipantLabel] = useState('');
   const [userChoices, setUserChoices] = useState<LocalUserChoices | null>(null);
   const [roomError, setRoomError] = useState<string | null>(null);
 
   const fullRoomName = useMemo(() => `investor-${roomSlug.replace(/^investor-/, '')}`, [roomSlug]);
 
-  const usingMasterKey = scheduledVerification && hostAccess;
+  const usingMasterKey = scheduledVerification && scheduledJoinMode === 'team';
 
   const join = useCallback(async () => {
     setError(null);
@@ -362,33 +363,60 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
 
       {scheduledVerification ? (
         <>
-          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
-            <input
-              type="checkbox"
-              checked={hostAccess}
-              onChange={(e) => {
-                setHostAccess(e.target.checked);
-                if (!e.target.checked) setMasterKey('');
-              }}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff]"
-            />
-            <span className="text-left text-sm text-white/60">
-              Parable team — join with host key (any investor room)
-            </span>
-          </label>
+          <fieldset className="space-y-2 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+            <legend className="px-1 text-[10px] font-black uppercase tracking-wider text-white/40">How are you joining?</legend>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="radio"
+                name="scheduled-join-mode"
+                checked={scheduledJoinMode === 'investor'}
+                onChange={() => {
+                  setScheduledJoinMode('investor');
+                  setMasterKey('');
+                }}
+                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff]"
+              />
+              <span className="text-left text-sm text-white/70">
+                Investor — use the <strong className="text-white/85">work email</strong> from your booking confirmation
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="radio"
+                name="scheduled-join-mode"
+                checked={scheduledJoinMode === 'team'}
+                onChange={() => {
+                  setScheduledJoinMode('team');
+                  setWorkEmail('');
+                }}
+                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff]"
+              />
+              <span className="text-left text-sm text-white/70">
+                Parable team — <strong className="text-white/85">host key</strong> (room suffix is in your confirmation email)
+              </span>
+            </label>
+          </fieldset>
 
           {usingMasterKey ? (
             <>
               <label className="block text-left">
                 <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Host key</span>
                 <input
-                  type="password"
+                  type="text"
+                  name="parable-host-key"
                   value={masterKey}
                   onChange={(e) => setMasterKey(e.target.value)}
                   autoComplete="off"
-                  placeholder="••••••••"
-                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50"
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  inputMode="text"
+                  placeholder="Paste the full key from your email"
+                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00f2ff]/50"
                 />
+                <span className="mt-1 block text-[10px] text-white/35">
+                  Use the exact key from your confirmation message — punctuation and symbols (e.g. !) are allowed.
+                </span>
               </label>
               <label className="block text-left">
                 <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Your name in the call</span>

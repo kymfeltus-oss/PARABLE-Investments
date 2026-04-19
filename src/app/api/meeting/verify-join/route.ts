@@ -13,9 +13,11 @@ function normalizeSuffix(raw: string): string {
 
 function isMeetingMasterKeyValid(provided: string): boolean {
   const expected = process.env.MEETING_MASTER_KEY?.trim();
-  if (!expected || !provided) return false;
+  if (!expected) return false;
+  const p = provided.trim();
+  if (!p) return false;
   try {
-    const a = Buffer.from(provided, 'utf8');
+    const a = Buffer.from(p, 'utf8');
     const b = Buffer.from(expected, 'utf8');
     if (a.length !== b.length) return false;
     return timingSafeEqual(a, b);
