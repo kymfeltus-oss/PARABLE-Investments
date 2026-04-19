@@ -1,7 +1,9 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import { buildMeetingConfirmationCalendar } from '@/lib/meeting-calendar';
 import { getDefaultScheduledRoomSuffix, getScheduledMeetUrl } from '@/lib/meeting-links';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
@@ -13,6 +15,10 @@ function escapeHtml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escapeHtmlAttr(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
 export async function POST(req: NextRequest) {
@@ -71,19 +77,100 @@ export async function POST(req: NextRequest) {
   const roomSuffix = getDefaultScheduledRoomSuffix();
   const meetUrl = getScheduledMeetUrl(roomSuffix);
   const roomLabel = `investor-${roomSuffix.replace(/^investor-/i, '')}`;
+  const schedulingUrl = process.env.NEXT_PUBLIC_SCHEDULING_URL?.trim() ?? '';
   const meetingHostKey = process.env.MEETING_MASTER_KEY?.trim() ?? '';
+  const suffixOnly = roomSuffix.replace(/^investor-/i, '');
+
+  const offsetHours = Number(process.env.MEETING_CONFIRMATION_CALENDAR_OFFSET_HOURS);
+  const reminderOffsetHours = Number.isFinite(offsetHours) && offsetHours > 0 ? offsetHours : 24;
+  const durationMin = Number(process.env.MEETING_CONFIRMATION_CALENDAR_DURATION_MINUTES);
+  const durationMinutes = Number.isFinite(durationMin) && durationMin > 0 ? durationMin : 60;
+
+  const icsFilename = `${roomLabel.replace(/[^a-zA-Z0-9_-]/g, '-')}-parable-meeting.ics`;
+
   const hostKeySection =
     meetingHostKey.length > 0
       ? `
       <p style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f6f8fa;border:1px solid #e1e4e8;border-radius:8px;font-size:13px;color:#222">
         <strong>Parable team — scheduled video call</strong><br/>
-        <span style="color:#444">Room suffix (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomSuffix.replace(/^investor-/i, ''))}</code>
+        <span style="color:#444"><strong>Host / meeting ID</strong> (full room name):</span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomLabel)}</code>
+        <span style="color:#444">Suffix (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(suffixOnly)}</code>
         <span style="color:#444">Host key (choose &quot;Parable team&quot; on the meeting page):</span>
         <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(meetingHostKey)}</code>
         <span style="font-size:11px;color:#666">Treat the host key like a password. Do not forward to people outside Parable.</span>
       </p>`
       : '';
+
+  const plainDetailLines: string[] = [
+    `Hi ${name},`,
+    '',
+    'Parable — meeting confirmation & video access',
+    `NDA / acknowledgment version: ${INVESTOR_AGREEMENT_VERSION}`,
+    '',
+    'Meeting details',
+    `— Host / meeting ID (full): ${roomLabel}`,
+    `— Room suffix (after "investor-"): ${suffixOnly}`,
+    `— Video join URL: ${meetUrl}`,
+  ];
+  if (schedulingUrl) {
+    plainDetailLines.push(`— Book a time (scheduling): ${schedulingUrl}`);
+  }
+  if (meetingHostKey) {
+    plainDetailLines.push(
+      '',
+      'Parable team (host path):',
+      `— Host key (choose "Parable team" on the meeting page): ${meetingHostKey}`,
+      '(Keep this secret — do not forward outside Parable.)',
+    );
+  }
+  plainDetailLines.push(
+    '',
+    'Investors: open the join link at meeting time, choose Investor, and enter the same email you used when booking.',
+    '',
+    `Calendar: attached "${icsFilename}" is a placeholder reminder (${reminderOffsetHours}h from send). Your real meeting time will come from your calendar after you book.`,
+    '',
+    'This message is retained as supplemental evidence alongside your investor NDA. Not legal advice.',
+    '— Parable',
+  );
+  const plainBody = plainDetailLines.join('\n');
+
+  const icsDescriptionLines = [
+    'Parable investor meeting — details',
+    '',
+    `NDA version on file: ${INVESTOR_AGREEMENT_VERSION}`,
+    '',
+    `Host / meeting ID (full): ${roomLabel}`,
+    `Room suffix: ${suffixOnly}`,
+    `Join: ${meetUrl}`,
+    ...(schedulingUrl ? [`Book time: ${schedulingUrl}`] : []),
+    ...(meetingHostKey
+      ? ['', 'Parable team — host key (do not share outside Parable):', meetingHostKey]
+      : []),
+    '',
+    `Placeholder calendar block (${reminderOffsetHours}h reminder). After you book, use your real calendar invite for the meeting time.`,
+  ];
+
+  const calendar = buildMeetingConfirmationCalendar({
+    uidSuffix: randomUUID(),
+    summary: `Parable — investor meeting (${roomLabel})`,
+    descriptionLines: icsDescriptionLines,
+    locationUrl: meetUrl,
+    reminderOffsetHours,
+    durationMinutes,
+  });
+
+  const calendarSection = `
+      <p style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#14532d">
+        <strong>Save to your calendar</strong><br/>
+        <span style="color:#166534">A placeholder reminder is attached (<code style="background:#dcfce7;padding:0 4px;border-radius:4px">.ics</code>). After you book, your real meeting time will come from your calendar provider.</span><br/>
+        <a href="${escapeHtmlAttr(calendar.googleCalendarUrl)}" style="display:inline-block;margin-top:0.5rem;color:#15803d;font-weight:600">Add to Google Calendar</a>
+      </p>`;
+
+  const schedulingBlock = schedulingUrl
+    ? `<p><strong>Book a time:</strong><br/><a href="${escapeHtmlAttr(schedulingUrl)}">${escapeHtml(schedulingUrl)}</a></p>`
+    : '';
 
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:560px;line-height:1.5;color:#111">
@@ -92,12 +179,20 @@ export async function POST(req: NextRequest) {
       <p>This email confirms your <strong>investor meeting scheduling registration</strong> and serves as a record tied to our confidentiality process.</p>
       <p><strong>NDA / acknowledgment version on file:</strong> ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p>
       <p>After you pick a time in the Parable booking calendar, your calendar provider may send a <em>separate</em> message with the specific date and time.</p>
+      <p style="padding:0.75rem 1rem;background:#fafafa;border:1px solid #eee;border-radius:8px;font-size:14px">
+        <strong>Meeting details</strong><br/>
+        <span style="color:#444"><strong>Host / meeting ID:</strong></span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomLabel)}</code>
+        <span style="color:#444"><strong>Room suffix</strong> (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
+        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(suffixOnly)}</code>
+      </p>
+      ${schedulingBlock}
       <p><strong>Investors — join the call</strong><br/>
-      Open the link below at meeting time. On the next page, choose <strong>Investor</strong> and enter the <strong>same work email</strong> you used when booking.</p>
+      Open the link below at meeting time. On the next page, choose <strong>Investor</strong> and enter the <strong>same email</strong> you used when booking.</p>
       <p><strong>Video room link:</strong><br/>
-      <a href="${meetUrl}">${meetUrl}</a></p>
-      <p style="font-size:13px;color:#444"><strong>Room name:</strong> ${escapeHtml(roomLabel)}</p>
+      <a href="${escapeHtmlAttr(meetUrl)}">${escapeHtml(meetUrl)}</a></p>
       ${hostKeySection}
+      ${calendarSection}
       <p style="font-size:12px;color:#555">This scheduling request is retained as supplemental evidence alongside your investor NDA / electronic acknowledgment. Not legal advice.</p>
       <p style="font-size:12px;color:#666">— Parable</p>
     </div>
@@ -116,7 +211,15 @@ export async function POST(req: NextRequest) {
         from,
         to: email,
         subject: 'Parable — Meeting confirmation, video link & NDA scheduling record',
+        text: plainBody,
         html,
+        attachments: [
+          {
+            filename: icsFilename,
+            content: calendar.ics,
+            contentType: 'text/calendar; charset=utf-8',
+          },
+        ],
       });
       emailStatus = 'sent';
       try {
@@ -124,7 +227,7 @@ export async function POST(req: NextRequest) {
           from,
           to: CONTACT,
           subject: `[Meeting + NDA evidence] ${name}`,
-          html: `<p><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(email)}&gt;</p><p>NDA version: ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p><p>Room: ${escapeHtml(roomLabel)}</p><p><a href="${meetUrl}">Join link</a></p>${
+          html: `<p><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(email)}&gt;</p><p>NDA version: ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p><p>Host / meeting ID: ${escapeHtml(roomLabel)}</p><p>Suffix: ${escapeHtml(suffixOnly)}</p><p><a href="${escapeHtmlAttr(meetUrl)}">Join link</a></p>${
             meetingHostKey
               ? `<p>Host key (internal): <code>${escapeHtml(meetingHostKey)}</code></p>`
               : ''

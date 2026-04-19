@@ -109,7 +109,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
                 />
               </label>
               <label className="block text-left">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Work email</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

@@ -26,17 +26,52 @@ function isMeetingMasterKeyValid(provided: string): boolean {
   }
 }
 
+/** Full bypass: no booking DB check, no team host key — set only in server env (e.g. Vercel). */
+function isUniversalBypassKeyValid(provided: string): boolean {
+  const expected = process.env.PARABLE_MASTER_BYPASS_KEY?.trim();
+  if (!expected) return false;
+  const p = provided.trim();
+  if (!p) return false;
+  try {
+    const a = Buffer.from(p, 'utf8');
+    const b = Buffer.from(expected, 'utf8');
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   let body: {
     email?: string;
     roomSuffix?: string;
     masterKey?: string;
     participantName?: string;
+    universalBypassKey?: string;
   };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
+  }
+
+  const universalBypassRaw =
+    typeof body.universalBypassKey === 'string' ? body.universalBypassKey.trim() : '';
+  if (universalBypassRaw.length > 0) {
+    if (isUniversalBypassKeyValid(universalBypassRaw)) {
+      return NextResponse.json({
+        ok: true,
+        participantName: 'Parable Host',
+      });
+    }
+    return NextResponse.json(
+      {
+        error:
+          'Master access key not recognized. If you are an operator, confirm PARABLE_MASTER_BYPASS_KEY is set on the server.',
+      },
+      { status: 403 }
+    );
   }
 
   const roomSuffix = typeof body.roomSuffix === 'string' ? normalizeSuffix(body.roomSuffix) : '';
@@ -66,7 +101,7 @@ export async function POST(req: NextRequest) {
 
   if (!isValidInvestorEmail(email)) {
     return NextResponse.json(
-      { error: 'Enter the same work email we have on file from your booking confirmation.' },
+      { error: 'Enter the same email we have on file from your booking confirmation.' },
       { status: 400 }
     );
   }

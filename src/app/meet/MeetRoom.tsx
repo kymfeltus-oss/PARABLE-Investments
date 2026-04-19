@@ -52,13 +52,26 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   const [connecting, setConnecting] = useState(false);
   const [welcomeStage, setWelcomeStage] = useState(false);
   const [masterKey, setMasterKey] = useState('');
-  /** Scheduled /meet?join=scheduled: investors use work email; Parable team uses MEETING_MASTER_KEY from confirmation email. */
-  const [scheduledJoinMode, setScheduledJoinMode] = useState<'investor' | 'team'>('investor');
+  /** Server env PARABLE_MASTER_BYPASS_KEY — full access without booking or host key. */
+  const [universalBypassKey, setUniversalBypassKey] = useState('');
+  /** Scheduled /meet?join=scheduled: investor email, team host key, or universal bypass. */
+  const [scheduledJoinMode, setScheduledJoinMode] = useState<'investor' | 'team' | 'bypass'>('investor');
   const [participantLabel, setParticipantLabel] = useState('');
   const [userChoices, setUserChoices] = useState<LocalUserChoices | null>(null);
   const [roomError, setRoomError] = useState<string | null>(null);
+  const [copiedMeetingId, setCopiedMeetingId] = useState(false);
 
   const fullRoomName = useMemo(() => `investor-${roomSlug.replace(/^investor-/, '')}`, [roomSlug]);
+
+  const copyFullMeetingId = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(fullRoomName);
+      setCopiedMeetingId(true);
+      window.setTimeout(() => setCopiedMeetingId(false), 2000);
+    } catch {
+      /* clipboard may be denied */
+    }
+  }, [fullRoomName]);
 
   const usingMasterKey = scheduledVerification && scheduledJoinMode === 'team';
 
@@ -69,7 +82,22 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
       let participantName = displayName.trim() || 'Guest';
 
       if (scheduledVerification) {
-        if (usingMasterKey) {
+        if (scheduledJoinMode === 'bypass') {
+          const verifyRes = await fetch('/api/meeting/verify-join', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              universalBypassKey: universalBypassKey.trim(),
+            }),
+          });
+          const verifyData = (await verifyRes.json()) as { error?: string; participantName?: string };
+          if (!verifyRes.ok) {
+            setError(verifyData.error ?? 'Access key not recognized.');
+            setConnecting(false);
+            return;
+          }
+          participantName = verifyData.participantName?.trim() || 'Parable Host';
+        } else if (usingMasterKey) {
           const verifyRes = await fetch('/api/meeting/verify-join', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -89,7 +117,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         } else {
           const em = workEmail.trim().toLowerCase();
           if (!isValidInvestorEmail(em)) {
-            setError('Enter the same work email from your meeting confirmation.');
+            setError('Enter the same email from your meeting confirmation.');
             setConnecting(false);
             return;
           }
@@ -136,7 +164,17 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     } finally {
       setConnecting(false);
     }
-  }, [displayName, fullRoomName, masterKey, roomSlug, scheduledVerification, usingMasterKey, workEmail]);
+  }, [
+    displayName,
+    fullRoomName,
+    masterKey,
+    roomSlug,
+    scheduledJoinMode,
+    scheduledVerification,
+    universalBypassKey,
+    usingMasterKey,
+    workEmail,
+  ]);
 
   const joinRef = useRef(join);
 
@@ -192,9 +230,11 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   );
 
   const canJoinScheduled = scheduledVerification
-    ? usingMasterKey
-      ? masterKey.trim().length > 0 && displayName.trim().length >= 1 && roomSlug.trim().length > 0
-      : isValidInvestorEmail(workEmail.trim()) && roomSlug.trim().length > 0
+    ? scheduledJoinMode === 'bypass'
+      ? universalBypassKey.trim().length > 0
+      : scheduledJoinMode === 'team'
+        ? masterKey.trim().length > 0 && displayName.trim().length >= 1 && roomSlug.trim().length > 0
+        : isValidInvestorEmail(workEmail.trim()) && roomSlug.trim().length > 0
     : false;
   const canJoinOpen = !scheduledVerification && roomSlug.trim().length > 0;
   const canJoin = scheduledVerification ? canJoinScheduled : canJoinOpen;
@@ -373,11 +413,12 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 onChange={() => {
                   setScheduledJoinMode('investor');
                   setMasterKey('');
+                  setUniversalBypassKey('');
                 }}
                 className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff]"
               />
               <span className="text-left text-sm text-white/70">
-                Investor — use the <strong className="text-white/85">work email</strong> from your booking confirmation
+                Investor — use the <strong className="text-white/85">email</strong> from your booking confirmation
               </span>
             </label>
             <label className="flex cursor-pointer items-start gap-3">
@@ -388,6 +429,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 onChange={() => {
                   setScheduledJoinMode('team');
                   setWorkEmail('');
+                  setUniversalBypassKey('');
                 }}
                 className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff]"
               />
@@ -395,7 +437,49 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 Parable team — <strong className="text-white/85">host key</strong> (room suffix is in your confirmation email)
               </span>
             </label>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="radio"
+                name="scheduled-join-mode"
+                checked={scheduledJoinMode === 'bypass'}
+                onChange={() => {
+                  setScheduledJoinMode('bypass');
+                  setMasterKey('');
+                  setWorkEmail('');
+                  setDisplayName('');
+                  setUniversalBypassKey('');
+                  const raw = initialRoomSuffix?.trim();
+                  setRoomSlug(raw ? raw.replace(/^investor-/i, '') : 'scheduled-call');
+                }}
+                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff]"
+              />
+              <span className="text-left text-sm text-white/70">
+                Parable — <strong className="text-white/85">master access</strong> (one key only — no booking or other fields)
+              </span>
+            </label>
           </fieldset>
+
+          {scheduledJoinMode === 'bypass' ? (
+            <label className="block text-left">
+              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Master access key</span>
+              <input
+                type="text"
+                name="parable-universal-bypass"
+                value={universalBypassKey}
+                onChange={(e) => setUniversalBypassKey(e.target.value)}
+                autoComplete="off"
+                spellCheck={false}
+                autoCapitalize="off"
+                autoCorrect="off"
+                placeholder="Enter your access key"
+                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00f2ff]/50"
+              />
+              <span className="mt-1 block text-[10px] text-white/35">
+                Joins the default scheduled room automatically. This option is only active when your host has configured a
+                master access key on the server.
+              </span>
+            </label>
+          ) : null}
 
           {usingMasterKey ? (
             <>
@@ -429,9 +513,9 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 />
               </label>
             </>
-          ) : (
+          ) : scheduledJoinMode === 'investor' ? (
             <label className="block text-left">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Work email</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
               <input
                 type="email"
                 value={workEmail}
@@ -441,7 +525,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50"
               />
             </label>
-          )}
+          ) : null}
         </>
       ) : (
         <label className="block text-left">
@@ -455,42 +539,69 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         </label>
       )}
 
-      <div className="block text-left">
-        <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Room (suffix)</span>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="shrink-0 rounded-lg border border-[#00f2ff]/30 bg-black/40 px-3 py-3 font-mono text-xs text-[#00f2ff]">
-            investor-
-          </span>
-          <input
-            value={roomSlug.replace(/^investor-/, '')}
-            onChange={(e) => {
-              if (scheduledVerification && !usingMasterKey) return;
-              setRoomSlug(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''));
-            }}
-            readOnly={scheduledVerification && !usingMasterKey}
-            placeholder="team-call"
-            className={`min-w-0 flex-1 rounded-xl border px-4 py-3 font-mono text-sm outline-none ${
-              scheduledVerification && !usingMasterKey
-                ? 'cursor-not-allowed border-white/10 bg-black/50 text-white/80'
-                : 'border-white/15 bg-black/60 text-white focus:border-[#00f2ff]/50'
-            }`}
-          />
-        </div>
-        <p className="mt-2 text-[10px] text-white/35">
-          {scheduledVerification ? (
-            usingMasterKey ? (
-              <>Choose any room suffix for this meeting.</>
+      {!(scheduledVerification && scheduledJoinMode === 'bypass') ? (
+        <div className="block text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-[#00f2ff]/75">Host / meeting ID</span>
+          <p className="mt-1 text-[10px] leading-relaxed text-white/38">
+            {scheduledVerification ? (
+              scheduledJoinMode === 'team' ? (
+                <>Set the suffix for this call — the full meeting ID below is what LiveKit uses.</>
+              ) : (
+                <>This invite uses the room shown below. Investors: it should match your confirmation email.</>
+              )
             ) : (
-              <>
-                Room for this invite:{' '}
-                <code className="text-white/50">investor-{roomSlug.replace(/^investor-/, '')}</code>
-              </>
-            )
-          ) : (
-            <>Use one shared suffix so everyone lands in the same call.</>
-          )}
-        </p>
-      </div>
+              <>Set the suffix — the full meeting ID is the host-facing room name everyone shares.</>
+            )}
+          </p>
+          <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-white/40">Suffix (after investor-)</p>
+          <div className="mt-1.5 flex items-center gap-2">
+            <span className="shrink-0 rounded-lg border border-[#00f2ff]/30 bg-black/40 px-3 py-3 font-mono text-xs text-[#00f2ff]">
+              investor-
+            </span>
+            <input
+              value={roomSlug.replace(/^investor-/, '')}
+              onChange={(e) => {
+                if (scheduledVerification && scheduledJoinMode === 'investor') return;
+                setRoomSlug(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''));
+              }}
+              readOnly={scheduledVerification && scheduledJoinMode === 'investor'}
+              placeholder="team-call"
+              className={`min-w-0 flex-1 rounded-xl border px-4 py-3 font-mono text-sm outline-none ${
+                scheduledVerification && scheduledJoinMode === 'investor'
+                  ? 'cursor-not-allowed border-white/10 bg-black/50 text-white/80'
+                  : 'border-white/15 bg-black/60 text-white focus:border-[#00f2ff]/50'
+              }`}
+            />
+          </div>
+          <div className="mt-3 flex flex-col gap-2 rounded-xl border border-[#00f2ff]/20 bg-black/40 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-white/45">Full meeting ID</span>
+              <p className="mt-1 break-all font-mono text-sm text-[#00f2ff]/95">{fullRoomName}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void copyFullMeetingId()}
+              className="shrink-0 rounded-lg border border-[#00f2ff]/35 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#00f2ff] hover:bg-[#00f2ff]/10"
+            >
+              {copiedMeetingId ? 'Copied' : 'Copy ID'}
+            </button>
+          </div>
+          <p className="mt-2 text-[10px] text-white/35">
+            {scheduledVerification ? (
+              scheduledJoinMode === 'team' ? (
+                <>Use one shared suffix so hosts and guests land in the same room.</>
+              ) : (
+                <>
+                  Scheduled room:{' '}
+                  <code className="text-white/55">{fullRoomName}</code>
+                </>
+              )
+            ) : (
+              <>Use one shared suffix so everyone lands in the same call.</>
+            )}
+          </p>
+        </div>
+      ) : null}
 
       {error ? (
         <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-xs text-red-200">
