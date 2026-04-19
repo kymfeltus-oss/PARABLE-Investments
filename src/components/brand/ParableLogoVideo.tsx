@@ -21,8 +21,8 @@ export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
 /**
  * Full-viewport looping background for the investor landing (under sparkles + copy).
  * Starts muted so autoplay succeeds; unmutes on first user gesture (tap/click/key).
- * Same styling on all viewports; only the asset differs — mobile uses `<source media>` →
- * `PARABLE Mobile logo.mp4`, desktop/laptop uses `PARABLE Logo.mp4`.
+ * Mobile: `PARABLE Mobile logo.mp4` + `object-contain` so the full frame fits (logo not blown up).
+ * md+: `PARABLE Logo.mp4` + `object-cover` for full-bleed hero.
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
@@ -71,7 +71,7 @@ export function LandingHeroBackgroundVideo() {
       <div className="absolute inset-0 overflow-hidden">
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full bg-[#070708] object-cover object-center"
+          className="absolute inset-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
           autoPlay
           muted={muted}
           loop
