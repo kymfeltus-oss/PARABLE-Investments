@@ -82,20 +82,15 @@ body {
   }
 }
 
-/* Landing `/` — larger, viewport-scaled hero lines (same colors / voice as `.parable-*`) */
+/* Landing `/` — same hierarchy on all breakpoints; scales with viewport (vmin keeps phone + desktop aligned) */
 .parable-landing-eyebrow {
   font-weight: 900;
-  letter-spacing: 0.35em;
   text-transform: uppercase;
   color: rgba(0, 242, 255, 0.7);
-  font-size: clamp(11px, 3.4vw, 16px);
-}
-
-@media (min-width: 768px) {
-  .parable-landing-eyebrow {
-    font-size: clamp(12px, 1.35vw, 17px);
-    letter-spacing: 0.38em;
-  }
+  white-space: nowrap;
+  max-width: 100%;
+  font-size: clamp(8px, min(2.65vmin, calc(1.05vw + 7px)), 17px);
+  letter-spacing: clamp(0.14em, calc(0.22em + 0.45vmin), 0.38em);
 }
 
 /* Inherits site Rajdhani — one line, centered, streaming/gaming dashboard feel */
@@ -103,26 +98,20 @@ body {
   font-family: var(--font-parable);
   font-weight: 700;
   font-style: normal;
-  letter-spacing: clamp(0.06em, 0.55vw, 0.22em);
   text-transform: uppercase;
   color: #00f2ff;
   text-shadow:
     0 0 12px #00f2ff,
     0 0 28px rgba(0, 242, 255, 0.35);
-  font-size: clamp(11px, 3.35vw, 2rem);
   line-height: 1.2;
   white-space: nowrap;
   text-align: center;
   width: 100%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-}
-
-@media (min-width: 768px) {
-  .parable-landing-tagline {
-    font-size: clamp(1.05rem, 2.35vw, 2.05rem);
-    letter-spacing: clamp(0.12em, 0.9vw, 0.32em);
-  }
+  font-size: clamp(11px, min(3.2vmin, calc(0.95vw + 0.4rem)), 2.05rem);
+  letter-spacing: clamp(0.08em, calc(0.12em + 0.35vmin), 0.32em);
 }
 
 .parable-glass-panel {

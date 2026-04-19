@@ -38,26 +38,35 @@ export default function InvestorLandingPage() {
       <LandingHeroBackgroundVideo />
       <InvestorAtmosphere overVideo />
 
-      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
-        <header className="shrink-0 pt-6 text-center md:pt-8">
-          <p className="parable-landing-eyebrow mb-10 md:mb-14">Confidential · Investor introduction</p>
-
-          <div className="flex w-full justify-center px-2">
-            <p className="parable-landing-tagline mb-2">
-              Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
-            </p>
-          </div>
+      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] md:px-8">
+        <header className="shrink-0 pt-4 text-center md:pt-8">
+          <p className="parable-landing-eyebrow mb-4 md:mb-5">
+            Confidential · Investor introduction
+          </p>
         </header>
 
-        {/* Logo only when reduced motion; sits below tagline with clear separation */}
-        <div className="flex w-full min-w-0 flex-1 flex-col items-center justify-start px-1 pt-4 md:pt-6">
+        {/* Logo zone: PARABLE (video fills viewport behind); static mark when reduced motion — same order as desktop */}
+        <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-1 py-3 md:min-h-[min(28vh,18rem)] md:py-6">
           {reduceMotion ? (
             <ParableLogoMark
-              className="mt-8 md:mt-12"
+              className="mt-0"
               maxWidthClass="max-w-[min(20rem,calc(100vw-3.25rem))] md:max-w-md"
             />
-          ) : null}
+          ) : (
+            <div
+              className="min-h-[min(22vh,12rem)] w-full md:min-h-[min(26vh,14rem)]"
+              aria-hidden
+            />
+          )}
         </div>
+
+        <div className="flex w-full shrink-0 justify-center px-2 pb-1 pt-1 md:pb-2 md:pt-2">
+          <p className="parable-landing-tagline">
+            Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
+          </p>
+        </div>
+
+        <div className="min-h-0 w-full flex-1" aria-hidden />
 
         <footer className="shrink-0 flex flex-col items-center gap-10 pb-6 md:gap-10 md:pb-10">
           <motion.div
