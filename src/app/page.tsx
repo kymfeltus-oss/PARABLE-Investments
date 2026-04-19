@@ -40,7 +40,7 @@ export default function InvestorLandingPage() {
 
       <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
         <header className="shrink-0 pt-6 text-center md:pt-8">
-          <p className="parable-landing-eyebrow mb-5 md:mb-7">Confidential · Investor introduction</p>
+          <p className="parable-landing-eyebrow mb-10 md:mb-14">Confidential · Investor introduction</p>
 
           <div className="flex w-full justify-center px-2">
             <p className="parable-landing-tagline mb-2">

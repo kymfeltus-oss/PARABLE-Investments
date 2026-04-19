@@ -1,15 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Inter, Rajdhani } from "next/font/google";
+import { Rajdhani } from "next/font/google";
 import "./globals.css";
 import { INVESTOR_SITE_URL } from "@/lib/investor-site";
 
-const inter = Inter({ subsets: ["latin"] });
-
-/** Condensed tech / streaming UI — common gaming & broadcast dashboard look */
-const streaming = Rajdhani({
+/** Site-wide Rajdhani — same voice as streaming / hero tagline (logo assets unchanged). */
+const rajdhani = Rajdhani({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-streaming",
   display: "swap",
 });
@@ -40,9 +38,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark h-full">
+    <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
       <body
-        className={`${inter.className} ${streaming.variable} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}
+        className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         {children}

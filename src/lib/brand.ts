@@ -1,5 +1,5 @@
 /**
- * PARABLE brand tokens — keep in sync with the main PARABLE app (Inter, #00f2ff cyber, dark sanctuary).
+ * PARABLE brand tokens — keep in sync with the main PARABLE app (Rajdhani, #00f2ff cyber, dark sanctuary).
  */
 export const BRAND = {
   cyber: '#00f2ff',

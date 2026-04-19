@@ -4,7 +4,7 @@
   --color-cyber: #00f2ff;
   --color-sanctuary: #010101;
   --color-shell: #070708;
-  --font-parable: "Inter", system-ui, sans-serif;
+  --font-parable: var(--font-streaming), "Rajdhani", system-ui, sans-serif;
 }
 
 /* Match main PARABLE app shell + flash */
@@ -98,9 +98,9 @@ body {
   }
 }
 
-/* Rajdhani via layout `--font-streaming` — one line, centered, streaming/gaming dashboard feel */
+/* Inherits site Rajdhani — one line, centered, streaming/gaming dashboard feel */
 .parable-landing-tagline {
-  font-family: var(--font-streaming), "Rajdhani", system-ui, sans-serif;
+  font-family: var(--font-parable);
   font-weight: 700;
   font-style: normal;
   letter-spacing: clamp(0.06em, 0.55vw, 0.22em);
