@@ -12,7 +12,10 @@ import {
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { MediaDeviceFailure } from 'livekit-client';
+import { BackgroundBlur, VirtualBackground, supportsBackgroundProcessors } from '@livekit/track-processors';
 import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettings';
+import { MeetPreJoinSetupPanel } from '@/components/meet/MeetPreJoinSetupPanel';
+import { MeetWelcomeClip } from '@/components/meet/MeetWelcomeClip';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 
 function mediaDeviceFailureMessage(failure: MediaDeviceFailure | undefined): string {
@@ -61,7 +64,59 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   const [roomError, setRoomError] = useState<string | null>(null);
   const [copiedMeetingId, setCopiedMeetingId] = useState(false);
 
+  /** PreJoin virtual background (LiveKit `videoProcessor` + remount key). */
+  const [prejoinBg, setPrejoinBg] = useState<'none' | 'blur' | 'image'>('none');
+  const [prejoinImageUrl, setPrejoinImageUrl] = useState<string | null>(null);
+
   const fullRoomName = useMemo(() => `investor-${roomSlug.replace(/^investor-/, '')}`, [roomSlug]);
+
+  /** false on SSR/first paint; updated after mount to avoid hydration mismatch. */
+  const [supportsVirtualBg, setSupportsVirtualBg] = useState(false);
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        setSupportsVirtualBg(supportsBackgroundProcessors());
+      } catch {
+        setSupportsVirtualBg(false);
+      }
+    });
+  }, []);
+
+  const prejoinVideoProcessor = useMemo(() => {
+    if (!supportsVirtualBg) return undefined;
+    if (prejoinBg === 'blur') return BackgroundBlur(14);
+    if (prejoinBg === 'image' && prejoinImageUrl) return VirtualBackground(prejoinImageUrl);
+    return undefined;
+  }, [supportsVirtualBg, prejoinBg, prejoinImageUrl]);
+
+  const preJoinRemountKey = useMemo(
+    () => `pj-${prejoinBg}-${prejoinImageUrl ?? 'n'}`,
+    [prejoinBg, prejoinImageUrl],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (prejoinImageUrl) URL.revokeObjectURL(prejoinImageUrl);
+    };
+  }, [prejoinImageUrl]);
+
+  const handlePrejoinBgMode = useCallback((mode: 'none' | 'blur' | 'image') => {
+    if (mode !== 'image') {
+      setPrejoinImageUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    }
+    setPrejoinBg(mode);
+  }, []);
+
+  const handlePrejoinBgImage = useCallback((file: File) => {
+    setPrejoinImageUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setPrejoinBg('image');
+  }, []);
 
   const copyFullMeetingId = useCallback(async () => {
     try {
@@ -197,6 +252,11 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     setError(null);
     setRoomError(null);
     setWelcomeStage(false);
+    setPrejoinBg('none');
+    setPrejoinImageUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
   }, []);
 
   const handlePreJoinSubmit = useCallback(
@@ -279,6 +339,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
           <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-xs text-red-200">{error}</p>
         ) : null}
         <PreJoin
+          key={preJoinRemountKey}
           className="rounded-2xl border border-white/10 bg-[#1b1b1d] p-4 shadow-2xl md:p-6"
           data-lk-theme="default"
           defaults={{ username: participantLabel || 'Guest' }}
@@ -287,8 +348,15 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
           micLabel="Microphone"
           camLabel="Camera"
           userLabel="Display name"
+          videoProcessor={prejoinVideoProcessor}
           onSubmit={handlePreJoinSubmit}
           onError={(err) => setError(err.message)}
+        />
+        <MeetPreJoinSetupPanel
+          bgMode={prejoinBg}
+          onBgModeChange={handlePrejoinBgMode}
+          onPickBackgroundImage={handlePrejoinBgImage}
+          supportsBackgrounds={supportsVirtualBg}
         />
       </div>
     );
@@ -360,20 +428,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         <p className="font-serif text-2xl text-white md:text-3xl">Welcome to Parable</p>
         <p className="text-sm text-white/50">A short welcome plays while we prepare your call.</p>
 
-        <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#0d0d0f] shadow-inner">
-          <div className="aspect-video w-full bg-gradient-to-br from-[#1a2a32] via-[#0f1418] to-[#0a0c10]">
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/15 bg-white/5">
-                <span className="text-2xl text-white/40">▶</span>
-              </div>
-              <p className="text-xs font-medium uppercase tracking-[0.25em] text-white/35">Welcome video</p>
-              <p className="max-w-xs text-[11px] leading-relaxed text-white/30">
-                Placeholder — your welcome clip will appear here. You&apos;ll join the meeting automatically.
-              </p>
-            </div>
-            <div className="absolute bottom-0 left-0 h-1 w-0 bg-[#00f2ff]/50 investor-welcome-progress-bar" />
-          </div>
-        </div>
+        <MeetWelcomeClip />
 
         {connecting ? (
           <p className="text-sm text-[#00f2ff]/80">Connecting to the room…</p>
