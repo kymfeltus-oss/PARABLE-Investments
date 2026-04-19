@@ -75,10 +75,41 @@ Restart the dev server (`npm run dev`) after changing env vars.
 
 ---
 
+## 7. Investor NDA / agreement storage (`/nda`, `POST /api/investor/agreement`)
+
+If you see **“Agreement storage is not configured”** when submitting the NDA, complete this once.
+
+### 7a. Service role key (server only)
+
+1. In Supabase: **Project Settings** → **API**.
+2. Under **Project API keys**, copy the **`service_role`** key (secret).  
+   **Never** put this in `NEXT_PUBLIC_*` or client code.
+3. Add to **`.env.local`** (and to **Vercel** → Project → Settings → Environment Variables for production):
+
+```env
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...your-service-role-key
+```
+
+`NEXT_PUBLIC_SUPABASE_URL` (or `SUPABASE_URL`) must also be set — same **Project URL** as in step 2.
+
+### 7b. Create the `investor_agreements` table
+
+1. **SQL Editor** → **New query**.
+2. Open **`supabase/schema-investor-agreements.sql`** in your repo, copy **all** of it, paste, **Run**.
+3. Confirm success (no SQL errors).
+
+### 7c. Redeploy / restart
+
+- **Local:** restart `npm run dev` after changing `.env.local`.
+- **Vercel:** redeploy after adding env vars, or use **Redeploy** on the latest deployment.
+
+---
+
 ## Done
 
 - **Sign up** in the app (Create Account) and **sign in** (Login).
 - **Sanctuary Reader** and **AI Scholar** work with only `OPENAI_API_KEY` in `.env.local`; they don’t need Supabase.
 - **The Table** (groups) needs Supabase and the script in step 4.
+- **Investor NDA submit** needs step 7 (URL + `SUPABASE_SERVICE_ROLE_KEY` + `schema-investor-agreements.sql`).
 
 If something fails, check the Supabase **Logs** (e.g. Auth logs, Postgres logs) for errors.
