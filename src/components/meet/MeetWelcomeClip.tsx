@@ -12,6 +12,7 @@ export function MeetWelcomeClip() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
   const [soundBlocked, setSoundBlocked] = useState(false);
+  const [hasEnded, setHasEnded] = useState(false);
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
@@ -29,12 +30,26 @@ export function MeetWelcomeClip() {
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    const onReady = () => tryPlayPreferSound();
+    const onReady = () => {
+      setHasEnded(false);
+      tryPlayPreferSound();
+    };
+    const onEnded = () => setHasEnded(true);
     if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) onReady();
     else el.addEventListener('canplay', onReady, { once: true });
+    el.addEventListener('ended', onEnded);
     return () => {
       el.removeEventListener('canplay', onReady);
+      el.removeEventListener('ended', onEnded);
     };
+  }, [tryPlayPreferSound]);
+
+  const replay = useCallback(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    setHasEnded(false);
+    el.currentTime = 0;
+    tryPlayPreferSound();
   }, [tryPlayPreferSound]);
 
   const enableSound = useCallback(() => {
@@ -55,21 +70,31 @@ export function MeetWelcomeClip() {
           src={WELCOME_SRC}
           autoPlay
           muted={muted}
-          loop
           playsInline
           preload="auto"
           aria-label="Welcome to Parable"
         />
       </div>
-      {soundBlocked || muted ? (
-        <div className="absolute bottom-3 left-0 right-0 flex justify-center px-3">
-          <button
-            type="button"
-            onClick={enableSound}
-            className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
-          >
-            Enable sound
-          </button>
+      {soundBlocked || muted || hasEnded ? (
+        <div className="absolute bottom-3 left-0 right-0 flex flex-wrap items-center justify-center gap-2 px-3">
+          {soundBlocked || muted ? (
+            <button
+              type="button"
+              onClick={enableSound}
+              className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
+            >
+              Enable sound
+            </button>
+          ) : null}
+          {hasEnded ? (
+            <button
+              type="button"
+              onClick={replay}
+              className="rounded-lg border border-white/25 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-white/10"
+            >
+              Replay welcome
+            </button>
+          ) : null}
         </div>
       ) : null}
     </div>

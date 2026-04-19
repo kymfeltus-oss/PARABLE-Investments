@@ -32,8 +32,6 @@ function mediaDeviceFailureMessage(failure: MediaDeviceFailure | undefined): str
   }
 }
 
-const WELCOME_PLACEHOLDER_MS = 3200;
-
 type Props = {
   serverUrl: string;
   /** Without `investor-` prefix; e.g. `feb-deck` → room `investor-feb-deck`. */
@@ -237,14 +235,6 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     joinRef.current = join;
   }, [join]);
 
-  useEffect(() => {
-    if (!welcomeStage || token) return;
-    const id = window.setTimeout(() => {
-      void joinRef.current();
-    }, WELCOME_PLACEHOLDER_MS);
-    return () => window.clearTimeout(id);
-  }, [welcomeStage, token]);
-
   const leave = useCallback(() => {
     setToken(null);
     setUserChoices(null);
@@ -309,6 +299,10 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     setWelcomeStage(false);
     setError(null);
   };
+
+  const continueFromWelcome = useCallback(() => {
+    void joinRef.current();
+  }, []);
 
   if (!serverUrl) {
     return (
@@ -426,15 +420,28 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     return (
       <div className="parable-glass-panel mx-auto w-full max-w-lg space-y-6 px-6 py-10 text-center">
         <p className="font-serif text-2xl text-white md:text-3xl">Welcome to Parable</p>
-        <p className="text-sm text-white/50">A short welcome plays while we prepare your call.</p>
+        <p className="text-sm text-white/50">
+          Watch the welcome clip, then continue to set up your microphone and camera.
+        </p>
 
         <MeetWelcomeClip />
 
         {connecting ? (
-          <p className="text-sm text-[#00f2ff]/80">Connecting to the room…</p>
+          <p className="text-sm text-[#00f2ff]/80">Connecting…</p>
         ) : (
-          <p className="text-sm text-white/40">Joining in a moment…</p>
+          <p className="text-xs text-white/35">When you&apos;re ready, continue to device setup.</p>
         )}
+
+        {!error ? (
+          <button
+            type="button"
+            onClick={continueFromWelcome}
+            disabled={connecting}
+            className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40"
+          >
+            Continue to microphone &amp; camera
+          </button>
+        ) : null}
 
         {error ? (
           <div className="space-y-3">
