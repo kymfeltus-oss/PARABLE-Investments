@@ -52,7 +52,7 @@ export function LandingHeroBackgroundVideo() {
     <div className="fixed inset-0 z-0 overflow-hidden">
       <video
         ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-contain object-center bg-[#070708]"
         autoPlay
         muted={muted}
         loop

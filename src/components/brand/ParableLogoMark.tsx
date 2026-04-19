@@ -13,7 +13,9 @@ type Props = {
  */
 export function ParableLogoMark({ className = '', maxWidthClass = 'max-w-md' }: Props) {
   return (
-    <div className={`relative mx-auto w-full aspect-[3/1] ${maxWidthClass} ${className}`}>
+    <div
+      className={`relative mx-auto w-full min-w-0 max-w-full shrink aspect-[3/1] ${maxWidthClass} ${className}`}
+    >
       <Image
         src="/logo.svg"
         alt="Parable Protocol"

@@ -50,11 +50,11 @@ export default function InvestorLandingPage() {
         </header>
 
         {/* Logo only when reduced motion; sits below tagline with clear separation */}
-        <div className="flex flex-1 flex-col items-center justify-start pt-4 md:pt-6">
+        <div className="flex w-full min-w-0 flex-1 flex-col items-center justify-start px-1 pt-4 md:pt-6">
           {reduceMotion ? (
             <ParableLogoMark
               className="mt-8 md:mt-12"
-              maxWidthClass="max-w-[min(20rem,85vw)] md:max-w-md"
+              maxWidthClass="max-w-[min(20rem,calc(100vw-3.25rem))] md:max-w-md"
             />
           ) : null}
         </div>
