@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(INVESTOR_SITE_URL),
   title: "Parable Investments",
   description: "Confidential investment overview for Parable.",
+  icons: {
+    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
   alternates: { canonical: canonical.href },
   openGraph: {
     type: "website",
@@ -40,8 +45,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
       <head>
-        {/* Early hint for LCP: logo is used in client hero areas; preload avoids late discovery. */}
-        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        {/* LCP: logo is the main above-the-fold mark on investor flows; high priority + no lazy path. */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" fetchPriority="high" />
       </head>
       <body
         className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}

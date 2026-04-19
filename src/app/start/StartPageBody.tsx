@@ -64,7 +64,7 @@ export default function StartPageBody() {
         className="pointer-events-none fixed inset-0 z-[6] bg-[radial-gradient(circle_at_80%_90%,rgba(0,242,255,0.06),transparent_45%)]"
         aria-hidden
       />
-      <InvestorAtmosphere />
+      <InvestorAtmosphere sparkleCount={40} />
 
       <div className="relative z-20 mx-auto flex min-h-screen max-w-2xl flex-col px-5 pb-16 pt-10 sm:px-8 md:px-10 md:pb-20 md:pt-14">
         <motion.div

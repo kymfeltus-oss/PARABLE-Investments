@@ -29,14 +29,17 @@ type Sparkle = { id: number; left: string; top: string; delay: string };
 type Props = {
   /** When true, sits above a full-screen video (transparent HubBackground, higher z-index). */
   overVideo?: boolean;
+  /** Fewer sparkles = less style/layout work on form-heavy routes (meet, NDA, start). */
+  sparkleCount?: number;
 };
 
 /**
  * Same layered background as the main app investor flash: HubBackground, sparkles, cyan fog.
  */
-export function InvestorAtmosphere({ overVideo = false }: Props) {
+export function InvestorAtmosphere({ overVideo = false, sparkleCount = 96 }: Props) {
   const sparkles = useMemo<Sparkle[]>(() => {
-    return Array.from({ length: 96 }).map((_, i) => {
+    const n = Math.max(12, Math.min(96, Math.floor(sparkleCount)));
+    return Array.from({ length: n }).map((_, i) => {
       const r1 = prand(i + 1);
       const r2 = prand(i + 101);
       const r3 = prand(i + 1001);
@@ -47,7 +50,7 @@ export function InvestorAtmosphere({ overVideo = false }: Props) {
         delay: `${(r3 * 2.25).toFixed(4)}s`,
       };
     });
-  }, []);
+  }, [sparkleCount]);
 
   return (
     <>

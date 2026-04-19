@@ -15,7 +15,7 @@ type Props = {
 export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
-      <InvestorAtmosphere />
+      <InvestorAtmosphere sparkleCount={40} />
       <div className="relative z-20 mx-auto flex min-h-screen max-w-4xl flex-col items-center px-4 py-10 text-white md:py-14">
         <ParableLogoMark className="mb-8 w-full max-w-xs md:max-w-sm" />
 

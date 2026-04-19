@@ -102,7 +102,7 @@ function NdaForm() {
   if (alreadySigned) {
     return (
       <div className="relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
-        <InvestorAtmosphere />
+        <InvestorAtmosphere sparkleCount={40} />
         <div className="relative z-20 flex min-h-screen flex-col items-center justify-center gap-3 px-4 text-center text-sm text-white/50">
           <p>NDA already on file for this browser—continuing…</p>
         </div>
@@ -112,7 +112,7 @@ function NdaForm() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
-      <InvestorAtmosphere />
+      <InvestorAtmosphere sparkleCount={40} />
       <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:py-14 md:pb-28">
         <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
           ← Back to landing
