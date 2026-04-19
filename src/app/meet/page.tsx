@@ -8,7 +8,10 @@ type PageProps = {
 
 export default async function MeetPage({ searchParams }: PageProps) {
   const sp = await searchParams;
-  const serverUrl = normalizeLiveKitServerUrl(process.env.NEXT_PUBLIC_LIVEKIT_URL);
+  /** `NEXT_PUBLIC_*` or server-only `LIVEKIT_URL` (e.g. Vercel) — URL is passed as a prop, not inlined in client bundles. */
+  const serverUrl = normalizeLiveKitServerUrl(
+    process.env.NEXT_PUBLIC_LIVEKIT_URL ?? process.env.LIVEKIT_URL,
+  );
 
   const join = typeof sp.join === 'string' ? sp.join : '';
   const roomParam = typeof sp.room === 'string' ? sp.room : '';

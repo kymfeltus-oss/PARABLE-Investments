@@ -19,7 +19,7 @@ Connect the repo to **Vercel** (or any Next.js host). **Canonical URL:** `https:
 
 Set in the host’s environment:
 
-- `NEXT_PUBLIC_LIVEKIT_URL` — WebSocket URL, e.g. `wss://your-project.livekit.cloud`
+- `NEXT_PUBLIC_LIVEKIT_URL` or `LIVEKIT_URL` — WebSocket URL, e.g. `wss://your-project.livekit.cloud` (either works; URL is read on the server and passed into `/meet`)
 - `LIVEKIT_API_KEY` — server API key (secret)
 - `LIVEKIT_API_SECRET` — server API secret
 
