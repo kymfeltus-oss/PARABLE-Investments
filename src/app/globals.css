@@ -91,23 +91,30 @@ body {
   }
 }
 
+/* Rajdhani via layout `--font-streaming` — one line, centered, streaming/gaming dashboard feel */
 .parable-landing-tagline {
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: clamp(0.26em, 1.4vw, 0.42em);
+  font-family: var(--font-streaming), "Rajdhani", system-ui, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: clamp(0.06em, 0.55vw, 0.22em);
   text-transform: uppercase;
   color: #00f2ff;
   text-shadow:
     0 0 12px #00f2ff,
     0 0 28px rgba(0, 242, 255, 0.35);
-  font-size: clamp(0.95rem, 6vw, 1.85rem);
-  line-height: 1.25;
+  font-size: clamp(11px, 3.35vw, 2rem);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 768px) {
   .parable-landing-tagline {
-    font-size: clamp(1.15rem, 2.5vw, 2rem);
-    letter-spacing: 0.4em;
+    font-size: clamp(1.05rem, 2.35vw, 2.05rem);
+    letter-spacing: clamp(0.12em, 0.9vw, 0.32em);
   }
 }
 

@@ -42,9 +42,11 @@ export default function InvestorLandingPage() {
         <header className="shrink-0 pt-6 text-center md:pt-8">
           <p className="parable-landing-eyebrow mb-5 md:mb-7">Confidential · Investor introduction</p>
 
-          <p className="parable-landing-tagline mb-2 max-w-[min(100%,42rem)] px-1">
-            Streaming · Creating · Believing
-          </p>
+          <div className="flex w-full justify-center px-2">
+            <p className="parable-landing-tagline mb-2">
+              Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
+            </p>
+          </div>
         </header>
 
         {/* Logo only when reduced motion; sits below tagline with clear separation */}

@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
+import { Inter, Rajdhani } from "next/font/google";
 import "./globals.css";
 import { INVESTOR_SITE_URL } from "@/lib/investor-site";
 
 const inter = Inter({ subsets: ["latin"] });
+
+/** Condensed tech / streaming UI — common gaming & broadcast dashboard look */
+const streaming = Rajdhani({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-streaming",
+  display: "swap",
+});
 
 const canonical = new URL("/", INVESTOR_SITE_URL);
 
@@ -26,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.className} text-white antialiased`}
+        className={`${inter.className} ${streaming.variable} text-white antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         {children}
