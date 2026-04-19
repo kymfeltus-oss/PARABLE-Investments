@@ -2,13 +2,11 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import {
-  InvestorLandingInlineLogoVideo,
-  LandingHeroBackgroundVideo,
-} from '@/components/brand/ParableLogoVideo';
+import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
+import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -18,6 +16,7 @@ function subscribeNop() {
 
 export default function InvestorLandingPage() {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const continueHref = useSyncExternalStore(
     subscribeNop,
     () => (getInvestorNdaAccepted() ? '/start' : '/nda?next=/start'),
@@ -46,9 +45,19 @@ export default function InvestorLandingPage() {
           </p>
         </header>
 
-        {/* PARABLE MP4 (or static mark) — inline so it scales to fit; tagline is strictly below */}
+        {/* Logo zone when reduced motion only; hero MP4 is fullscreen behind content */}
         <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-0 pb-2 pt-0 md:pb-3 md:pt-0">
-          <InvestorLandingInlineLogoVideo />
+          {reduceMotion ? (
+            <ParableLogoMark
+              className="mt-0"
+              maxWidthClass="max-w-[min(20rem,calc(100vw-3.25rem))] md:max-w-md"
+            />
+          ) : (
+            <div
+              className="min-h-[min(22vh,12rem)] w-full md:min-h-[min(26vh,14rem)]"
+              aria-hidden
+            />
+          )}
         </div>
 
         <div className="flex w-full shrink-0 justify-center px-2 pb-2 pt-3 md:pb-3 md:pt-4">
