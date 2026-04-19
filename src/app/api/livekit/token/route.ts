@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
     canPublish: true,
     canSubscribe: true,
     canPublishData: true,
+    /** Lets clients update display name / metadata from the meeting (e.g. profile thumbnail in settings). */
+    canUpdateOwnMetadata: true,
   });
 
   const jwt = await token.toJwt();

@@ -1,4 +1,5 @@
 import { NdaGate } from '@/components/investor/NdaGate';
+import { normalizeLiveKitServerUrl } from '@/lib/livekit-server-url';
 import MeetClient from './MeetClient';
 
 type PageProps = {
@@ -7,7 +8,7 @@ type PageProps = {
 
 export default async function MeetPage({ searchParams }: PageProps) {
   const sp = await searchParams;
-  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL ?? '';
+  const serverUrl = normalizeLiveKitServerUrl(process.env.NEXT_PUBLIC_LIVEKIT_URL);
 
   const join = typeof sp.join === 'string' ? sp.join : '';
   const roomParam = typeof sp.room === 'string' ? sp.room : '';

@@ -22,7 +22,8 @@ export function BookMeetingWizard({ embedSrc }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  /** Resend outcome: only `sent` means the inbox should have received Parable's confirmation. */
+  const [emailStatus, setEmailStatus] = useState<'sent' | 'unconfigured' | 'failed' | null>(null);
 
   const canRegister =
     name.trim().length >= 2 && isValidInvestorEmail(email.trim()) && ack && !submitting;
@@ -41,13 +42,19 @@ export function BookMeetingWizard({ embedSrc }: Props) {
           acknowledged: true,
         }),
       });
-      const data = (await res.json()) as { error?: string; ok?: boolean; emailSent?: boolean };
+      const data = (await res.json()) as {
+        error?: string;
+        ok?: boolean;
+        emailSent?: boolean;
+        emailStatus?: 'sent' | 'unconfigured' | 'failed';
+      };
       if (!res.ok || !data.ok) {
         setError(data.error || 'Something went wrong. Try again.');
         setSubmitting(false);
         return;
       }
-      setEmailSent(Boolean(data.emailSent));
+      const status = data.emailStatus ?? (data.emailSent ? 'sent' : 'unconfigured');
+      setEmailStatus(status);
       setRegistered(true);
     } catch {
       setError('Network error. Try again.');
@@ -140,21 +147,33 @@ export function BookMeetingWizard({ embedSrc }: Props) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-10">
             <div className="rounded-2xl border border-[#00f2ff]/25 bg-[#00f2ff]/[0.06] px-5 py-6 text-center md:px-8">
               <p className="font-serif text-lg text-white md:text-xl">Check your email</p>
-              {emailSent ? (
+              {emailStatus === 'sent' ? (
                 <p className="mt-3 text-sm text-white/55">
                   We sent a confirmation message. Please check your inbox (and spam) for next steps.
                 </p>
-              ) : (
-                <p className="mt-3 text-sm leading-relaxed text-white/55">
-                  Your registration was saved. You might not get an automated confirmation email yet—check spam, use
-                  the calendar below if it&apos;s available, or reach us at{' '}
+              ) : emailStatus === 'failed' ? (
+                <p className="mt-3 text-sm leading-relaxed text-amber-100/90">
+                  Your registration was saved, but our system could not send the confirmation email just now. Please use
+                  the calendar below if it appears, or email{' '}
                   <a
                     href={`mailto:${SUPPORT_EMAIL}`}
                     className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
                   >
                     {SUPPORT_EMAIL}
-                  </a>
-                  .
+                  </a>{' '}
+                  so we can confirm your slot and resend the meeting link.
+                </p>
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed text-white/55">
+                  Your registration was saved. An automated confirmation email was not sent from this site (mail may not
+                  be configured yet). Use the calendar below when it appears, or contact{' '}
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}`}
+                    className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
+                  >
+                    {SUPPORT_EMAIL}
+                  </a>{' '}
+                  so we can confirm and send your meeting details.
                 </p>
               )}
             </div>

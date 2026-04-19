@@ -87,7 +87,9 @@ export async function POST(req: NextRequest) {
     </div>
   `;
 
-  let emailSent = false;
+  /** `sent` = user confirmation delivered via Resend; `unconfigured` = missing env; `failed` = Resend threw. */
+  type EmailStatus = 'sent' | 'unconfigured' | 'failed';
+  let emailStatus: EmailStatus = 'unconfigured';
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL?.trim();
 
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
         subject: 'Parable — Meeting confirmation, video link & NDA scheduling record',
         html,
       });
-      emailSent = true;
+      emailStatus = 'sent';
       try {
         await resend.emails.send({
           from,
@@ -112,13 +114,21 @@ export async function POST(req: NextRequest) {
         console.error('[meeting/register] team notify', e);
       }
     } catch (e) {
-      console.error('[meeting/register] Resend', e);
+      emailStatus = 'failed';
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error('[meeting/register] Resend user confirmation failed:', msg, e);
     }
+  } else {
+    console.warn(
+      '[meeting/register] No confirmation email: set RESEND_API_KEY and RESEND_FROM_EMAIL on the server (e.g. Vercel env).'
+    );
   }
 
   return NextResponse.json({
     ok: true,
-    emailSent,
+    emailStatus,
+    /** @deprecated use emailStatus === 'sent' */
+    emailSent: emailStatus === 'sent',
     meetUrl,
     roomLabel,
   });

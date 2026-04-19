@@ -188,6 +188,42 @@ body {
   border-radius: 0.5rem;
 }
 
+/* Chat + settings: keep panels readable inside the meeting shell */
+.investor-meeting-shell .lk-video-conference-inner {
+  min-height: 0;
+}
+
+.investor-meeting-shell .lk-chat {
+  min-height: 0;
+  max-height: 100%;
+}
+
+@media (min-width: 900px) {
+  .investor-meeting-shell .lk-video-conference-inner {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .investor-meeting-shell .lk-chat {
+    width: min(360px, 34vw);
+    flex-shrink: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+.investor-meeting-shell .lk-settings-menu-modal {
+  z-index: 60;
+  min-width: unset;
+  min-height: unset;
+  max-width: calc(100vw - 1rem);
+  max-height: calc(100vh - 2rem);
+  align-items: stretch;
+}
+
+.parable-meet-settings {
+  color: #e8e8e8;
+}
+
 @keyframes investor-welcome-progress {
   from {
     width: 0%;

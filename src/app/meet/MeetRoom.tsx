@@ -2,14 +2,32 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ConnectionState,
   LiveKitRoom,
   PreJoin,
   RoomAudioRenderer,
+  StartAudio,
   VideoConference,
   type LocalUserChoices,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
+import { MediaDeviceFailure } from 'livekit-client';
+import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettings';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+
+function mediaDeviceFailureMessage(failure: MediaDeviceFailure | undefined): string {
+  switch (failure) {
+    case MediaDeviceFailure.PermissionDenied:
+      return 'Camera or microphone permission was denied. Allow access for this site in your browser settings, then reload.';
+    case MediaDeviceFailure.NotFound:
+      return 'No camera or microphone was found. Connect a device and try again.';
+    case MediaDeviceFailure.DeviceInUse:
+      return 'Another app is using your camera or microphone. Close it and try again.';
+    case MediaDeviceFailure.Other:
+    default:
+      return 'Could not access camera or microphone. Check browser permissions and try again.';
+  }
+}
 
 const WELCOME_PLACEHOLDER_MS = 3200;
 
@@ -37,6 +55,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   const [hostAccess, setHostAccess] = useState(false);
   const [participantLabel, setParticipantLabel] = useState('');
   const [userChoices, setUserChoices] = useState<LocalUserChoices | null>(null);
+  const [roomError, setRoomError] = useState<string | null>(null);
 
   const fullRoomName = useMemo(() => `investor-${roomSlug.replace(/^investor-/, '')}`, [roomSlug]);
 
@@ -137,6 +156,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     setUserChoices(null);
     setParticipantLabel('');
     setError(null);
+    setRoomError(null);
     setWelcomeStage(false);
   }, []);
 
@@ -243,10 +263,16 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
 
     return (
       <div className="investor-meeting-shell parable-livekit-root fixed inset-x-0 bottom-0 top-0 z-30 mx-auto flex w-full max-w-[100vw] flex-col border-0 border-white/10 shadow-2xl md:relative md:inset-auto md:max-w-6xl md:rounded-xl md:border">
-        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.08] bg-[#2d2d30] px-4 py-3">
+        <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[#2d2d30] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="truncate text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Parable Meeting</p>
             <p className="truncate font-mono text-sm text-white/90">{fullRoomName}</p>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-white/45">
+              <ConnectionState />
+            </div>
+            <p className="mt-1 hidden text-[10px] text-white/35 sm:block">
+              Bottom bar: microphone, camera, share screen, chat, settings (background & profile).
+            </p>
           </div>
           <button
             type="button"
@@ -256,6 +282,11 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             Leave
           </button>
         </header>
+        {roomError ? (
+          <div className="shrink-0 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-center text-[11px] text-amber-100">
+            {roomError}
+          </div>
+        ) : null}
         <div className="investor-meeting-stage min-h-0 flex-1">
           <LiveKitRoom
             key={token}
@@ -264,10 +295,17 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             connect
             audio={audioOpts}
             video={videoOpts}
+            onConnected={() => setRoomError(null)}
+            onError={(err) => {
+              const msg = err instanceof Error ? err.message : String(err);
+              setRoomError(msg);
+            }}
+            onMediaDeviceFailure={(failure) => setRoomError(mediaDeviceFailureMessage(failure))}
             onDisconnected={leave}
             data-lk-theme="default"
           >
-            <VideoConference />
+            <VideoConference SettingsComponent={MeetParticipantSettings} />
+            <StartAudio label="Tap to enable meeting audio" />
             <RoomAudioRenderer />
           </LiveKitRoom>
         </div>
