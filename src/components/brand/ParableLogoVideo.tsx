@@ -15,11 +15,34 @@ export const PARABLE_LOGO_VIDEO_SRC =
   '/videos/' + encodeURIComponent('PARABLE Logo.mp4');
 
 /**
- * Full-viewport looping background for the investor landing (under sparkles + copy).
- * Starts muted so autoplay succeeds; unmutes on first user gesture (tap/click/key) — no extra UI.
- * Browsers do not allow unmuted autoplay without a gesture.
+ * Fixed backdrop only (no video). Logo MP4 renders inline on the landing page so it scales
+ * with the layout and sits above this layer + sparkles.
  */
 export function LandingHeroBackgroundVideo() {
+  return (
+    <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden>
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/[0.12] to-black/45"
+        aria-hidden
+      />
+    </div>
+  );
+}
+
+type InlineLogoProps = {
+  className?: string;
+  /** Caps video height so the full word fits on small viewports */
+  maxHeightClass?: string;
+};
+
+/**
+ * PARABLE logo MP4 in document flow (under eyebrow, tagline goes below). Full width,
+ * object-contain so the entire word stays visible on phones.
+ */
+export function InvestorLandingInlineLogoVideo({
+  className = '',
+  maxHeightClass = 'max-h-[min(42vmin,52vw,22rem)] md:max-h-[min(48vmin,28rem)]',
+}: InlineLogoProps) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
@@ -45,27 +68,30 @@ export function LandingHeroBackgroundVideo() {
   }, []);
 
   if (reduceMotion) {
-    return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
+    return (
+      <ParableLogoMark
+        className={className}
+        maxWidthClass="w-full max-w-[min(22rem,calc(100vw-2rem))] md:max-w-lg"
+      />
+    );
   }
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden">
+    <div
+      className={`relative mx-auto w-full max-w-[min(100%,36rem)] min-w-0 shrink-0 ${className}`}
+    >
       <video
         ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className={`mx-auto h-auto w-full ${maxHeightClass} object-contain object-center mix-blend-lighten drop-shadow-[0_0_24px_rgba(0,242,255,0.35)]`}
         autoPlay
         muted={muted}
         loop
         playsInline
         preload="auto"
-        aria-label="PARABLE background"
+        aria-label="PARABLE logo"
       >
         <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
       </video>
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
-        aria-hidden
-      />
     </div>
   );
 }

@@ -2,11 +2,13 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
-import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import {
+  InvestorLandingInlineLogoVideo,
+  LandingHeroBackgroundVideo,
+} from '@/components/brand/ParableLogoVideo';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -16,7 +18,6 @@ function subscribeNop() {
 
 export default function InvestorLandingPage() {
   const router = useRouter();
-  const reduceMotion = useReducedMotion();
   const continueHref = useSyncExternalStore(
     subscribeNop,
     () => (getInvestorNdaAccepted() ? '/start' : '/nda?next=/start'),
@@ -45,22 +46,12 @@ export default function InvestorLandingPage() {
           </p>
         </header>
 
-        {/* Logo zone: PARABLE (video fills viewport behind); static mark when reduced motion — same order as desktop */}
-        <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-1 py-3 md:min-h-[min(28vh,18rem)] md:py-6">
-          {reduceMotion ? (
-            <ParableLogoMark
-              className="mt-0"
-              maxWidthClass="max-w-[min(20rem,calc(100vw-3.25rem))] md:max-w-md"
-            />
-          ) : (
-            <div
-              className="min-h-[min(22vh,12rem)] w-full md:min-h-[min(26vh,14rem)]"
-              aria-hidden
-            />
-          )}
+        {/* PARABLE MP4 (or static mark) — inline so it scales to fit; tagline is strictly below */}
+        <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-0 py-2 md:py-4">
+          <InvestorLandingInlineLogoVideo />
         </div>
 
-        <div className="flex w-full shrink-0 justify-center px-2 pb-1 pt-1 md:pb-2 md:pt-2">
+        <div className="flex w-full shrink-0 justify-center px-2 pb-2 pt-3 md:pb-3 md:pt-4">
           <p className="parable-landing-tagline">
             Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
           </p>
