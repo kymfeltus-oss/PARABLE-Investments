@@ -38,8 +38,8 @@ export default function InvestorLandingPage() {
       <LandingHeroBackgroundVideo />
       <InvestorAtmosphere overVideo />
 
-      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2.75rem,env(safe-area-inset-top))]">
-        <header className="shrink-0 pt-11 text-center">
+      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))]">
+        <header className="shrink-0 pt-14 text-center">
           <p className="parable-landing-eyebrow mb-8">
             Confidential · Investor introduction
           </p>
