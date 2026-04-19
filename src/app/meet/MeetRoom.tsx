@@ -466,43 +466,54 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
 
   if (welcomeStage) {
     return (
-      <div className="parable-glass-panel mx-auto w-full max-w-lg space-y-6 px-6 py-10 text-center">
-        <p className="font-serif text-2xl text-white md:text-3xl">Welcome to Parable</p>
-        <p className="text-sm text-white/50">
-          Watch the welcome clip, then continue to set up your microphone and camera.
-        </p>
-
-        <MeetWelcomeClip />
-
-        {connecting ? (
-          <p className="text-sm text-[#00f2ff]/80">Connecting…</p>
-        ) : (
-          <p className="text-xs text-white/35">When you&apos;re ready, continue to device setup.</p>
-        )}
-
-        {!error ? (
-          <button
-            type="button"
-            onClick={continueFromWelcome}
-            disabled={connecting}
-            className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40"
-          >
-            Continue to microphone &amp; camera
-          </button>
-        ) : null}
-
-        {error ? (
-          <div className="space-y-3">
-            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-200">{error}</p>
-            <button
-              type="button"
-              onClick={backToLobby}
-              className="text-xs font-semibold uppercase tracking-wider text-[#00f2ff] hover:underline"
-            >
-              ← Edit details
-            </button>
+      <div className="fixed inset-0 z-[200] flex min-h-[100dvh] min-h-screen flex-col bg-black">
+        <div className="absolute inset-0">
+          <MeetWelcomeClip fullscreen />
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/55"
+          aria-hidden
+        />
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] text-center">
+          <div className="space-y-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            <p className="font-serif text-2xl text-white md:text-3xl">Welcome to Parable</p>
+            <p className="text-sm text-white/80">
+              Watch the welcome clip, then continue to set up your microphone and camera.
+            </p>
           </div>
-        ) : null}
+
+          <div className="flex w-full max-w-lg flex-col gap-4 self-center">
+            {connecting ? (
+              <p className="text-sm text-[#00f2ff]/80">Connecting…</p>
+            ) : (
+              <p className="text-xs text-white/50">When you&apos;re ready, continue to device setup.</p>
+            )}
+
+            {!error ? (
+              <button
+                type="button"
+                onClick={continueFromWelcome}
+                disabled={connecting}
+                className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40"
+              >
+                Continue to microphone &amp; camera
+              </button>
+            ) : null}
+
+            {error ? (
+              <div className="space-y-3 text-left">
+                <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-200">{error}</p>
+                <button
+                  type="button"
+                  onClick={backToLobby}
+                  className="text-xs font-semibold uppercase tracking-wider text-[#00f2ff] hover:underline"
+                >
+                  ← Edit details
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
       </div>
     );
   }
