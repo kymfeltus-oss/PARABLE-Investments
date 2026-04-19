@@ -82,7 +82,7 @@ body {
   }
 }
 
-/* Landing `/` — readable at arm’s length on phones; scales smoothly to desktop */
+/* Landing `/` — one fluid scale for all viewports (same rules as desktop/laptop) */
 .parable-landing-eyebrow {
   font-weight: 900;
   text-transform: uppercase;

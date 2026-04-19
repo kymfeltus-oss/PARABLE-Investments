@@ -38,9 +38,9 @@ export default function InvestorLandingPage() {
       <LandingHeroBackgroundVideo />
       <InvestorAtmosphere overVideo />
 
-      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] md:px-8">
-        <header className="shrink-0 pt-6 text-center md:pt-10">
-          <p className="parable-landing-eyebrow mb-7 md:mb-9">
+      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+        <header className="shrink-0 pt-8 text-center">
+          <p className="parable-landing-eyebrow mb-8">
             Confidential · Investor introduction
           </p>
           {/* Kept high on the page so it does not sit over the PARABLE hero in the video */}
@@ -52,40 +52,40 @@ export default function InvestorLandingPage() {
         </header>
 
         {/* Middle: optional static logo; otherwise open space so hero PARABLE video stays unobstructed */}
-        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center px-0 pb-2 pt-3 md:pb-3 md:pt-5">
+        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center px-0 pb-3 pt-4">
           {reduceMotion ? (
             <ParableLogoMark
               className="mt-0"
-              maxWidthClass="max-w-[min(20rem,calc(100vw-3.25rem))] md:max-w-md"
+              maxWidthClass="max-w-[min(28rem,calc(100vw-2rem))]"
             />
           ) : null}
         </div>
 
-        <footer className="shrink-0 flex flex-col items-center gap-10 pb-6 md:gap-10 md:pb-10">
+        <footer className="shrink-0 flex flex-col items-center gap-10 pb-10">
           <motion.div
             className="flex w-full max-w-sm flex-col items-center"
             animate={{ opacity: [0.35, 1, 0.35] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <p className="mb-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/40 md:text-[10px] md:tracking-[0.35em]">
+            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.35em] text-white/40">
               Tap below or press Enter to continue
             </p>
             <Link
               href={continueHref}
               suppressHydrationWarning
-              className="pointer-events-auto inline-block rounded-xl border border-[#00f2ff]/30 bg-black/40 px-10 py-4 shadow-[0_0_20px_rgba(0,242,255,0.1)] backdrop-blur-md transition hover:border-[#00f2ff]/50 hover:bg-black/55 md:px-6 md:py-2.5"
+              className="pointer-events-auto inline-block rounded-xl border border-[#00f2ff]/30 bg-black/40 px-6 py-2.5 shadow-[0_0_20px_rgba(0,242,255,0.1)] backdrop-blur-md transition hover:border-[#00f2ff]/50 hover:bg-black/55"
             >
-              <span className="text-base font-black tracking-[0.35em] text-[#00f2ff] md:text-sm md:tracking-[0.4em]">
+              <span className="text-sm font-black tracking-[0.4em] text-[#00f2ff]">
                 CONTINUE
               </span>
             </Link>
           </motion.div>
 
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#00f2ff]/45 to-transparent md:w-32" />
+          <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#00f2ff]/45 to-transparent" />
 
           <a
             href={INVESTOR_SITE_URL}
-            className="text-[10px] font-semibold tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff] md:text-[11px]"
+            className="text-[11px] font-semibold tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
           >
             parableinvestments.com
           </a>
