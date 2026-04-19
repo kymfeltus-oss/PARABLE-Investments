@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Rajdhani } from "next/font/google";
 import "./globals.css";
@@ -30,11 +30,19 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#070708",
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <body
-        className={`${inter.className} ${streaming.variable} text-white antialiased`}
+        className={`${inter.className} ${streaming.variable} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         {children}

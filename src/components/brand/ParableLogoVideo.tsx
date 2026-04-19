@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 
@@ -16,19 +16,32 @@ export const PARABLE_LOGO_VIDEO_SRC =
 
 /**
  * Full-viewport looping background for the investor landing (under sparkles + copy).
- * Starts muted for autoplay; user taps "Turn sound on" to unmute (browser policy).
+ * Starts muted so autoplay succeeds; unmutes on first user gesture (tap/click/key) — no extra UI.
+ * Browsers do not allow unmuted autoplay without a gesture.
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [soundOn, setSoundOn] = useState(false);
+  const [muted, setMuted] = useState(true);
 
-  const enableSound = useCallback(() => {
-    setSoundOn(true);
+  useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    el.muted = false;
-    void el.play().catch(() => {});
+
+    const unmute = () => {
+      setMuted(false);
+      el.muted = false;
+      void el.play().catch(() => {});
+    };
+
+    const opts = { once: true, passive: true } as const;
+    window.addEventListener('pointerdown', unmute, opts);
+    window.addEventListener('keydown', unmute, opts);
+
+    return () => {
+      window.removeEventListener('pointerdown', unmute);
+      window.removeEventListener('keydown', unmute);
+    };
   }, []);
 
   if (reduceMotion) {
@@ -41,7 +54,7 @@ export function LandingHeroBackgroundVideo() {
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
-        muted={!soundOn}
+        muted={muted}
         loop
         playsInline
         preload="auto"
@@ -53,15 +66,6 @@ export function LandingHeroBackgroundVideo() {
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
         aria-hidden
       />
-      {!soundOn ? (
-        <button
-          type="button"
-          onClick={enableSound}
-          className="fixed bottom-[max(6.5rem,env(safe-area-inset-bottom))] left-4 z-[25] rounded-full border border-[#00f2ff]/35 bg-black/50 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] backdrop-blur-md transition hover:border-[#00f2ff]/55 hover:bg-black/65 sm:left-6 sm:px-5 sm:text-[11px] md:bottom-40"
-        >
-          Turn sound on
-        </button>
-      ) : null}
     </div>
   );
 }
