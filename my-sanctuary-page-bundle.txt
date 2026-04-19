@@ -1,0 +1,2233 @@
+﻿================================================================================
+PARABLE — My Sanctuary page: source bundle for external AI / review
+Repo: Next.js App Router · Route: /my-sanctuary
+================================================================================
+
+CONTENTS OF THIS FILE (full source)
+- src/app/my-sanctuary/page.tsx
+- src/components/sanctuary/SanctuaryPostsFeed.tsx
+- src/lib/sanctuary-posts-storage.ts
+- src/components/sanctuary/SanctuaryModeToggle.tsx
+- src/components/sanctuary/SanctuaryProfileHero.tsx
+- src/components/SparkleOverlay.tsx
+- src/lib/testimony-storage.ts
+- src/lib/sanctuary-following.ts
+- src/hooks/useRegisteredProfileSuggestions.ts
+- src/hooks/useSanctuaryFollowGraph.ts (full)
+
+ALSO IMPORTED BY PAGE — open these paths in the repo for full source if needed:
+- src/components/sanctuary/SanctuaryFollowingPanel.tsx
+- src/components/sanctuary/SanctuaryTestimonyWall.tsx
+- src/components/sanctuary/SanctuaryLiveStatusCard.tsx
+- src/components/sanctuary/SanctuaryNetworkSection.tsx
+- src/components/sanctuary/SanctuaryGameLobbyRail.tsx
+- src/lib/sanctuary-game-lobby-mock.ts (GAME_LOBBY_CARDS only — rest is mock cards)
+- src/contexts/LivenessSimulationContext.tsx (useLivenessSimulation)
+- src/lib/parableMockData.ts (PARABLE_PROFILE_DEFAULTS)
+- src/providers/AuthProvider.tsx (useAuth)
+- src/lib/profile-suggestions.ts, src/lib/avatar-display.ts
+
+================================================================================
+
+
+================================================================================
+FILE: src/app/my-sanctuary/page.tsx
+================================================================================
+
+
+"use client";
+
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Activity, Radio } from "lucide-react";
+import SparkleOverlay from "@/components/SparkleOverlay";
+import { useAuth } from "@/hooks/useAuth";
+import { loadAllTestimonies, saveTestimonies, TESTIMONY_STORAGE_KEY } from "@/lib/testimony-storage";
+import { RECOMMENDED_SANCTUARY_CHANNELS, type SanctuaryChannel } from "@/lib/sanctuary-following";
+import { SanctuaryFollowingPanel } from "@/components/sanctuary/SanctuaryFollowingPanel";
+import { useRegisteredProfileSuggestions } from "@/hooks/useRegisteredProfileSuggestions";
+import { useSanctuaryFollowGraph } from "@/hooks/useSanctuaryFollowGraph";
+import SanctuaryTestimonyWall from "@/components/sanctuary/SanctuaryTestimonyWall";
+import SanctuaryLiveStatusCard from "@/components/sanctuary/SanctuaryLiveStatusCard";
+import SanctuaryProfileHero from "@/components/sanctuary/SanctuaryProfileHero";
+import SanctuaryModeToggle, { type SanctuaryViewMode } from "@/components/sanctuary/SanctuaryModeToggle";
+import SanctuaryPostsFeed from "@/components/sanctuary/SanctuaryPostsFeed";
+import SanctuaryNetworkSection from "@/components/sanctuary/SanctuaryNetworkSection";
+import { PARABLE_PROFILE_DEFAULTS } from "@/lib/parableMockData";
+import { GAME_LOBBY_CARDS } from "@/lib/sanctuary-game-lobby-mock";
+import { useLivenessSimulation } from "@/contexts/LivenessSimulationContext";
+
+const SanctuaryGameLobbyRail = dynamic(
+  () => import("@/components/sanctuary/SanctuaryGameLobbyRail"),
+  {
+    loading: () => (
+      <div className="h-56 animate-pulse rounded-[28px] border border-[#00f2ff]/20 bg-black/40" />
+    ),
+  }
+);
+
+type TestimonyPost = {
+  id: number;
+  user: string;
+  time: string;
+  tag: string;
+  text: string;
+  mediaUrl?: string;
+  mediaType?: "image" | "video" | null;
+  mediaName?: string;
+  createdAt: number;
+  stats: {
+    amens: number;
+    comments: number;
+    shares: number;
+    praiseBreaks: number;
+    claps: number;
+    dances: number;
+    shouts: number;
+  };
+  reactions?: Record<string, number>;
+};
+
+const REACTION_EMOJIS = ["â¤ï¸", "ðŸ”¥", "ðŸ‘"] as const;
+
+const IDENTITY_TITLE = "Kym The CEO";
+
+const BROWSE_TAGS = [
+  "Creative",
+  "Stories",
+  "Live",
+  "Youth",
+  "Community",
+  "Gaming",
+  "Audio",
+  "Culture",
+];
+
+function formatRelativeTime(createdAt: number) {
+  const diffMs = Date.now() - createdAt;
+  const minutes = Math.max(0, Math.floor(diffMs / 60000));
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
+function loadMyTestimonies(username?: string | null) {
+  try {
+    const raw = window.localStorage.getItem(TESTIMONY_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as TestimonyPost[];
+    if (!Array.isArray(parsed)) return [];
+    const targetNames = [username]
+      .filter(Boolean)
+      .map((value) => String(value).trim().toUpperCase());
+    return parsed
+      .filter((post) => targetNames.includes(String(post.user).trim().toUpperCase()))
+      .map((post) => {
+        if (
+          post.mediaUrl &&
+          !post.mediaUrl.startsWith("data:") &&
+          !post.mediaUrl.startsWith("http") &&
+          !post.mediaUrl.startsWith("/")
+        ) {
+          return { ...post, mediaUrl: undefined, mediaType: null, mediaName: undefined };
+        }
+        return post;
+      });
+  } catch {
+    return [];
+  }
+}
+
+export default function MySanctuaryPage() {
+  const router = useRouter();
+  const { userProfile, avatarUrl, loading, authUserId } = useAuth();
+  const { registeredChannels, registeredLoading, registeredError } = useRegisteredProfileSuggestions();
+  const {
+    followingIds,
+    updateFollowingIds,
+    customFollowers,
+    updateCustomFollowers,
+    allFollowers,
+  } = useSanctuaryFollowGraph(registeredChannels);
+  const { followerSimBonus } = useLivenessSimulation();
+
+  const [testimonies, setTestimonies] = useState<TestimonyPost[]>([]);
+  const [viewMode, setViewMode] = useState<SanctuaryViewMode>("social");
+
+  useEffect(() => {
+    if (loading) return;
+    const refresh = () => {
+      const username = userProfile?.username || null;
+      setTestimonies(loadMyTestimonies(username));
+    };
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("parable:testimonies-updated", refresh as EventListener);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("parable:testimonies-updated", refresh as EventListener);
+    };
+  }, [loading, userProfile?.username]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!userProfile) router.replace("/login?next=/my-sanctuary");
+  }, [loading, userProfile, router]);
+
+  const followedAccounts = allFollowers.filter((f) => followingIds.includes(f.id));
+  const liveFollowed = followedAccounts.filter((f) => f.isLive);
+
+  const handleToggleFollow = (id: string) => {
+    updateFollowingIds((current) =>
+      current.includes(id) ? current.filter((fId) => fId !== id) : [...current, id]
+    );
+  };
+
+  const handleAddCustom = (name: string, handle: string) => {
+    const id = `custom-${Date.now()}`;
+    const avatarLabel = name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+    const follower: SanctuaryChannel = {
+      id,
+      name,
+      handle,
+      avatarLabel,
+      isLive: false,
+      viewers: "0",
+    };
+    updateCustomFollowers([...customFollowers, follower]);
+    updateFollowingIds((current) => [...current, id]);
+  };
+
+  const handleRemoveCustomChannel = (id: string) => {
+    if (!id.startsWith("custom-")) return;
+    updateCustomFollowers(customFollowers.filter((c) => c.id !== id));
+    updateFollowingIds((current) => current.filter((x) => x !== id));
+  };
+
+  const handleTestimonyReaction = (postId: number, emoji: string) => {
+    const all = loadAllTestimonies();
+    const updated = all.map((p) => {
+      if (p.id !== postId) return p;
+      const reactions = { ...(p.reactions || {}) };
+      reactions[emoji] = (reactions[emoji] || 0) + 1;
+      return { ...p, reactions };
+    });
+    if (saveTestimonies(updated)) {
+      setTestimonies(loadMyTestimonies(userProfile?.username || null));
+    }
+  };
+
+  if (loading || !userProfile) {
+    return <div className="min-h-screen bg-[#010101]" />;
+  }
+
+  /** Prefer Supabase auth id so storage matches the session even if profile.id is missing or out of sync. */
+  const userId =
+    authUserId != null && String(authUserId).trim() !== ""
+      ? String(authUserId)
+      : userProfile?.id != null && String(userProfile.id).trim() !== ""
+        ? String(userProfile.id)
+        : "";
+
+  const followersStat =
+    Math.max(PARABLE_PROFILE_DEFAULTS.followers, allFollowers.length) + followerSimBonus;
+  const followingStat = Math.max(PARABLE_PROFILE_DEFAULTS.following, followingIds.length);
+  const studioWinsStat = Math.max(28, testimonies.length * 2 + 16);
+  const handleLabel = userProfile.username
+    ? `@${userProfile.username}`
+    : userProfile.full_name
+      ? `@${String(userProfile.full_name).replace(/\s+/g, "").toLowerCase()}`
+      : "@creator";
+
+  return (
+    <div className="min-h-[100dvh] bg-[#010101] font-sans text-white relative overflow-x-hidden pb-parable-bottom">
+      <SparkleOverlay />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,242,255,0.1)_0%,transparent_55%)]" />
+
+      <main className="relative z-10 mx-auto min-w-0 max-w-[min(1200px,calc(100%-2rem))] space-y-8 px-5 py-8 sm:px-8 sm:py-10">
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative h-8 w-28 shrink-0">
+            <Image
+              src="/fonts/parable-logo.svg"
+              alt="Parable"
+              fill
+              className="object-contain object-left drop-shadow-[0_0_14px_rgba(0,242,255,0.75)]"
+              priority
+            />
+          </div>
+          <div className="flex flex-wrap justify-end gap-1.5">
+            <button
+              type="button"
+              onClick={() => router.push("/sanctuary-reader")}
+              className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-[10px] font-semibold text-white/80"
+            >
+              <Activity className="h-3.5 w-3.5 text-[#00f2ff]" />
+              Reader
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/testify")}
+              className="inline-flex items-center gap-1 rounded-full bg-[#00f2ff] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wide text-black"
+            >
+              Testify
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/live-studio")}
+              className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-[10px] font-medium text-white/75"
+            >
+              <Radio className="h-3.5 w-3.5 text-emerald-400" />
+              Studio
+            </button>
+            <a
+              href="/logout"
+              className="inline-flex items-center rounded-full border border-red-400/25 bg-red-500/10 px-2.5 py-1.5 text-[10px] text-red-200"
+            >
+              Out
+            </a>
+          </div>
+        </div>
+
+        <SanctuaryProfileHero
+          avatarUrl={avatarUrl}
+          identityTitle={IDENTITY_TITLE}
+          handle={handleLabel}
+          followers={followersStat}
+          following={followingStat}
+          studioWins={studioWinsStat}
+        />
+
+        <SanctuaryModeToggle mode={viewMode} onChange={setViewMode} />
+
+        {viewMode === "social" ? (
+          <div className="space-y-12">
+            <SanctuaryPostsFeed userId={userId} />
+
+            <SanctuaryLiveStatusCard liveFollowed={liveFollowed} isLiveMock={false} />
+
+            <SanctuaryTestimonyWall posts={testimonies} formatRelativeTime={formatRelativeTime} />
+
+            {testimonies.length > 0 && (
+              <section className="rounded-[20px] border border-white/[0.08] bg-black/40 px-4 py-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/35">Quick react</p>
+                <p className="mt-1 text-[11px] text-white/45">
+                  Tap to add emoji reactions on your latest archive pieces (syncs with Testify storage).
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {testimonies.slice(0, 4).map((post) => (
+                    <div key={post.id} className="flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-white/[0.04] px-2 py-2">
+                      <span className="text-[10px] text-white/50">#{post.id}</span>
+                      {REACTION_EMOJIS.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => handleTestimonyReaction(post.id, emoji)}
+                          className="rounded-lg px-1.5 py-0.5 text-sm hover:bg-white/10"
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-10">
+            <SanctuaryLiveStatusCard liveFollowed={liveFollowed} isLiveMock={false} />
+            <SanctuaryGameLobbyRail title="Your active streams" cards={GAME_LOBBY_CARDS} />
+          </div>
+        )}
+
+        <SanctuaryNetworkSection
+          tags={
+            <>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/45">Tags</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {BROWSE_TAGS.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/12 bg-black/50 px-3 py-1.5 text-[10px] font-semibold text-white/60"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </>
+          }
+        >
+          <SanctuaryFollowingPanel
+            allChannels={allFollowers}
+            followingIds={followingIds}
+            registeredSuggestions={registeredChannels}
+            registeredLoading={registeredLoading}
+            registeredError={registeredError}
+            onToggleFollow={handleToggleFollow}
+            onAddCustom={handleAddCustom}
+            onRemoveCustomChannel={handleRemoveCustomChannel}
+            onOpenStreamers={() => router.push("/streamers")}
+          />
+        </SanctuaryNetworkSection>
+
+        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-black/60 to-black/30 px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Curated</p>
+          <p className="mt-1 text-sm text-white/50">Channels picked for discovery.</p>
+          <div className="mt-4 space-y-2">
+            {RECOMMENDED_SANCTUARY_CHANNELS.slice(0, 4).map((channel) => (
+              <button
+                key={channel.id}
+                type="button"
+                onClick={() => router.push("/streamers")}
+                className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent bg-white/[0.03] px-3 py-3 text-left transition hover:border-[#00f2ff]/25 hover:bg-[#00f2ff]/5"
+              >
+                <span className="text-sm font-semibold text-white">{channel.name}</span>
+                <span className="text-[11px] font-mono tabular-nums text-emerald-400/90">{channel.viewers}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+
+
+================================================================================
+FILE: src/components/sanctuary/SanctuaryPostsFeed.tsx
+================================================================================
+
+
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Camera,
+  CheckCircle2,
+  Grid3x3,
+  ImageIcon,
+  Images,
+  LayoutGrid,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  compressImageToDataUrl,
+  isDeviceFallbackSanctuaryKey,
+  isSanctuaryPostImageDataUrl,
+  loadSanctuaryPostsAsyncWithRecovery,
+  mergeSanctuaryPostsStorage,
+  resolveSanctuaryStorageUserId,
+  saveSanctuaryPostsAsync,
+  shrinkDataUrlForStorage,
+  type SanctuaryPost,
+  type SanctuaryPostAspect,
+} from "@/lib/sanctuary-posts-storage";
+
+type Props = {
+  userId: string;
+};
+
+const FILE_INPUT_ID = "sanctuary-post-file-input";
+
+/** DevTools: confirms local load/save without exposing full storage keys. */
+function devSanctuaryLog(message: string, detail?: Record<string, unknown>) {
+  if (process.env.NODE_ENV !== "development") return;
+  console.info(`[SanctuaryPosts] ${message}`, detail ?? "");
+}
+
+function isImageFile(file: File) {
+  if (file.type.startsWith("image/")) return true;
+  return /\.(png|jpe?g|gif|webp|bmp|heic|heif)$/i.test(file.name);
+}
+
+export default function SanctuaryPostsFeed({ userId }: Props) {
+  const { authUserId } = useAuth();
+  /** Profile id â†’ auth id â†’ stable device id so posts always persist. */
+  const storageUserId = useMemo(
+    () => resolveSanctuaryStorageUserId(userId, authUserId),
+    [userId, authUserId],
+  );
+
+  const [posts, setPosts] = useState<SanctuaryPost[]>([]);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [editPost, setEditPost] = useState<SanctuaryPost | null>(null);
+  const [captionDraft, setCaptionDraft] = useState("");
+  const [aspectDraft, setAspectDraft] = useState<SanctuaryPostAspect>("1x1");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const captionRef = useRef<HTMLTextAreaElement>(null);
+  /** Scroll target after media is added so the publish zone is unmistakable. */
+  const draftCtaRef = useRef<HTMLDivElement>(null);
+  /** Tracks last storage key so we can merge device-scoped posts into the account key when auth/profile id arrives. */
+  const prevStorageKeyRef = useRef<string | null>(null);
+  const mergeInFlightRef = useRef(false);
+
+  const refresh = useCallback(async () => {
+    if (!storageUserId) {
+      setPosts([]);
+      return;
+    }
+    const loaded = await loadSanctuaryPostsAsyncWithRecovery(storageUserId);
+    setPosts(loaded);
+    devSanctuaryLog("posts loaded from storage", {
+      count: loaded.length,
+      keyPrefix: `${storageUserId.slice(0, 8)}â€¦`,
+    });
+  }, [storageUserId]);
+
+  useEffect(() => {
+    void refresh();
+    const onUp = () => void refresh();
+    window.addEventListener("parable:sanctuary-posts-updated", onUp);
+    return () => window.removeEventListener("parable:sanctuary-posts-updated", onUp);
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!storageUserId || mergeInFlightRef.current) return;
+    const prev = prevStorageKeyRef.current;
+    const needsMerge =
+      !!prev &&
+      prev !== storageUserId &&
+      isDeviceFallbackSanctuaryKey(prev) &&
+      !isDeviceFallbackSanctuaryKey(storageUserId);
+
+    if (needsMerge) {
+      mergeInFlightRef.current = true;
+      void (async () => {
+        try {
+          const ok = await mergeSanctuaryPostsStorage(prev, storageUserId);
+          if (ok) await refresh();
+        } finally {
+          mergeInFlightRef.current = false;
+          prevStorageKeyRef.current = storageUserId;
+        }
+      })();
+      return;
+    }
+
+    prevStorageKeyRef.current = storageUserId;
+  }, [storageUserId, refresh]);
+
+  const resetComposer = () => {
+    setCaptionDraft("");
+    setAspectDraft("1x1");
+    setPreviewUrl(null);
+    setError(null);
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+  };
+
+  const handlePickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !isImageFile(file)) {
+      setError("Choose an image file (PNG, JPG, WebP, HEIC, etc.).");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const dataUrl = await compressImageToDataUrl(file);
+      if (!dataUrl) {
+        setError("Could not read this image.");
+        return;
+      }
+      setPreviewUrl(dataUrl);
+      // Keep focus off the hidden file input â€” Enter was firing the browser default and collapsing the composer.
+      e.target.blur();
+      queueMicrotask(() => {
+        captionRef.current?.focus();
+        draftCtaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!previewUrl) {
+      setError("Add a photo first.");
+      return;
+    }
+    if (!storageUserId.trim()) {
+      setError("Could not open storage. Try again or use a private window.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      if (!isSanctuaryPostImageDataUrl(previewUrl)) {
+        setError("This image format could not be saved. Try JPG or PNG.");
+        return;
+      }
+      const next: SanctuaryPost = {
+        id: `sp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        caption: captionDraft.trim().slice(0, 2200),
+        imageDataUrl: previewUrl,
+        createdAt: Date.now(),
+        aspect: aspectDraft,
+      };
+      const existing = await loadSanctuaryPostsAsyncWithRecovery(storageUserId);
+      const merged = [next, ...existing.filter((p) => p.id !== next.id)];
+      if (await saveSanctuaryPostsAsync(storageUserId, merged)) {
+        devSanctuaryLog("save ok", { total: merged.length, keyPrefix: `${storageUserId.slice(0, 8)}â€¦` });
+        await refresh();
+        resetComposer();
+        setComposerOpen(false);
+        return;
+      }
+      const smaller = await shrinkDataUrlForStorage(previewUrl, 960, 0.72);
+      if (smaller && smaller !== previewUrl) {
+        const retryPost: SanctuaryPost = { ...next, imageDataUrl: smaller };
+        const retryMerged = [retryPost, ...existing.filter((p) => p.id !== retryPost.id)];
+        if (await saveSanctuaryPostsAsync(storageUserId, retryMerged)) {
+          devSanctuaryLog("save ok (shrunk)", { total: retryMerged.length, keyPrefix: `${storageUserId.slice(0, 8)}â€¦` });
+          await refresh();
+          resetComposer();
+          setComposerOpen(false);
+          return;
+        }
+      }
+      const tiny = await shrinkDataUrlForStorage(previewUrl, 640, 0.55);
+      if (tiny && tiny !== previewUrl) {
+        const retryPost: SanctuaryPost = { ...next, imageDataUrl: tiny };
+        const retryMerged = [retryPost, ...existing.filter((p) => p.id !== retryPost.id)];
+        if (await saveSanctuaryPostsAsync(storageUserId, retryMerged)) {
+          devSanctuaryLog("save ok (tiny)", { total: retryMerged.length, keyPrefix: `${storageUserId.slice(0, 8)}â€¦` });
+          await refresh();
+          resetComposer();
+          setComposerOpen(false);
+          return;
+        }
+      }
+      devSanctuaryLog("save failed after retries");
+      setError("Could not save (storage may be full). Try a smaller photo or remove older posts.");
+    } catch (publishErr) {
+      console.error(publishErr);
+      setError("Could not publish this post. Try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdateCaption = async () => {
+    if (!editPost || !storageUserId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const existing = await loadSanctuaryPostsAsyncWithRecovery(storageUserId);
+      const merged = existing.map((p) =>
+        p.id === editPost.id ? { ...p, caption: captionDraft.trim().slice(0, 2200), aspect: aspectDraft } : p
+      );
+      if (!(await saveSanctuaryPostsAsync(storageUserId, merged))) {
+        setError("Could not save.");
+        return;
+      }
+      await refresh();
+      setEditPost(null);
+      resetComposer();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!storageUserId) return;
+    setSaving(true);
+    try {
+      const existing = await loadSanctuaryPostsAsyncWithRecovery(storageUserId);
+      const merged = existing.filter((p) => p.id !== id);
+      await saveSanctuaryPostsAsync(storageUserId, merged);
+      await refresh();
+      setEditPost(null);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openEdit = (p: SanctuaryPost) => {
+    setEditPost(p);
+    setCaptionDraft(p.caption);
+    setAspectDraft(p.aspect);
+    setPreviewUrl(p.imageDataUrl);
+  };
+
+  const aspectClass = (a: SanctuaryPostAspect) =>
+    a === "4x5" ? "aspect-[4/5]" : "aspect-square";
+
+  return (
+    <section id="sanctuary-posts" className="scroll-mt-24 space-y-4">
+      <div className="overflow-hidden rounded-[28px] border border-white/[0.1] bg-gradient-to-b from-white/[0.06] to-black/45 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="border-b border-white/[0.07] bg-[radial-gradient(ellipse_120%_100%_at_50%_0%,rgba(0,242,255,0.08),transparent_55%)] px-5 py-5 sm:px-8 sm:py-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#00f2ff]/25 bg-[#00f2ff]/10 shadow-[0_0_28px_rgba(0,242,255,0.12)]">
+                <Images className="h-5 w-5 text-[#00f2ff]" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.38em] text-white/45">Your feed</p>
+                <h2 className="mt-1 text-xl font-black text-white sm:text-2xl">Posts</h2>
+                <p className="mt-2 max-w-xl text-sm text-white/50">
+                  Upload photos, write captions, and pick square or portrait grid crops. Saved on this device until you
+                  sync elsewhere.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                resetComposer();
+                setComposerOpen(true);
+              }}
+              className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-[#00f2ff] px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-black shadow-[0_12px_40px_rgba(0,242,255,0.25)] transition hover:brightness-110"
+            >
+              <Plus size={16} />
+              New post
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-5 px-5 pb-6 pt-5 sm:px-8 sm:pb-8 sm:pt-6">
+          {!userId.trim() && !authUserId ? (
+            <p className="rounded-[20px] border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/90">
+              Connecting your accountâ€¦ Posts still save on this device using a local key until you are fully signed in.
+            </p>
+          ) : null}
+
+      <AnimatePresence>
+        {composerOpen && (
+          <motion.div
+            layout={false}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            style={{ pointerEvents: "auto" }}
+            className="relative z-[2] overflow-hidden rounded-[28px] border border-white/[0.1] bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+          >
+            {previewUrl ? (
+              <div
+                className="-mb-px border-b-2 border-[#00f2ff]/55 bg-gradient-to-b from-[#00f2ff]/20 via-[#00f2ff]/8 to-black/70 px-5 py-6 sm:px-8 sm:py-7"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="flex flex-wrap items-start gap-3 sm:gap-4">
+                  <CheckCircle2 className="mt-1 h-7 w-7 shrink-0 text-[#00f2ff] drop-shadow-[0_0_12px_rgba(0,242,255,0.45)]" aria-hidden />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-black uppercase tracking-[0.42em] text-[#00f2ff]">Draft mode</p>
+                    <p className="mt-2 text-xl font-black leading-tight text-white sm:text-2xl">You&apos;re editing a post</p>
+                    <p className="mt-2 max-w-xl text-sm text-white/65">
+                      Photo attached â€” you&apos;re past picking a file. Add a caption if you want, then{" "}
+                      <span className="font-semibold text-white/85">press Enter to post</span> (or tap{" "}
+                      <span className="font-semibold text-[#00f2ff]">Post to Sanctuary</span>).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="border-b border-white/[0.08] bg-black/35 px-5 py-4 sm:px-8">
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-white/35">New post</p>
+                <p className="mt-1 text-sm text-white/55">
+                  <span className="font-semibold text-white/75">Step 1:</span> choose a photo. Nothing is posted until you
+                  finish the draft below.
+                </p>
+              </div>
+            )}
+            <div className="p-5 sm:p-6">
+            <div
+              className="flex flex-col gap-5 lg:flex-row"
+              role="presentation"
+              onKeyDown={(e) => {
+                const t = e.target as HTMLElement | null;
+                if (e.key === "Enter" && t?.tagName === "INPUT" && (t as HTMLInputElement).type === "file") {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <div
+                className={[
+                  "relative flex min-h-[220px] flex-1 items-center justify-center overflow-hidden rounded-2xl border bg-black/50",
+                  previewUrl
+                    ? "border-[#00f2ff]/35 ring-1 ring-[#00f2ff]/25 shadow-[inset_0_0_40px_rgba(0,242,255,0.06)]"
+                    : "border-dashed border-white/15",
+                ].join(" ")}
+              >
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={previewUrl} alt="" className="max-h-[min(420px,50vh)] w-full object-contain" />
+                ) : (
+                  <label
+                    htmlFor={FILE_INPUT_ID}
+                    className="flex cursor-pointer flex-col items-center gap-2 p-8 text-white/45"
+                  >
+                    <Camera className="h-10 w-10" />
+                    <span className="text-sm font-semibold">Tap to upload</span>
+                  </label>
+                )}
+                <input
+                  id={FILE_INPUT_ID}
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*,.heic,.heif"
+                  className="sr-only"
+                  tabIndex={-1}
+                  onChange={handlePickFile}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.preventDefault();
+                  }}
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col gap-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/40">Caption</p>
+                  <textarea
+                    ref={captionRef}
+                    value={captionDraft}
+                    onChange={(e) => setCaptionDraft(e.target.value)}
+                    placeholder="Write a captionâ€¦"
+                    rows={5}
+                    className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/40 focus:outline-none focus:ring-1 focus:ring-[#00f2ff]/25"
+                    maxLength={2200}
+                    onKeyDown={(e) => {
+                      if (e.nativeEvent.isComposing || e.key === "Process") return;
+                      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        void handlePublish();
+                        return;
+                      }
+                      if (previewUrl && e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        void handlePublish();
+                        return;
+                      }
+                    }}
+                  />
+                  <p className="mt-2 text-[11px] leading-snug text-white/40">
+                    {previewUrl ? (
+                      <>
+                        <span className="font-semibold text-[#00f2ff]/90">Enter</span> to post Â·{" "}
+                        <span className="text-white/55">Shift+Enter</span> new line Â·{" "}
+                        <span className="text-white/45">Ctrl+Enter / âŒ˜+Enter</span> also post
+                      </>
+                    ) : (
+                      <>
+                        After you add a photo: <span className="text-white/55">Enter</span> posts Â·{" "}
+                        <span className="text-white/55">Shift+Enter</span> new line
+                      </>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/40">Grid crop</p>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setAspectDraft("1x1")}
+                      className={[
+                        "inline-flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide",
+                        aspectDraft === "1x1"
+                          ? "border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]"
+                          : "border-white/10 bg-black/40 text-white/55",
+                      ].join(" ")}
+                    >
+                      <Grid3x3 size={16} /> Square
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAspectDraft("4x5")}
+                      className={[
+                        "inline-flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide",
+                        aspectDraft === "4x5"
+                          ? "border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]"
+                          : "border-white/10 bg-black/40 text-white/55",
+                      ].join(" ")}
+                    >
+                      <LayoutGrid size={16} /> Portrait
+                    </button>
+                  </div>
+                </div>
+                {error ? <p className="text-sm text-amber-300/90">{error}</p> : null}
+                <div ref={draftCtaRef} className="flex flex-wrap items-center gap-2 scroll-mt-28">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={handlePublish}
+                    className={[
+                      "rounded-xl font-black uppercase tracking-wide text-black transition disabled:opacity-50",
+                      previewUrl
+                        ? "bg-[#00f2ff] px-6 py-3 text-sm shadow-[0_8px_32px_rgba(0,242,255,0.35)] ring-2 ring-[#00f2ff]/40 hover:brightness-105"
+                        : "bg-[#00f2ff]/85 px-5 py-2.5 text-sm opacity-90 hover:opacity-100",
+                    ].join(" ")}
+                  >
+                    {saving ? "Processingâ€¦" : previewUrl ? "Post to Sanctuary" : "Share"}
+                  </button>
+                  <label
+                    htmlFor={FILE_INPUT_ID}
+                    className="inline-flex cursor-pointer items-center rounded-xl border border-white/15 bg-black/50 px-4 py-2.5 text-sm font-semibold text-white/80"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <ImageIcon size={16} /> Change photo
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setComposerOpen(false);
+                      resetComposer();
+                    }}
+                    className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/55"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+          <div className="rounded-[22px] border border-white/[0.08] bg-black/30 p-4 sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/80">Post grid</p>
+                <p className="mt-0.5 text-xs text-white/40">Tap a thumbnail to edit caption or delete.</p>
+              </div>
+              {posts.length > 0 ? (
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold tabular-nums text-white/60">
+                  {posts.length} {posts.length === 1 ? "post" : "posts"}
+                </span>
+              ) : null}
+            </div>
+
+            {posts.length > 0 ? (
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+                {posts.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => openEdit(p)}
+                    className={[
+                      "group relative w-full overflow-hidden rounded-xl border border-white/[0.1] bg-black/60 transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-[0.98]",
+                      aspectClass(p.aspect),
+                    ].join(" ")}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- data URLs are most reliable with native img */}
+                    <img
+                      src={p.imageDataUrl}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover transition group-hover:brightness-110"
+                    />
+                    {p.caption ? (
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2">
+                        <p className="line-clamp-2 text-left text-[10px] leading-snug text-white/90">{p.caption}</p>
+                      </div>
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-[min(320px,45vh)] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-white/15 bg-black/40 px-6 py-12 text-center">
+                {composerOpen ? (
+                  <>
+                    <p className="max-w-sm text-sm font-medium text-white/55">
+                      After you tap <span className="text-[#00f2ff]">Share</span>, your photos appear here in a
+                      three-column grid.
+                    </p>
+                    <p className="text-xs text-white/35">You can keep writing your post above â€” this area updates when the post is saved.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-base font-semibold text-white/75">No posts yet</p>
+                    <p className="max-w-sm text-sm text-white/45">
+                      Create a post to fill this grid. Your gallery stays on this browser until you clear site data.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetComposer();
+                        setComposerOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[#00f2ff]/35 bg-[#00f2ff]/10 px-6 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/15"
+                    >
+                      <Plus size={16} /> New post
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {editPost ? (
+          <motion.div
+            layout={false}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+            role="dialog"
+            aria-modal
+          >
+            <motion.div
+              layout={false}
+              initial={{ scale: 0.96, y: 12 }}
+              animate={{ scale: 1, y: 0 }}
+              className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[28px] border border-white/10 bg-zinc-950 p-5 shadow-2xl"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setEditPost(null);
+                  resetComposer();
+                }}
+                className="absolute right-4 top-4 rounded-lg p-2 text-white/50 hover:bg-white/10 hover:text-white"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+              <div
+                className={[
+                  "relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black",
+                  editPost.aspect === "4x5" ? "aspect-[4/5]" : "aspect-square",
+                ].join(" ")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={editPost.imageDataUrl}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </div>
+              <label className="mt-4 block text-[10px] font-black uppercase tracking-[0.25em] text-white/40">
+                Caption
+                <textarea
+                  value={captionDraft}
+                  onChange={(e) => setCaptionDraft(e.target.value)}
+                  rows={4}
+                  className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-black/50 px-3 py-2 text-sm text-white"
+                  maxLength={2200}
+                />
+              </label>
+              <div className="mt-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/40">Grid crop</p>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAspectDraft("1x1")}
+                    className={[
+                      "flex-1 rounded-xl border py-2 text-[11px] font-bold uppercase",
+                      aspectDraft === "1x1"
+                        ? "border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]"
+                        : "border-white/10 text-white/55",
+                    ].join(" ")}
+                  >
+                    Square
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectDraft("4x5")}
+                    className={[
+                      "flex-1 rounded-xl border py-2 text-[11px] font-bold uppercase",
+                      aspectDraft === "4x5"
+                        ? "border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]"
+                        : "border-white/10 text-white/55",
+                    ].join(" ")}
+                  >
+                    Portrait
+                  </button>
+                </div>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleUpdateCaption}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#00f2ff] px-4 py-3 text-sm font-black uppercase text-black"
+                >
+                  <Pencil size={16} /> Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(editPost.id)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-200"
+                >
+                  <Trash2 size={16} /> Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </section>
+  );
+}
+
+
+
+================================================================================
+FILE: src/lib/sanctuary-posts-storage.ts
+================================================================================
+
+
+export type SanctuaryPostAspect = "1x1" | "4x5";
+
+export type SanctuaryPost = {
+  id: string;
+  caption: string;
+  imageDataUrl: string;
+  createdAt: number;
+  aspect: SanctuaryPostAspect;
+};
+
+const PREFIX = "parable:sanctuary-posts:";
+const DEVICE_FALLBACK_KEY = "parable:sanctuary-storage-device-id";
+const IDB_NAME = "parable-sanctuary-posts";
+const IDB_STORE = "postsByUser";
+const IDB_VERSION = 1;
+
+let memoryStorageUserId: string | null = null;
+
+/**
+ * Resolves a stable key for localStorage / IndexedDB. Uses profile id, then auth session id,
+ * then a persisted device id so posts still save if ids are missing on first paint.
+ */
+export function resolveSanctuaryStorageUserId(
+  userIdFromPage: string,
+  authUserId: string | null | undefined,
+): string {
+  const a = userIdFromPage.trim();
+  if (a) return a;
+  const b = authUserId != null ? String(authUserId).trim() : "";
+  if (b) return b;
+  if (typeof window === "undefined") return "";
+  try {
+    let id = window.localStorage.getItem(DEVICE_FALLBACK_KEY);
+    if (!id) {
+      id = `local-${crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`}`;
+      window.localStorage.setItem(DEVICE_FALLBACK_KEY, id);
+    }
+    return id;
+  } catch {
+    if (!memoryStorageUserId) {
+      memoryStorageUserId = `mem-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    }
+    return memoryStorageUserId;
+  }
+}
+
+function keyForUser(userId: string) {
+  return `${PREFIX}${userId}`;
+}
+
+/** True if a string can be stored and re-loaded as a sanctuary post image (see normalizePost). */
+export function isSanctuaryPostImageDataUrl(s: unknown): s is string {
+  return typeof s === "string" && s.length > 22 && /^data:image\//i.test(s);
+}
+
+function isValidImageDataUrl(s: unknown): s is string {
+  return isSanctuaryPostImageDataUrl(s);
+}
+
+function normalizePost(p: Partial<SanctuaryPost> & { id?: string }): SanctuaryPost | null {
+  if (!p || typeof p.id !== "string" || !isValidImageDataUrl(p.imageDataUrl)) return null;
+  const aspect: SanctuaryPostAspect = p.aspect === "4x5" ? "4x5" : "1x1";
+  const caption = typeof p.caption === "string" ? p.caption : "";
+  const createdAt = typeof p.createdAt === "number" && Number.isFinite(p.createdAt) ? p.createdAt : Date.now();
+  return {
+    id: p.id,
+    caption,
+    imageDataUrl: p.imageDataUrl,
+    createdAt,
+    aspect,
+  };
+}
+
+function parsePosts(raw: string | null): SanctuaryPost[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    const out: SanctuaryPost[] = [];
+    for (const item of parsed) {
+      const n = normalizePost(item as Partial<SanctuaryPost>);
+      if (n) out.push(n);
+    }
+    return out.sort((a, b) => b.createdAt - a.createdAt).slice(0, 80);
+  } catch {
+    return [];
+  }
+}
+
+function openIdb(): Promise<IDBDatabase | null> {
+  if (typeof indexedDB === "undefined") return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onerror = () => resolve(null);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE);
+      }
+    };
+  });
+}
+
+async function idbGet(userKey: string): Promise<string | null> {
+  const db = await openIdb();
+  if (!db) return null;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).get(userKey);
+      req.onsuccess = () => {
+        const v = req.result;
+        resolve(typeof v === "string" ? v : null);
+      };
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+async function idbSet(userKey: string, value: string): Promise<boolean> {
+  const db = await openIdb();
+  if (!db) return false;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      const store = tx.objectStore(IDB_STORE);
+      const req = store.put(value, userKey);
+      req.onerror = () => resolve(false);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+      tx.onabort = () => resolve(false);
+    } catch {
+      resolve(false);
+    }
+  });
+}
+
+async function idbDelete(userKey: string): Promise<void> {
+  const db = await openIdb();
+  if (!db) return;
+  await new Promise<void>((resolve) => {
+    try {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).delete(userKey);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+      tx.onabort = () => resolve();
+    } catch {
+      resolve();
+    }
+  });
+}
+
+/** List all object-store keys (e.g. to find orphan device-scoped sanctuary rows in IndexedDB). */
+async function idbListAllKeys(): Promise<string[]> {
+  const db = await openIdb();
+  if (!db) return [];
+  return new Promise((resolve) => {
+    const out: string[] = [];
+    try {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).openKeyCursor();
+      req.onsuccess = () => {
+        const cursor = req.result;
+        if (!cursor) {
+          resolve(out);
+          return;
+        }
+        if (typeof cursor.key === "string") out.push(cursor.key);
+        cursor.continue();
+      };
+      req.onerror = () => resolve(out);
+    } catch {
+      resolve([]);
+    }
+  });
+}
+
+function collectFallbackUserIdsFromKeyedStorage(getKey: (i: number) => string | null, length: number): string[] {
+  const ids: string[] = [];
+  try {
+    for (let i = 0; i < length; i++) {
+      const k = getKey(i);
+      if (!k?.startsWith(PREFIX)) continue;
+      const uid = k.slice(PREFIX.length);
+      if (isDeviceFallbackSanctuaryKey(uid)) ids.push(uid);
+    }
+  } catch {
+    /* ignore */
+  }
+  return ids;
+}
+
+/**
+ * Merge every non-empty device-scoped bucket (local-â€¦ / mem-â€¦) into the account key when the account is empty.
+ * Covers cases where DEVICE_FALLBACK_KEY was reset but old `parable:sanctuary-posts:local-â€¦` rows remain, or IDB-only saves.
+ */
+async function mergeOrphanFallbackBucketsInto(accountUserId: string): Promise<void> {
+  const candidates = new Set<string>();
+  for (const id of collectFallbackUserIdsFromKeyedStorage((i) => localStorage.key(i), localStorage.length)) {
+    candidates.add(id);
+  }
+  for (const id of collectFallbackUserIdsFromKeyedStorage((i) => sessionStorage.key(i), sessionStorage.length)) {
+    candidates.add(id);
+  }
+  try {
+    const d = localStorage.getItem(DEVICE_FALLBACK_KEY);
+    if (d && isDeviceFallbackSanctuaryKey(d)) candidates.add(d);
+  } catch {
+    /* ignore */
+  }
+  for (const k of await idbListAllKeys()) {
+    if (!k.startsWith(PREFIX)) continue;
+    const uid = k.slice(PREFIX.length);
+    if (isDeviceFallbackSanctuaryKey(uid)) candidates.add(uid);
+  }
+
+  for (const fromId of candidates) {
+    if (!fromId.trim() || fromId === accountUserId) continue;
+    const chunk = await loadSanctuaryPostsAsync(fromId);
+    if (chunk.length === 0) continue;
+    await mergeSanctuaryPostsStorage(fromId, accountUserId);
+  }
+}
+
+/** Remove all stored data for one user key (localStorage, sessionStorage, IndexedDB). */
+export async function clearSanctuaryPostsStorage(userId: string): Promise<void> {
+  if (typeof window === "undefined" || !userId.trim()) return;
+  const k = keyForUser(userId);
+  try {
+    localStorage.removeItem(k);
+  } catch {
+    /* ignore */
+  }
+  try {
+    sessionStorage.removeItem(k);
+  } catch {
+    /* ignore */
+  }
+  await idbDelete(k);
+}
+
+/**
+ * Merge posts from a temporary key (e.g. local-â€¦) into the account key, then delete the old key.
+ * Fixes posts "disappearing" when storageUserId switched from device fallback to profile/auth id after load.
+ */
+export async function mergeSanctuaryPostsStorage(fromUserId: string, toUserId: string): Promise<boolean> {
+  if (!fromUserId.trim() || !toUserId.trim() || fromUserId === toUserId) return true;
+  const from = await loadSanctuaryPostsAsync(fromUserId);
+  if (from.length === 0) {
+    await clearSanctuaryPostsStorage(fromUserId);
+    return true;
+  }
+  const to = await loadSanctuaryPostsAsync(toUserId);
+  const map = new Map<string, SanctuaryPost>();
+  for (const p of to) map.set(p.id, p);
+  for (const p of from) map.set(p.id, p);
+  const merged = Array.from(map.values())
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 80);
+  if (!(await saveSanctuaryPostsAsync(toUserId, merged))) return false;
+  await clearSanctuaryPostsStorage(fromUserId);
+  dispatchUpdated();
+  return true;
+}
+
+export function isDeviceFallbackSanctuaryKey(id: string): boolean {
+  return id.startsWith("local-") || id.startsWith("mem-");
+}
+
+function dispatchUpdated() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("parable:sanctuary-posts-updated"));
+  }
+}
+
+/** Sync read â€” localStorage only (used where async is awkward). */
+export function loadSanctuaryPosts(userId: string): SanctuaryPost[] {
+  if (typeof window === "undefined" || !userId.trim()) return [];
+  try {
+    const raw = localStorage.getItem(keyForUser(userId));
+    return parsePosts(raw);
+  } catch {
+    return [];
+  }
+}
+
+/** Loads from localStorage first, then IndexedDB if LS is empty (e.g. large payloads moved to IDB). */
+export async function loadSanctuaryPostsAsync(userId: string): Promise<SanctuaryPost[]> {
+  if (typeof window === "undefined" || !userId.trim()) return [];
+  const k = keyForUser(userId);
+  const fromLs = parsePosts(localStorage.getItem(k));
+  if (fromLs.length > 0) return fromLs;
+  const fromIdb = parsePosts(await idbGet(k));
+  if (fromIdb.length > 0) return fromIdb;
+  try {
+    return parsePosts(sessionStorage.getItem(k));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Loads posts for the account key; if empty, merges any posts still stored under the device fallback id
+ * (common when the account id loaded after the first save).
+ */
+export async function loadSanctuaryPostsAsyncWithRecovery(accountUserId: string): Promise<SanctuaryPost[]> {
+  if (!accountUserId.trim()) return [];
+  let primary = await loadSanctuaryPostsAsync(accountUserId);
+  if (primary.length > 0) return primary;
+
+  let deviceId: string | null = null;
+  try {
+    deviceId = window.localStorage.getItem(DEVICE_FALLBACK_KEY);
+  } catch {
+    /* still try orphan scan */
+  }
+  if (deviceId && deviceId !== accountUserId) {
+    const orphan = await loadSanctuaryPostsAsync(deviceId);
+    if (orphan.length > 0) {
+      const ok = await mergeSanctuaryPostsStorage(deviceId, accountUserId);
+      if (ok) primary = await loadSanctuaryPostsAsync(accountUserId);
+    }
+  }
+
+  if (primary.length > 0) return primary;
+
+  await mergeOrphanFallbackBucketsInto(accountUserId);
+  return loadSanctuaryPostsAsync(accountUserId);
+}
+
+export function saveSanctuaryPosts(userId: string, posts: SanctuaryPost[]): boolean {
+  if (typeof window === "undefined" || !userId.trim()) return false;
+  const json = JSON.stringify(posts);
+  try {
+    localStorage.setItem(keyForUser(userId), json);
+    dispatchUpdated();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Saves to localStorage; on quota error falls back to IndexedDB, then sessionStorage. */
+export async function saveSanctuaryPostsAsync(userId: string, posts: SanctuaryPost[]): Promise<boolean> {
+  if (typeof window === "undefined" || !userId.trim()) return false;
+  const k = keyForUser(userId);
+  let json: string;
+  try {
+    json = JSON.stringify(posts);
+  } catch {
+    return false;
+  }
+  try {
+    localStorage.setItem(k, json);
+    dispatchUpdated();
+    void idbSet(k, json).catch(() => {});
+    return true;
+  } catch {
+    const ok = await idbSet(k, json);
+    if (ok) {
+      dispatchUpdated();
+      return true;
+    }
+    try {
+      sessionStorage.setItem(k, json);
+      dispatchUpdated();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+export async function compressImageToDataUrl(file: File, maxDim = 1024, quality = 0.72): Promise<string | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+    return canvas.toDataURL("image/jpeg", quality);
+  } catch {
+    return await compressImageViaFileReader(file, maxDim, quality);
+  }
+}
+
+function compressImageViaFileReader(file: File, maxDim: number, quality: number): Promise<string | null> {
+  return new Promise((resolve) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const dataUrl = typeof fr.result === "string" ? fr.result : "";
+      if (!dataUrl.startsWith("data:image/")) {
+        resolve(null);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+          const w = Math.max(1, Math.round(img.naturalWidth * scale));
+          const h = Math.max(1, Math.round(img.naturalHeight * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(null);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        } catch {
+          resolve(dataUrl.length < 4_500_000 ? dataUrl : null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    };
+    fr.onerror = () => resolve(null);
+    fr.readAsDataURL(file);
+  });
+}
+
+/** Re-encode an existing data URL smaller for localStorage quota retries (client-only). */
+export function shrinkDataUrlForStorage(
+  dataUrl: string,
+  maxDim = 960,
+  quality = 0.72,
+): Promise<string | null> {
+  if (typeof window === "undefined" || !dataUrl.startsWith("data:image/")) {
+    return Promise.resolve(null);
+  }
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(1, Math.round(img.naturalWidth * scale));
+        const h = Math.max(1, Math.round(img.naturalHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      } catch {
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
+
+
+================================================================================
+FILE: src/components/sanctuary/SanctuaryModeToggle.tsx
+================================================================================
+
+
+"use client";
+
+import { motion } from "framer-motion";
+
+export type SanctuaryViewMode = "social" | "game";
+
+type SanctuaryModeToggleProps = {
+  mode: SanctuaryViewMode;
+  onChange: (mode: SanctuaryViewMode) => void;
+};
+
+export default function SanctuaryModeToggle({ mode, onChange }: SanctuaryModeToggleProps) {
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-[10px] font-black uppercase tracking-[0.35em] text-white/40">Focus</p>
+      <div
+        className="relative flex w-full max-w-md rounded-[22px] border border-white/[0.1] bg-black/50 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl sm:ml-auto"
+        role="tablist"
+        aria-label="Page focus"
+      >
+        <motion.div
+          layout
+          className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-[18px] bg-gradient-to-r from-[#00f2ff]/25 to-amber-400/15 shadow-[0_0_32px_rgba(0,242,255,0.2)]"
+          style={{ left: mode === "social" ? 6 : "calc(50% + 3px)" }}
+          transition={{ type: "spring", stiffness: 380, damping: 32 }}
+        />
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "social"}
+          onClick={() => onChange("social")}
+          className="relative z-10 flex-1 rounded-[18px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.22em] transition-colors text-white/90"
+        >
+          Social feed
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "game"}
+          onClick={() => onChange("game")}
+          className="relative z-10 flex-1 rounded-[18px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.22em] transition-colors text-white/90"
+        >
+          Game room
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+
+================================================================================
+FILE: src/components/sanctuary/SanctuaryProfileHero.tsx
+================================================================================
+
+
+"use client";
+
+import { motion } from "framer-motion";
+import { fallbackAvatarOnError } from "@/lib/avatar-display";
+
+type SanctuaryProfileHeroProps = {
+  avatarUrl: string;
+  identityTitle: string;
+  handle: string;
+  followers: number;
+  following: number;
+  studioWins: number;
+};
+
+function StatBlock({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="min-w-0 flex-1 text-center">
+      <p className="text-[9px] font-black uppercase tracking-[0.28em] text-white/40">{label}</p>
+      <p className="mt-1.5 truncate text-lg font-black tabular-nums text-white sm:text-xl">{value.toLocaleString()}</p>
+    </div>
+  );
+}
+
+export default function SanctuaryProfileHero({
+  avatarUrl,
+  identityTitle,
+  handle,
+  followers,
+  following,
+  studioWins,
+}: SanctuaryProfileHeroProps) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden rounded-[32px] border border-white/[0.12] bg-white/[0.06] px-6 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.55),0_0_60px_rgba(0,242,255,0.08)] backdrop-blur-2xl sm:px-10 sm:py-10"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(0,242,255,0.14),transparent_55%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(251,191,36,0.08),transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06)_0%,transparent_42%,transparent_58%,rgba(0,242,255,0.04)_100%)]" />
+
+      <div className="relative flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:gap-12">
+        <div className="relative shrink-0">
+          <div className="pointer-events-none absolute -inset-1 rounded-full bg-[conic-gradient(from_200deg,rgba(0,242,255,0.5),rgba(251,191,36,0.35),rgba(0,242,255,0.45),rgba(0,242,255,0.2))] opacity-90 blur-md" />
+          <div className="relative h-[120px] w-[120px] overflow-hidden rounded-full border-2 border-black/60 bg-black/70 ring-2 ring-[#00f2ff]/35 shadow-[0_0_48px_rgba(0,242,255,0.25)] sm:h-[132px] sm:w-[132px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={avatarUrl && avatarUrl !== "/logo.svg" ? avatarUrl : "/logo.svg"}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={fallbackAvatarOnError}
+            />
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1 text-center sm:text-left">
+          <p className="text-[10px] font-black uppercase tracking-[0.42em] text-[#00f2ff]/75">Profile</p>
+          <h1 className="mt-2 text-balance text-2xl font-black tracking-tight text-white sm:text-3xl">{identityTitle}</h1>
+          <p className="mt-2 text-sm font-semibold text-white/45">{handle}</p>
+
+          <div className="mt-8 flex max-w-md flex-wrap justify-center gap-0 rounded-[22px] border border-white/[0.08] bg-black/40 px-2 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md sm:justify-start sm:px-4">
+            <StatBlock label="Followers" value={followers} />
+            <div className="w-px self-stretch bg-white/[0.08]" aria-hidden />
+            <StatBlock label="Following" value={following} />
+            <div className="w-px self-stretch bg-white/[0.08]" aria-hidden />
+            <StatBlock label="Studio Wins" value={studioWins} />
+          </div>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+
+
+================================================================================
+FILE: src/components/SparkleOverlay.tsx
+================================================================================
+
+
+"use client";
+
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+interface Sparkle {
+  x: string; y: string; delay: number; size: number; duration: number; drift: string;
+}
+
+export default function SparkleOverlay() {
+  const [mounted, setMounted] = useState(false);
+  const [sparkleData, setSparkleData] = useState<Sparkle[]>([]);
+
+  useEffect(() => {
+    // BACK TO ORIGINAL LOGIC: 300 Living Particles
+    const newSparkles = Array.from({ length: 300 }).map(() => ({
+      x: `${Math.random() * 100}%`,
+      y: `${Math.random() * 110}%`,
+      delay: Math.random() * 5,
+      size: Math.random() * 3 + 0.5, 
+      duration: Math.random() * 4 + 2,
+      drift: `${(Math.random() - 0.5) * 60}px`
+    }));
+    
+    setSparkleData(newSparkles);
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {sparkleData.map((s, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-[#00f2ff] rounded-full"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ 
+            opacity: [0, 1, 0.5, 1, 0],
+            scale: [0, 1.5, 1, 1.5, 0],
+            y: ["0px", "-250px"], // High-velocity upward drift
+            x: ["0px", s.drift]
+          }}
+          transition={{
+            duration: s.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: s.delay
+          }}
+          style={{
+            left: s.x,
+            top: s.y,
+            width: `${s.size}px`,
+            height: `${s.size}px`,
+            filter: "blur(1px) drop-shadow(0 0 8px #00f2ff)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/lib/testimony-storage.ts
+================================================================================
+
+
+/**
+ * Shared testimony localStorage helpers with quota-safe save.
+ * Used by testify and my-sanctuary to avoid QuotaExceededError.
+ */
+
+export const TESTIMONY_STORAGE_KEY = 'parable:testimonies';
+
+const MAX_POSTS = 80;
+const MAX_BYTES = 4 * 1024 * 1024; // ~4MB to stay under typical 5MB limit
+
+export type TestimonyPostStored = {
+  id: number;
+  user: string;
+  /** Supabase auth user id â€” used for Following feed */
+  authorId?: string;
+  time: string;
+  tag: string;
+  text: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | null;
+  mediaName?: string;
+  createdAt: number;
+  stats: {
+    amens: number;
+    comments: number;
+    shares: number;
+    praiseBreaks: number;
+    claps: number;
+    dances: number;
+    shouts: number;
+  };
+  reactions?: Record<string, number>;
+};
+
+function trimForQuota(posts: TestimonyPostStored[]): TestimonyPostStored[] {
+  // Keep only the most recent posts
+  let list = posts.length > MAX_POSTS ? posts.slice(0, MAX_POSTS) : [...posts];
+
+  let json = JSON.stringify(list);
+  if (json.length <= MAX_BYTES) return list;
+
+  // Strip media from oldest posts to reduce size (keep text + stats)
+  for (let i = list.length - 1; i >= 0 && json.length > MAX_BYTES; i--) {
+    const post = list[i];
+    if (post.mediaUrl) {
+      list[i] = { ...post, mediaUrl: undefined, mediaType: null, mediaName: undefined };
+      json = JSON.stringify(list);
+    }
+  }
+
+  if (json.length <= MAX_BYTES) return list;
+
+  // Still too big: keep fewer posts
+  while (list.length > 10 && json.length > MAX_BYTES) {
+    list = list.slice(0, Math.floor(list.length * 0.8));
+    json = JSON.stringify(list);
+  }
+
+  return list;
+}
+
+export function saveTestimonies(posts: TestimonyPostStored[]): boolean {
+  const trimmed = trimForQuota(posts);
+  const json = JSON.stringify(trimmed);
+
+  try {
+    window.localStorage.setItem(TESTIMONY_STORAGE_KEY, json);
+    window.dispatchEvent(new Event('parable:testimonies-updated'));
+    return true;
+  } catch (e) {
+    if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
+      // Last resort: keep only first 20 posts without media
+      const minimal = trimmed.slice(0, 20).map((p) => ({
+        ...p,
+        mediaUrl: undefined,
+        mediaType: null,
+        mediaName: undefined,
+      }));
+      try {
+        window.localStorage.setItem(TESTIMONY_STORAGE_KEY, JSON.stringify(minimal));
+        window.dispatchEvent(new Event('parable:testimonies-updated'));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  }
+}
+
+export function loadAllTestimonies(): TestimonyPostStored[] {
+  try {
+    const raw = window.localStorage.getItem(TESTIMONY_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as TestimonyPostStored[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+
+
+================================================================================
+FILE: src/lib/sanctuary-following.ts
+================================================================================
+
+
+/** Local-only follow graph for My Sanctuary / Following (until backed by Supabase). */
+
+export const FOLLOWING_STORAGE_KEY = 'parable:following';
+export const CUSTOM_FOLLOWERS_STORAGE_KEY = 'parable:custom-followers';
+export const FOLLOWING_NOTIF_KEY = 'parable:following-notifications';
+
+export type SanctuaryChannel = {
+  id: string;
+  name: string;
+  handle: string;
+  avatarLabel: string;
+  isLive: boolean;
+  viewers: string;
+  /** Profile photo when loaded from Supabase */
+  avatarUrl?: string | null;
+  /** Subtitle in Discover (e.g. role or curated tagline) */
+  tagline?: string;
+  source?: 'registered' | 'curated';
+};
+
+export type RecommendedSanctuary = {
+  id: string;
+  name: string;
+  tagline: string;
+  viewers: string;
+  avatarLabel: string;
+};
+
+export const BASE_SANCTUARY_CHANNELS: SanctuaryChannel[] = [
+  {
+    id: 'black-church-tv',
+    name: 'Black Church TV',
+    handle: '@blackchurchtv',
+    avatarLabel: 'BC',
+    isLive: true,
+    viewers: '524',
+  },
+  {
+    id: 'sanctuary-sundays',
+    name: 'Sanctuary Sundays',
+    handle: '@sanctuarysundays',
+    avatarLabel: 'SS',
+    isLive: false,
+    viewers: '0',
+  },
+  {
+    id: 'faith-influencer',
+    name: 'Faith Influencer',
+    handle: '@faithinfluencer',
+    avatarLabel: 'FI',
+    isLive: true,
+    viewers: '312',
+  },
+];
+
+export const RECOMMENDED_SANCTUARY_CHANNELS: RecommendedSanctuary[] = [
+  {
+    id: 'new-birth-live',
+    name: 'New Birth Live',
+    tagline: 'Sunday Worship & Word',
+    viewers: '621',
+    avatarLabel: 'NB',
+  },
+  {
+    id: 'urban-faith-tv',
+    name: 'Urban Faith TV',
+    tagline: 'Just Testifying',
+    viewers: '1.2K',
+    avatarLabel: 'UF',
+  },
+  {
+    id: 'praise-city',
+    name: 'Praise City Network',
+    tagline: 'Choir & Worship Nights',
+    viewers: '10.3K',
+    avatarLabel: 'PC',
+  },
+];
+
+export function loadFollowingIds(): string[] {
+  try {
+    const raw = window.localStorage.getItem(FOLLOWING_STORAGE_KEY);
+    if (!raw) return [];
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch {
+    return [];
+  }
+}
+
+export function loadCustomChannels(): SanctuaryChannel[] {
+  try {
+    const raw = window.localStorage.getItem(CUSTOM_FOLLOWERS_STORAGE_KEY);
+    if (!raw) return [];
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch {
+    return [];
+  }
+}
+
+export function loadNotifChannelIds(): string[] {
+  try {
+    const raw = window.localStorage.getItem(FOLLOWING_NOTIF_KEY);
+    if (!raw) return [];
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveFollowingIds(ids: string[]) {
+  window.localStorage.setItem(FOLLOWING_STORAGE_KEY, JSON.stringify(ids));
+  try {
+    window.dispatchEvent(new Event('parable:following-updated'));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function saveCustomChannels(channels: SanctuaryChannel[]) {
+  window.localStorage.setItem(CUSTOM_FOLLOWERS_STORAGE_KEY, JSON.stringify(channels));
+}
+
+export function saveNotifChannelIds(ids: string[]) {
+  window.localStorage.setItem(FOLLOWING_NOTIF_KEY, JSON.stringify(ids));
+}
+
+
+
+================================================================================
+FILE: src/hooks/useRegisteredProfileSuggestions.ts
+================================================================================
+
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import type { SanctuaryChannel } from '@/lib/sanctuary-following';
+import { fetchRegisteredProfileSuggestions } from '@/lib/profile-suggestions';
+
+export function useRegisteredProfileSuggestions() {
+  const [channels, setChannels] = useState<SanctuaryChannel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setErrorMessage(null);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        if (!cancelled) {
+          setChannels([]);
+          setErrorMessage(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      const res = await fetchRegisteredProfileSuggestions();
+      if (!cancelled) {
+        setChannels(res.channels);
+        setErrorMessage(res.errorMessage);
+        setLoading(false);
+      }
+    };
+
+    load();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      load();
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return {
+    registeredChannels: channels,
+    registeredLoading: loading,
+    registeredError: errorMessage,
+  };
+}
+
+
+
+================================================================================
+FILE: src/hooks/useSanctuaryFollowGraph.ts
+================================================================================
+
+
+'use client';
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import {
+  BASE_SANCTUARY_CHANNELS,
+  RECOMMENDED_SANCTUARY_CHANNELS,
+  loadCustomChannels,
+  loadFollowingIds,
+  saveCustomChannels,
+  saveFollowingIds,
+  type SanctuaryChannel,
+} from '@/lib/sanctuary-following';
+import { profileRowToSuggestionChannel } from '@/lib/profile-suggestions';
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(id: string) {
+  return UUID_RE.test(id);
+}
+
+/**
+ * Merges curated + registered + custom channels and loads Supabase profiles for
+ * followed UUIDs that are not yet in the merged list (so Following tab always lists real people).
+ */
+export function useSanctuaryFollowGraph(registeredChannels: SanctuaryChannel[]) {
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const [customFollowers, setCustomFollowers] = useState<SanctuaryChannel[]>([]);
+  const [orphanFollowed, setOrphanFollowed] = useState<SanctuaryChannel[]>([]);
+
+  const recommendedAsChannels = useMemo(
+    () =>
+      RECOMMENDED_SANCTUARY_CHANNELS.map((r) => ({
+        id: r.id,
+        name: r.name,
+        handle: `@${r.id.replace(/-/g, '')}`,
+        avatarLabel: r.avatarLabel,
+        isLive: false,
+        viewers: r.viewers,
+        tagline: r.tagline,
+        source: 'curated' as const,
+      })),
+    []
+  );
+
+  const refreshLocal = useCallback(() => {
+    setFollowingIds(loadFollowingIds());
+    setCustomFollowers(loadCustomChannels());
+  }, []);
+
+  const updateFollowingIds = useCallback(
+    (next: string[] | ((prev: string[]) => string[])) => {
+      setFollowingIds((prev) => {
+        const resolved = typeof next === 'function' ? next(prev) : next;
+        saveFollowingIds(resolved);
+        return resolved;
+      });
+    },
+    []
+  );
+
+  const updateCustomFollowers = useCallback(
+    (next: SanctuaryChannel[] | ((prev: SanctuaryChannel[]) => SanctuaryChannel[])) => {
+      setCustomFollowers((prev) => {
+        const resolved = typeof next === 'function' ? next(prev) : next;
+        saveCustomChannels(resolved);
+        return resolved;
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    refreshLocal();
+  }, [refreshLocal]);
+
+  useEffect(() => {
+    const onFollowing = () => refreshLocal();
+    window.addEventListener('parable:following-updated', onFollowing);
+    return () => window.removeEventListener('parable:following-updated', onFollowing);
+  }, [refreshLocal]);
+
+  const baseMerged = useMemo(() => {
+    const merged = new Map<string, SanctuaryChannel>();
+    for (const c of BASE_SANCTUARY_CHANNELS) merged.set(c.id, c);
+    for (const c of recommendedAsChannels) merged.set(c.id, c);
+    for (const c of registeredChannels) merged.set(c.id, c);
+    for (const c of customFollowers) merged.set(c.id, c);
+    return merged;
+  }, [recommendedAsChannels, registeredChannels, customFollowers]);
+
+  const knownIds = useMemo(() => new Set(baseMerged.keys()), [baseMerged]);
+
+  useEffect(() => {
+    const missing = followingIds.filter((id) => isUuid(id) && !knownIds.has(id));
+    if (missing.length === 0) {
+      setOrphanFollowed([]);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url')
+        .in('id', missing);
+
+      if (cancelled || error || !data?.length) {
+        if (!cancelled) setOrphanFollowed([]);
+        return;
+      }
+
+      setOrphanFollowed(
+        data.map((row) =>
+          profileRowToSuggestionChannel(
+            row as {
+              id: string;
+              username: string | null;
+              full_name: string | null;
+              avatar_url: string | null;
+            }
+          )
+        )
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [followingIds, knownIds]);
+
+  const allFollowers = useMemo(() => {
+    const merged = new Map<string, SanctuaryChannel>(baseMerged);
+    for (const c of orphanFollowed) merged.set(c.id, c);
+    return Array.from(merged.values());
+  }, [baseMerged, orphanFollowed]);
+
+  return {
+    followingIds,
+    updateFollowingIds,
+    customFollowers,
+    updateCustomFollowers,
+    allFollowers,
+    recommendedAsChannels,
+    refreshLocal,
+  };
+}
+
