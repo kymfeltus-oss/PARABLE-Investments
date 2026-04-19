@@ -22,6 +22,7 @@ export function ParableLogoMark({ className = '', maxWidthClass = 'max-w-md' }: 
         fill
         className="object-contain drop-shadow-[0_0_30px_rgba(0,242,255,0.8)]"
         priority
+        fetchPriority="high"
       />
     </div>
   );

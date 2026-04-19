@@ -39,6 +39,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
+      <head>
+        {/* Early hint for LCP: logo is used in client hero areas; preload avoids late discovery. */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+      </head>
       <body
         className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
