@@ -68,10 +68,10 @@ export function MeetWelcomeClip({ fullscreen = false }: Props) {
 
   if (fullscreen) {
     return (
-      <div className="absolute inset-0 overflow-hidden bg-black">
+      <div className="absolute inset-0 min-h-[100dvh] w-full overflow-hidden bg-black">
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 min-h-full min-w-full object-cover"
           src={WELCOME_SRC}
           autoPlay
           muted={muted}

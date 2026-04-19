@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ConnectionState,
   LiveKitRoom,
@@ -465,9 +466,15 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   }
 
   if (welcomeStage) {
-    return (
-      <div className="fixed inset-0 z-[200] flex min-h-[100dvh] min-h-screen flex-col bg-black">
-        <div className="absolute inset-0">
+    /** Portal to `document.body` so `fixed` is not trapped by MeetClient `max-w-4xl` / filters. */
+    return createPortal(
+      <div
+        className="fixed inset-0 z-[9999] flex min-h-[100dvh] w-full min-w-0 flex-col bg-black"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="meet-welcome-title"
+      >
+        <div className="absolute inset-0 min-h-[100dvh] w-full">
           <MeetWelcomeClip fullscreen />
         </div>
         <div
@@ -476,7 +483,9 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         />
         <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] text-center">
           <div className="space-y-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
-            <p className="font-serif text-2xl text-white md:text-3xl">Welcome to Parable</p>
+            <p id="meet-welcome-title" className="font-serif text-2xl text-white md:text-3xl">
+              Welcome to Parable
+            </p>
             <p className="text-sm text-white/80">
               Watch the welcome clip, then continue to set up your microphone and camera.
             </p>
@@ -514,7 +523,8 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             ) : null}
           </div>
         </div>
-      </div>
+      </div>,
+      document.body,
     );
   }
 
