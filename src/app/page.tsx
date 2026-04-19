@@ -41,13 +41,13 @@ export default function InvestorLandingPage() {
 
       <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] md:px-8">
         <header className="shrink-0 pt-4 text-center md:pt-8">
-          <p className="parable-landing-eyebrow mb-4 md:mb-5">
+          <p className="parable-landing-eyebrow mb-1.5 md:mb-2">
             Confidential · Investor introduction
           </p>
         </header>
 
         {/* PARABLE MP4 (or static mark) — inline so it scales to fit; tagline is strictly below */}
-        <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-0 py-2 md:py-4">
+        <div className="flex w-full min-w-0 shrink-0 flex-col items-center justify-center px-0 pb-2 pt-0 md:pb-3 md:pt-0">
           <InvestorLandingInlineLogoVideo />
         </div>
 
