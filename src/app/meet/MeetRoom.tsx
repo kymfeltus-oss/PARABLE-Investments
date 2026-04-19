@@ -11,7 +11,7 @@ import {
   type LocalUserChoices,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
-import { MediaDeviceFailure } from 'livekit-client';
+import { DisconnectReason, MediaDeviceFailure } from 'livekit-client';
 import { BackgroundBlur, VirtualBackground, supportsBackgroundProcessors } from '@livekit/track-processors';
 import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettings';
 import { MeetPreJoinSetupPanel } from '@/components/meet/MeetPreJoinSetupPanel';
@@ -398,8 +398,8 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
       : false;
 
     return (
-      <div className="investor-meeting-shell parable-livekit-root fixed inset-x-0 bottom-0 top-0 z-30 mx-auto flex w-full max-w-[100vw] flex-col border-0 border-white/10 shadow-2xl md:relative md:inset-auto md:max-w-6xl md:rounded-xl md:border">
-        <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[#2d2d30] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="investor-meeting-shell parable-livekit-root fixed inset-0 z-[100] flex w-full max-w-none flex-col border-0 border-white/10 bg-[#1b1b1d] shadow-none">
+        <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[#2d2d30] px-[max(1rem,env(safe-area-inset-left))] pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="truncate text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Parable Meeting</p>
             <p className="truncate font-mono text-sm text-white/90">{fullRoomName}</p>
@@ -431,13 +431,28 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             connect
             audio={audioOpts}
             video={videoOpts}
+            options={{
+              adaptiveStream: true,
+              dynacast: true,
+            }}
             onConnected={() => setRoomError(null)}
             onError={(err) => {
               const msg = err instanceof Error ? err.message : String(err);
               setRoomError(msg);
             }}
             onMediaDeviceFailure={(failure) => setRoomError(mediaDeviceFailureMessage(failure))}
-            onDisconnected={leave}
+            onDisconnected={(reason) => {
+              if (reason === DisconnectReason.CLIENT_INITIATED) {
+                leave();
+                return;
+              }
+              const byNum = DisconnectReason as unknown as Record<number, string>;
+              const reasonLabel =
+                reason === undefined ? 'unknown' : (byNum[reason] ?? String(reason));
+              setRoomError(
+                `Disconnected (${reasonLabel}). If you did not leave on purpose, check your network and that LiveKit is configured (NEXT_PUBLIC_LIVEKIT_URL, LIVEKIT_API_KEY/SECRET).`,
+              );
+            }}
             data-lk-theme="default"
           >
             <VideoConference SettingsComponent={MeetParticipantSettings} />
