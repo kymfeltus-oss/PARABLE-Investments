@@ -1,28 +1,42 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import {
+  type BlurStrength,
+  type MeetBgPresetId,
+  MEET_BG_PRESETS,
+} from '@/lib/meet-virtual-background';
 
-type BgMode = 'none' | 'blur' | 'image';
+type BgMode = 'none' | 'blur' | 'image' | 'preset';
 
 type Props = {
   bgMode: BgMode;
   onBgModeChange: (mode: BgMode) => void;
-  onPickBackgroundImage: (file: File) => void;
+  blurStrength: BlurStrength;
+  onBlurStrengthChange: (s: BlurStrength) => void;
+  onPreset: (id: MeetBgPresetId) => void;
+  selectedPresetId: MeetBgPresetId | null;
+  onPickBackgroundImage: (file: File) => Promise<void>;
   supportsBackgrounds: boolean;
 };
 
 /**
- * Pre-join controls below LiveKit PreJoin: mic level check (separate short capture) and
- * virtual background options (paired with LiveKit PreJoin `videoProcessor`).
+ * Pre-join controls below LiveKit PreJoin: mic level check and virtual backgrounds
+ * (paired with LiveKit PreJoin `videoProcessor`).
  */
 export function MeetPreJoinSetupPanel({
   bgMode,
   onBgModeChange,
+  blurStrength,
+  onBlurStrengthChange,
+  onPreset,
+  selectedPresetId,
   onPickBackgroundImage,
   supportsBackgrounds,
 }: Props) {
   const [micCheckOpen, setMicCheckOpen] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
+  const [uploadBusy, setUploadBusy] = useState(false);
   const rafRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -85,8 +99,8 @@ export function MeetPreJoinSetupPanel({
     <div className="rounded-xl border border-white/10 bg-[#141416]/95 px-4 py-3 text-left shadow-inner">
       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Preview settings</p>
       <p className="mt-1 text-[11px] leading-relaxed text-white/45">
-        Use the microphone and camera controls in the preview above to choose devices. Test your mic here; background
-        effects apply to the camera preview when supported.
+        Use the microphone and camera controls in the preview above to choose devices. Background effects keep you in
+        focus and only change the backdrop; uploads are cropped to fit (16∶9).
       </p>
 
       <div className="mt-3 border-t border-white/10 pt-3">
@@ -116,14 +130,15 @@ export function MeetPreJoinSetupPanel({
       </div>
 
       <div className="mt-4 border-t border-white/10 pt-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Camera — background & filters</p>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Camera — background</p>
         {!supportsBackgrounds ? (
           <p className="mt-1 text-[11px] text-amber-100/80">Background effects are not supported in this browser.</p>
         ) : (
           <p className="mt-1 text-[11px] text-white/40">
-            Blur or image background (same engine as in-meeting settings). First use may download a small ML model.
+            First use may download a small segmentation model. Use light blur for the sharpest edges.
           </p>
         )}
+
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
@@ -137,6 +152,10 @@ export function MeetPreJoinSetupPanel({
           >
             None
           </button>
+        </div>
+
+        <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-white/35">Blur backdrop</p>
+        <div className="mt-1 flex flex-wrap gap-2">
           <button
             type="button"
             disabled={!supportsBackgrounds}
@@ -149,29 +168,65 @@ export function MeetPreJoinSetupPanel({
           >
             Blur
           </button>
-          <label
-            className={`cursor-pointer rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide ${
-              bgMode === 'image'
-                ? 'border-[#00f2ff]/50 bg-[#00f2ff]/15 text-[#00f2ff]'
-                : 'border-white/20 text-white/75 hover:bg-white/10'
-            } ${!supportsBackgrounds ? 'pointer-events-none opacity-40' : ''}`}
-          >
-            Image…
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={!supportsBackgrounds}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = '';
-                if (file && file.type.startsWith('image/')) onPickBackgroundImage(file);
-              }}
-            />
-          </label>
+          {(['light', 'medium', 'strong'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              disabled={!supportsBackgrounds || bgMode !== 'blur'}
+              onClick={() => onBlurStrengthChange(s)}
+              className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold capitalize ${
+                bgMode === 'blur' && blurStrength === s
+                  ? 'border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]'
+                  : 'border-white/15 text-white/55 hover:bg-white/5 disabled:opacity-35'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
         </div>
-      </div>
 
+        <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-white/35">Presets</p>
+        <div className="mt-1 flex flex-wrap gap-2">
+          {MEET_BG_PRESETS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              disabled={!supportsBackgrounds}
+              onClick={() => onPreset(p.id)}
+              className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold ${
+                bgMode === 'preset' && selectedPresetId === p.id
+                  ? 'border-[#00f2ff]/50 bg-[#00f2ff]/15 text-[#00f2ff]'
+                  : 'border-white/20 text-white/75 hover:bg-white/10'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-white/35">Your image</p>
+        <label
+          className={`inline-flex cursor-pointer rounded-md border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/75 hover:bg-white/10 ${
+            uploadBusy || !supportsBackgrounds ? 'pointer-events-none opacity-40' : ''
+          }`}
+        >
+          {uploadBusy ? 'Processing…' : 'Upload image…'}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploadBusy || !supportsBackgrounds}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (file && file.type.startsWith('image/')) {
+                setUploadBusy(true);
+                void onPickBackgroundImage(file).finally(() => setUploadBusy(false));
+              }
+            }}
+          />
+        </label>
+      </div>
     </div>
   );
 }

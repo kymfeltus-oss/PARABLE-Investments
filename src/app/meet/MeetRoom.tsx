@@ -17,6 +17,14 @@ import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettin
 import { MeetPreJoinSetupPanel } from '@/components/meet/MeetPreJoinSetupPanel';
 import { MeetWelcomeClip } from '@/components/meet/MeetWelcomeClip';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import {
+  BLUR_STRENGTH,
+  type BlurStrength,
+  type MeetBgPresetId,
+  MEET_BG_PRESETS,
+  createPresetBackgroundDataUrl,
+  prepareUploadedBackgroundImage,
+} from '@/lib/meet-virtual-background';
 
 function mediaDeviceFailureMessage(failure: MediaDeviceFailure | undefined): string {
   switch (failure) {
@@ -63,8 +71,10 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   const [copiedMeetingId, setCopiedMeetingId] = useState(false);
 
   /** PreJoin virtual background (LiveKit `videoProcessor` + remount key). */
-  const [prejoinBg, setPrejoinBg] = useState<'none' | 'blur' | 'image'>('none');
-  const [prejoinImageUrl, setPrejoinImageUrl] = useState<string | null>(null);
+  const [prejoinBg, setPrejoinBg] = useState<'none' | 'blur' | 'image' | 'preset'>('none');
+  const [prejoinBlurStrength, setPrejoinBlurStrength] = useState<BlurStrength>('light');
+  const [prejoinImageDataUrl, setPrejoinImageDataUrl] = useState<string | null>(null);
+  const [prejoinPresetId, setPrejoinPresetId] = useState<MeetBgPresetId | null>(null);
 
   const fullRoomName = useMemo(() => `investor-${roomSlug.replace(/^investor-/, '')}`, [roomSlug]);
 
@@ -80,39 +90,59 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     });
   }, []);
 
+  const prejoinPresetUrls = useMemo(() => {
+    if (typeof window === 'undefined' || !supportsVirtualBg) return null;
+    const m = new Map<MeetBgPresetId, string>();
+    for (const p of MEET_BG_PRESETS) {
+      m.set(p.id, createPresetBackgroundDataUrl(p.id));
+    }
+    return m;
+  }, [supportsVirtualBg]);
+
   const prejoinVideoProcessor = useMemo(() => {
     if (!supportsVirtualBg) return undefined;
-    if (prejoinBg === 'blur') return BackgroundBlur(14);
-    if (prejoinBg === 'image' && prejoinImageUrl) return VirtualBackground(prejoinImageUrl);
+    if (prejoinBg === 'blur') return BackgroundBlur(BLUR_STRENGTH[prejoinBlurStrength]);
+    if (prejoinBg === 'image' && prejoinImageDataUrl) return VirtualBackground(prejoinImageDataUrl);
+    if (prejoinBg === 'preset' && prejoinPresetId && prejoinPresetUrls) {
+      const u = prejoinPresetUrls.get(prejoinPresetId);
+      if (u) return VirtualBackground(u);
+    }
     return undefined;
-  }, [supportsVirtualBg, prejoinBg, prejoinImageUrl]);
+  }, [
+    supportsVirtualBg,
+    prejoinBg,
+    prejoinBlurStrength,
+    prejoinImageDataUrl,
+    prejoinPresetId,
+    prejoinPresetUrls,
+  ]);
 
   const preJoinRemountKey = useMemo(
-    () => `pj-${prejoinBg}-${prejoinImageUrl ?? 'n'}`,
-    [prejoinBg, prejoinImageUrl],
+    () =>
+      `pj-${prejoinBg}-${prejoinBlurStrength}-${prejoinPresetId ?? 'np'}-${prejoinImageDataUrl ? prejoinImageDataUrl.slice(-40) : 'n'}`,
+    [prejoinBg, prejoinBlurStrength, prejoinPresetId, prejoinImageDataUrl],
   );
 
-  useEffect(() => {
-    return () => {
-      if (prejoinImageUrl) URL.revokeObjectURL(prejoinImageUrl);
-    };
-  }, [prejoinImageUrl]);
-
-  const handlePrejoinBgMode = useCallback((mode: 'none' | 'blur' | 'image') => {
-    if (mode !== 'image') {
-      setPrejoinImageUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-    }
+  const handlePrejoinBgMode = useCallback((mode: 'none' | 'blur' | 'image' | 'preset') => {
+    if (mode !== 'image') setPrejoinImageDataUrl(null);
+    if (mode !== 'preset') setPrejoinPresetId(null);
     setPrejoinBg(mode);
   }, []);
 
-  const handlePrejoinBgImage = useCallback((file: File) => {
-    setPrejoinImageUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return URL.createObjectURL(file);
-    });
+  const handlePrejoinPreset = useCallback((id: MeetBgPresetId) => {
+    setPrejoinImageDataUrl(null);
+    setPrejoinPresetId(id);
+    setPrejoinBg('preset');
+  }, []);
+
+  const handlePrejoinBlurStrength = useCallback((s: BlurStrength) => {
+    setPrejoinBlurStrength(s);
+  }, []);
+
+  const handlePrejoinBgImage = useCallback(async (file: File) => {
+    const dataUrl = await prepareUploadedBackgroundImage(file);
+    setPrejoinImageDataUrl(dataUrl);
+    setPrejoinPresetId(null);
     setPrejoinBg('image');
   }, []);
 
@@ -243,10 +273,9 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     setRoomError(null);
     setWelcomeStage(false);
     setPrejoinBg('none');
-    setPrejoinImageUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
+    setPrejoinBlurStrength('light');
+    setPrejoinImageDataUrl(null);
+    setPrejoinPresetId(null);
   }, []);
 
   const handlePreJoinSubmit = useCallback(
@@ -349,6 +378,10 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         <MeetPreJoinSetupPanel
           bgMode={prejoinBg}
           onBgModeChange={handlePrejoinBgMode}
+          blurStrength={prejoinBlurStrength}
+          onBlurStrengthChange={handlePrejoinBlurStrength}
+          selectedPresetId={prejoinPresetId}
+          onPreset={handlePrejoinPreset}
           onPickBackgroundImage={handlePrejoinBgImage}
           supportsBackgrounds={supportsVirtualBg}
         />
