@@ -2,7 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
@@ -62,11 +62,7 @@ export default function InvestorLandingPage() {
         </div>
 
         <footer className="shrink-0 flex flex-col items-center gap-10 pb-10">
-          <motion.div
-            className="flex w-full max-w-sm flex-col items-center"
-            animate={{ opacity: [0.35, 1, 0.35] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-          >
+          <div className="parable-landing-continue-pulse flex w-full max-w-sm flex-col items-center">
             <p className="mb-4 text-[10px] font-black uppercase tracking-[0.35em] text-white/40">
               Tap below or press Enter to continue
             </p>
@@ -79,7 +75,7 @@ export default function InvestorLandingPage() {
                 CONTINUE
               </span>
             </Link>
-          </motion.div>
+          </div>
 
           <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#00f2ff]/45 to-transparent" />
 

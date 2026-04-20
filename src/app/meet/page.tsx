@@ -2,6 +2,9 @@ import { NdaGate } from '@/components/investor/NdaGate';
 import { normalizeLiveKitServerUrl } from '@/lib/livekit-server-url';
 import MeetClient from './MeetClient';
 
+/** Avoid serving a long-cached HTML shell for the meeting flow (`?live=1`, scheduled joins, etc.). */
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };

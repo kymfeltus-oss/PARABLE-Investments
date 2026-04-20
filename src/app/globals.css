@@ -122,6 +122,50 @@ body {
   backdrop-filter: blur(12px);
 }
 
+/* Landing `/` — footer CTA pulse (CSS only; avoids framer-motion runtime on critical path) */
+@keyframes parable-landing-continue-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.parable-landing-continue-pulse {
+  animation: parable-landing-continue-pulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parable-landing-continue-pulse {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Investor demo — praise break gold/cyan shimmer (ParableInteractiveDemo) */
+@keyframes parable-demo-praise-pulse {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.22;
+  }
+}
+
+.parable-demo-praise-pulse {
+  animation: parable-demo-praise-pulse 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parable-demo-praise-pulse {
+    animation: none;
+    opacity: 0.14;
+  }
+}
+
 /* LiveKit — nudge UI toward PARABLE cyan (components use lk-* classes) */
 .parable-livekit-root {
   --lk-accent-fg: #00f2ff;

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ExplorePrototypeIcon } from '@/components/investor/ExplorePrototypeBody';
+import { ParablePortalFeatures } from '@/components/investor/ParablePortalFeatures';
 import { RequestMeetingBlock } from '@/components/investor/RequestMeetingBlock';
 
 function scheduledMeetHref(): string {
@@ -140,6 +142,15 @@ export default function StartPageBody() {
         </motion.div>
 
         <motion.div
+          className="mt-8 md:mt-10"
+          initial={reduceMotion ? false : fadeUp.initial}
+          animate={fadeUp.animate}
+          transition={{ ...trans, delay: reduceMotion ? 0 : 0.22 }}
+        >
+          <ParablePortalFeatures variant="compact" meetHref={meetHref} />
+        </motion.div>
+
+        <motion.div
           className="mt-10 flex flex-col gap-4 md:mt-12 md:gap-5"
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -186,10 +197,43 @@ export default function StartPageBody() {
               Open materials <span aria-hidden>→</span>
             </span>
           </Link>
+
+          <Link
+            href="/explore"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+          >
+            <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
+              <ExplorePrototypeIcon className="h-7 w-7" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
+              Interactive prototype
+            </span>
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+              Explore the Parable app
+            </span>
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+              Real app embed when a prototype URL is set; otherwise the brand-matched in-browser preview (hub shell + nav).
+            </span>
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+              Open prototype <span aria-hidden>→</span>
+            </span>
+          </Link>
+
+          <p className="text-center text-[12px] leading-relaxed text-white/45">
+            Prefer everything in this site?{' '}
+            <Link
+              href="/parable-demo"
+              className="font-semibold text-[#00f2ff]/85 underline decoration-[#00f2ff]/35 underline-offset-4 hover:text-[#00f2ff] hover:decoration-[#00f2ff]/60"
+            >
+              Open the on-site interactive demo
+            </Link>{' '}
+            — no hosted prototype URL required.
+          </p>
         </motion.div>
 
         <motion.div
-          className="mt-12 md:mt-14"
+          id="book-meeting"
+          className="mt-12 scroll-mt-24 md:mt-14"
           initial={reduceMotion ? false : fadeUp.initial}
           animate={fadeUp.animate}
           transition={{ ...trans, delay: reduceMotion ? 0 : 0.34 }}

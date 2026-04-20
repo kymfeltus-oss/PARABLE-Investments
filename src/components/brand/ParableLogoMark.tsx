@@ -15,7 +15,7 @@ export function ParableLogoMark({ className = '', maxWidthClass = 'max-w-md' }: 
     <div
       className={`relative mx-auto w-full min-w-0 max-w-full shrink aspect-[3/1] ${maxWidthClass} ${className}`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- SVG LCP: native img + fetchPriority beats next/image deferral */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- SVG LCP: eager img + root preload (avoid fetchPriority SSR/client attr mismatches) */}
       <img
         src="/logo.svg"
         alt="Parable Protocol"
@@ -23,7 +23,6 @@ export function ParableLogoMark({ className = '', maxWidthClass = 'max-w-md' }: 
         height={300}
         decoding="async"
         loading="eager"
-        fetchPriority="high"
         className="h-full w-full object-contain drop-shadow-[0_0_30px_rgba(0,242,255,0.8)]"
       />
     </div>

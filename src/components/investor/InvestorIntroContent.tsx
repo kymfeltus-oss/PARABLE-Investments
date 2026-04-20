@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ParablePortalFeatures } from '@/components/investor/ParablePortalFeatures';
 
 /** Full investment intro / materials — used on `/info`. */
 export function InvestorIntroContent() {
@@ -13,6 +14,10 @@ export function InvestorIntroContent() {
         <span className="text-white/85">Parable</span>: a protocol-shaped platform where ministry, testimony, study, and
         live creation come together for audiences who want depth—not only scale.
       </p>
+
+      <div className="mb-10">
+        <ParablePortalFeatures variant="full" />
+      </div>
 
       <div className="parable-glass-panel mb-10 px-6 py-8 md:px-10 md:py-10">
         <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[#00f2ff]/80">
@@ -65,7 +70,13 @@ export function InvestorIntroContent() {
         </dl>
       </div>
 
-      <div className="mt-12 flex flex-col items-center gap-6 sm:flex-row sm:justify-center sm:gap-10">
+      <div className="mt-12 flex flex-col flex-wrap items-center justify-center gap-6 sm:flex-row sm:gap-10">
+        <Link
+          href="/explore"
+          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#00f2ff]/75 hover:text-[#00f2ff] md:text-[11px]"
+        >
+          App prototype →
+        </Link>
         <Link
           href="/meet"
           className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#00f2ff]/75 hover:text-[#00f2ff] md:text-[11px]"

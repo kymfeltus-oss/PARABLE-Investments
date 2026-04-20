@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import MeetRoom from './MeetRoom';
@@ -13,6 +15,17 @@ type Props = {
 };
 
 export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
+  const router = useRouter();
+
+  /** Back/forward cache can restore a stale `/meet` document; refresh server components so UI matches the latest deploy. */
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) router.refresh();
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, [router]);
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
       <InvestorAtmosphere sparkleCount={40} />

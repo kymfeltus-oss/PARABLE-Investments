@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
       <head>
         {/* LCP: logo is the main above-the-fold mark on investor flows; high priority + no lazy path. */}
-        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" fetchPriority="high" />
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
       </head>
       <body
         className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}

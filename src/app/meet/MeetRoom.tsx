@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import {
   ConnectionState,
   LiveKitRoom,
@@ -27,6 +28,9 @@ import {
   prepareUploadedBackgroundImage,
 } from '@/lib/meet-virtual-background';
 
+/** Query flag while in the LiveKit stage — replaces the lobby history entry so Back exits /meet cleanly. */
+const LIVE_MEET_PARAM = 'live';
+
 function mediaDeviceFailureMessage(failure: MediaDeviceFailure | undefined): string {
   switch (failure) {
     case MediaDeviceFailure.PermissionDenied:
@@ -50,6 +54,7 @@ type Props = {
 };
 
 export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
+  const router = useRouter();
   const [displayName, setDisplayName] = useState('');
   const [workEmail, setWorkEmail] = useState('');
   const [roomSlug, setRoomSlug] = useState(() => {
@@ -278,6 +283,29 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     setPrejoinImageDataUrl(null);
     setPrejoinPresetId(null);
   }, []);
+
+  /**
+   * When the user reaches the LiveKit room, add `?live=1` via `replace` so the **lobby** step is not kept
+   * as the previous history entry. Browser Back from the call then skips the cached “Before you join” shell.
+   * When not in the room, strip `live` (refresh with stale URL, or after Leave).
+   */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const inRoom = Boolean(token && userChoices);
+    const u = new URL(window.location.href);
+    const hasLive = u.searchParams.get(LIVE_MEET_PARAM) === '1';
+
+    if (inRoom && !hasLive) {
+      u.searchParams.set(LIVE_MEET_PARAM, '1');
+      router.replace(u.pathname + u.search, { scroll: false });
+      return;
+    }
+    if (!inRoom && hasLive) {
+      u.searchParams.delete(LIVE_MEET_PARAM);
+      const qs = u.searchParams.toString();
+      router.replace(u.pathname + (qs ? `?${qs}` : ''), { scroll: false });
+    }
+  }, [token, userChoices, router]);
 
   const handlePreJoinSubmit = useCallback(
     async (choices: LocalUserChoices) => {

@@ -1,6 +1,6 @@
 # Parable Investments
 
-Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/book`** (register name/email + NDA acknowledgment → **email confirmation** with video link → embedded **Cal.com** calendar) → **`/info`** and **`/meet`** (LiveKit).
+Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/explore`** (optional embedded Parable app prototype; set `NEXT_PUBLIC_PARABLE_PROTOTYPE_URL`) → **`/book`** (register name/email + NDA acknowledgment → **email confirmation** with video link → embedded **Cal.com** calendar) → **`/info`** and **`/meet`** (LiveKit).
 
 ## Run locally
 
@@ -14,6 +14,10 @@ Open [http://localhost:3003](http://localhost:3003).
 ## Deploy
 
 Connect the repo to **Vercel** (or any Next.js host). **Canonical URL:** `https://parableinvestments.com` (see `src/lib/investor-site.ts`).
+
+### App prototype (`/explore`)
+
+Optional. Set **`NEXT_PUBLIC_PARABLE_PROTOTYPE_URL`** to a public **HTTPS** URL (staging or demo) of the Parable product. Investors who have passed the NDA can open **`/explore`** from the choice hub (`/start`) to use an **iframe** or **open in new tab**. If the prototype is on another origin, allow this site in **`Content-Security-Policy: frame-ancestors`** (or equivalent) so the embed can load; otherwise the page still works via “Open in new tab.”
 
 ### LiveKit (investor video — `/meet`)
 

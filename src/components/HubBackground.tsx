@@ -3,15 +3,18 @@
 type Props = {
   /** Sit above a full-bleed video: no solid base, effects only (grid + glow orbs). */
   variant?: "default" | "overVideo";
+  /** Fill the nearest positioned ancestor (e.g. phone-frame demo) instead of the viewport. */
+  contained?: boolean;
 };
 
-export default function HubBackground({ variant = "default" }: Props) {
+export default function HubBackground({ variant = "default", contained = false }: Props) {
   const over = variant === "overVideo";
-  const position = over ? "absolute" : "fixed";
+  const position = contained || over ? "absolute" : "fixed";
 
   return (
     <div
       className={`${position} inset-0 z-0 overflow-hidden ${over ? "bg-transparent" : "bg-[#050505]"}`}
+      aria-hidden
     >
       <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-[#00f2ff]/10 blur-[120px]" />
       <div
