@@ -36,12 +36,18 @@ export default async function InvestorPortalProposalPage() {
   return (
     <NdaGate>
       <div className="flex min-h-dvh flex-col">
-        <div className="mx-auto w-full max-w-7xl px-4 pt-3">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-5 gap-y-2 px-4 pt-3">
           <Link
-            href="/investor/portal"
+            href="/investor/portal/hub"
             className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
           >
-            ← Welcome video
+            ← Investor hub
+          </Link>
+          <Link
+            href="/investor/portal"
+            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
+          >
+            Rewatch intro
           </Link>
         </div>
         {process.env.NODE_ENV === 'development' ? (

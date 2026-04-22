@@ -7,14 +7,7 @@ import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { ExplorePrototypeIcon } from '@/components/investor/ExplorePrototypeBody';
 import { ParablePortalFeatures } from '@/components/investor/ParablePortalFeatures';
 import { RequestMeetingBlock } from '@/components/investor/RequestMeetingBlock';
-
-function scheduledMeetHref(): string {
-  const suffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim();
-  if (suffix) {
-    return `/meet?join=scheduled&room=${encodeURIComponent(suffix)}`;
-  }
-  return '/meet?join=scheduled';
-}
+import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 
 function VideoIcon({ className }: { className?: string }) {
   return (
@@ -76,7 +69,7 @@ const fadeUp = {
 };
 
 export default function StartPageBody() {
-  const meetHref = scheduledMeetHref();
+  const meetHref = getInvestorScheduledMeetHref();
   const reduceMotion = useReducedMotion();
   const trans = reduceMotion
     ? { duration: 0 }

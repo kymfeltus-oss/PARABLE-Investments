@@ -7,8 +7,8 @@ export default function InvestorPortalPage() {
   return (
     <NdaGate>
       <InfoIntroVideoPage
-        continueHref="/investor/portal/proposal"
-        continueButtonLabel="Continue to proposal"
+        continueHref="/investor/portal/hub"
+        continueButtonLabel="Enter investor hub"
       />
     </NdaGate>
   );

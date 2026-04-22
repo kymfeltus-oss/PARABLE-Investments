@@ -17,6 +17,15 @@ export function getScheduledMeetPath(roomSuffix?: string): string {
   return `/meet?join=scheduled&room=${encodeURIComponent(suffix)}`;
 }
 
+/** Same join URL pattern as `/start` — room param only when `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` is set. */
+export function getInvestorScheduledMeetHref(): string {
+  const suffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim();
+  if (suffix) {
+    return `/meet?join=scheduled&room=${encodeURIComponent(suffix)}`;
+  }
+  return '/meet?join=scheduled';
+}
+
 export function getScheduledMeetUrl(roomSuffix?: string): string {
   return `${getPublicSiteOrigin()}${getScheduledMeetPath(roomSuffix)}`;
 }
