@@ -14,7 +14,7 @@ const canonical = new URL('/investor/portal', INVESTOR_SITE_URL);
 
 export const metadata: Metadata = {
   title: 'Investor Portal | Project PARABLE',
-  description: 'Confidential strategic proposal — secured investor access.',
+  description: 'Welcome video, then confidential strategic proposal — secured investor access.',
   alternates: { canonical: canonical.href },
   robots: { index: false, follow: false },
 };

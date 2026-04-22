@@ -6,16 +6,29 @@ import { useCallback, useEffect, useRef } from 'react';
 
 const VIDEO_SRC = '/videos/Welcome.mp4';
 
+export type InfoIntroVideoPageProps = {
+  /** “Back” link in the header (default: choice hub). */
+  backHref?: string;
+  /** Route after Skip, Continue, or when the video ends (default: `/info`). */
+  continueHref?: string;
+  /** Primary CTA under the player. */
+  continueButtonLabel?: string;
+};
+
 /**
- * Standalone intro video at `/info/intro`. Continue / Skip / end → `/info` (materials).
+ * Welcome video — used at `/info/intro` (→ materials) and `/investor/portal` (→ proposal deck).
  */
-export function InfoIntroVideoPage() {
+export function InfoIntroVideoPage({
+  backHref = '/start',
+  continueHref = '/info',
+  continueButtonLabel = 'Continue to materials',
+}: InfoIntroVideoPageProps = {}) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const goToMaterials = useCallback(() => {
-    router.push('/info');
-  }, [router]);
+  const goNext = useCallback(() => {
+    router.push(continueHref);
+  }, [router, continueHref]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -37,13 +50,13 @@ export function InfoIntroVideoPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#060708] text-white">
       <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-        <Link href="/start" className="parable-eyebrow text-xs hover:text-[#00f2ff]">
+        <Link href={backHref} className="parable-eyebrow text-xs hover:text-[#00f2ff]">
           ← Choice hub
         </Link>
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={goToMaterials}
+            onClick={goNext}
             className="rounded-lg border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/80 transition hover:bg-white/10"
           >
             Skip
@@ -62,7 +75,7 @@ export function InfoIntroVideoPage() {
           src={VIDEO_SRC}
           playsInline
           preload="auto"
-          onEnded={goToMaterials}
+          onEnded={goNext}
         />
       </div>
 
@@ -80,10 +93,10 @@ export function InfoIntroVideoPage() {
         <div>
           <button
             type="button"
-            onClick={goToMaterials}
+            onClick={goNext}
             className="rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-8 py-3 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] transition hover:bg-[#00f2ff]/20"
           >
-            Continue to materials
+            {continueButtonLabel}
           </button>
         </div>
       </div>
