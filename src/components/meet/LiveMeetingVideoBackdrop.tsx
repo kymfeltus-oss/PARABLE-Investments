@@ -70,7 +70,7 @@ export function LiveMeetingVideoBackdrop({ loop = true, className = '' }: Props)
         </p>
       ) : null}
 
-      <div className="pointer-events-auto absolute bottom-[max(6.5rem,env(safe-area-inset-bottom)+5rem)] left-4 z-[5] sm:left-6">
+      <div className="pointer-events-auto absolute bottom-[max(6.5rem,env(safe-area-inset-bottom)+5rem)] left-4 z-[5] sm:left-6 md:bottom-[max(7rem,env(safe-area-inset-bottom)+5.5rem)]">
         <button
           type="button"
           onClick={toggleMute}

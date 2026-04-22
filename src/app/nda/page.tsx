@@ -113,24 +113,24 @@ function NdaForm() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
       <InvestorAtmosphere sparkleCount={40} />
-      <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:py-14 md:pb-28">
+      <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:max-w-4xl md:px-8 md:py-14 md:pb-28 lg:max-w-5xl lg:px-10">
         <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
           ← Back to landing
         </Link>
 
-        <ParableLogoMark className="mx-auto mb-8 max-w-xs opacity-90 md:max-w-sm" />
+        <ParableLogoMark className="mx-auto mb-8 max-w-xs opacity-90 md:mb-10 md:max-w-md lg:max-w-lg" />
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <p className="parable-eyebrow mb-3 text-center">Step 2 of 3</p>
-          <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00f2ff] md:text-2xl md:tracking-[0.22em]">
+          <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00f2ff] md:text-2xl md:tracking-[0.22em] lg:text-3xl">
             Confidentiality &amp; non-compete
           </h1>
-          <p className="mb-10 text-center text-sm text-white/45">
+          <p className="mb-10 text-center text-sm text-white/45 md:text-base">
             Read the terms, print and sign electronically below, then continue to investor materials.
           </p>
         </motion.div>
 
-        <div className="parable-glass-panel max-h-[min(56vh,520px)] overflow-y-auto px-5 py-6 text-left text-sm leading-relaxed text-white/65 md:px-8 md:py-8 md:text-[15px]">
+        <div className="parable-glass-panel max-h-[min(56vh,520px)] overflow-y-auto px-5 py-6 text-left text-sm leading-relaxed text-white/65 md:max-h-[min(60vh,640px)] md:px-8 md:py-8 md:text-[15px] lg:text-base">
           {paragraphs.map((block, i) => (
             <p key={i} className={block.startsWith('Disclaimer:') ? 'mt-4 text-white/45' : i === 0 ? 'font-semibold text-white/90' : 'mt-4'}>
               {block}

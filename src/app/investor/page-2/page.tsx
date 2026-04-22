@@ -16,8 +16,8 @@ export default async function InvestorPage2() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere />
-      <div className="relative z-20 mx-auto max-w-2xl px-4 py-14 pb-28 md:py-20">
-        <ParableLogoMark className="mx-auto mb-10 max-w-[180px] opacity-90" />
+      <div className="relative z-20 mx-auto max-w-2xl px-4 py-14 pb-28 md:max-w-3xl md:px-8 md:py-20 lg:max-w-4xl lg:px-10">
+        <ParableLogoMark className="mx-auto mb-10 max-w-[180px] opacity-90 md:max-w-xs lg:max-w-sm" />
         <p className="parable-eyebrow mb-3 text-center text-[#00f2ff]/80">Verified</p>
         <h1 className="mb-4 text-center text-2xl font-black uppercase tracking-[0.14em] text-white md:text-3xl">
           Welcome in
@@ -25,7 +25,7 @@ export default async function InvestorPage2() {
         <p className="mb-2 text-center text-sm text-white/50">
           Signed in as <span className="text-white/80">{user?.email ?? 'your account'}</span>
         </p>
-        <p className="mx-auto mb-10 max-w-md text-center text-sm leading-relaxed text-white/45">
+        <p className="mx-auto mb-10 max-w-md text-center text-sm leading-relaxed text-white/45 md:max-w-2xl md:text-base">
           You passed the legal gate. Continue to the full NDA step and investor hub when you are ready.
         </p>
 

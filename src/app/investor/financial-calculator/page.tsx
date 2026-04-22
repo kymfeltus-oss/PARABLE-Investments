@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 export default function InvestorFinancialCalculatorPage() {
   return (
-    <div className="relative min-h-dvh bg-[#050506] px-4 pb-16 pt-8 text-white sm:px-6 sm:pt-10">
-      <div className="mx-auto w-full max-w-2xl">
+    <div className="relative min-h-dvh bg-[#050506] px-4 pb-16 pt-8 text-white sm:px-6 sm:pt-10 md:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-2xl md:max-w-4xl lg:max-w-5xl">
         <Link
           href="/start"
           className="inline-flex items-center gap-2 rounded-full border border-[#00f2ff]/20 bg-black/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/80 backdrop-blur-sm transition hover:border-[#00f2ff]/40 hover:bg-black/55 hover:text-[#00f2ff]"

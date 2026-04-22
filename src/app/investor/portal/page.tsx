@@ -7,6 +7,7 @@ export default function InvestorPortalPage() {
   return (
     <NdaGate>
       <InfoIntroVideoPage
+        variant="flash"
         continueHref="/investor/portal/hub"
         continueButtonLabel="Enter investor hub"
       />

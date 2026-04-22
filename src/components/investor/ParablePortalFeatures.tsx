@@ -55,6 +55,34 @@ function CalculatorIcon({ className }: { className?: string }) {
   );
 }
 
+function CalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8 7V3m8 4V3M5 11h14M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function EnvelopeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export type PortalNavItem = {
   id: string;
   title: string;
@@ -63,9 +91,14 @@ export type PortalNavItem = {
   icon: ReactNode;
   /** Resolved client href (meet uses scheduled URL from parent). */
   href: string;
+  /** `mailto` shortcuts render as `<a>` (compact + full). */
+  kind?: 'route' | 'mailto';
 };
 
-function buildPortalItems(meetHref: string): PortalNavItem[] {
+export function buildPortalItems(meetHref: string): PortalNavItem[] {
+  const contactEmail = process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL?.trim() || 'investors@parableinvestments.com';
+  const mailtoHref = `mailto:${contactEmail}?subject=${encodeURIComponent('PARABLE investor inquiry')}`;
+
   return [
     {
       id: 'portal',
@@ -84,6 +117,14 @@ function buildPortalItems(meetHref: string): PortalNavItem[] {
       href: meetHref,
     },
     {
+      id: 'book',
+      title: 'Schedule meeting',
+      shortLabel: 'Schedule Meeting',
+      body: 'Register, confirm by email, then choose a slot when the calendar opens—same booking flow as the main investor site.',
+      icon: <CalendarIcon className="h-5 w-5" />,
+      href: '/book',
+    },
+    {
       id: 'calculator',
       title: 'Financial calculator',
       shortLabel: 'Financial Calculator',
@@ -99,14 +140,25 @@ function buildPortalItems(meetHref: string): PortalNavItem[] {
       icon: <AppGridIcon className="h-5 w-5" />,
       href: '/explore',
     },
+    {
+      id: 'contact',
+      title: 'Contact us',
+      shortLabel: 'Contact Us',
+      body: `Email ${contactEmail} for investor questions—the same inbox used for booking confirmations when configured.`,
+      icon: <EnvelopeIcon className="h-5 w-5" />,
+      href: mailtoHref,
+      kind: 'mailto',
+    },
   ];
 }
 
 const FULL_ICONS: Record<string, ReactNode> = {
   portal: <LayersIcon className="h-6 w-6" />,
   meet: <StreamIcon className="h-6 w-6" />,
+  book: <CalendarIcon className="h-6 w-6" />,
   calculator: <CalculatorIcon className="h-6 w-6" />,
   explore: <AppGridIcon className="h-6 w-6" />,
+  contact: <EnvelopeIcon className="h-6 w-6" />,
 };
 
 type Props = {
@@ -136,6 +188,15 @@ export function ParablePortalFeatures({
     icon: FULL_ICONS[item.id] ?? item.icon,
   }));
 
+  const shortcutTileClass =
+    'flex h-full min-h-[5.35rem] w-full min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.1] bg-black/45 px-1.5 py-2 text-center transition active:scale-[0.98] hover:border-[#00f2ff]/40 hover:bg-[#00f2ff]/10 sm:min-h-[5.85rem] sm:gap-1.5 sm:rounded-2xl sm:px-2.5 sm:py-3 md:min-h-[6.25rem] md:gap-2 md:px-3 md:py-3.5 lg:min-h-[6.5rem]';
+
+  const shortcutIconClass =
+    'text-[#00f2ff]/90 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6 md:[&_svg]:h-7 md:[&_svg]:w-7 lg:[&_svg]:h-8 lg:[&_svg]:w-8';
+
+  const shortcutLabelClass =
+    'max-w-[11.5rem] text-pretty text-[9px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:max-w-none sm:text-[10px] sm:tracking-[0.05em] md:text-[11px] lg:text-xs';
+
   if (compact) {
     return (
       <nav
@@ -145,26 +206,33 @@ export function ParablePortalFeatures({
         <p className="text-center text-[10px] font-black uppercase tracking-[0.26em] text-[#00f2ff]/70 sm:text-[11px] sm:tracking-[0.28em] md:text-xs md:tracking-[0.3em]">
           PARABLE · This portal — jump to
         </p>
-        <ul className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4">
+        <ul className="mt-4 grid grid-cols-2 auto-rows-fr gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-2.5 md:mt-6 md:gap-3 lg:grid-cols-6">
           {navItems.map((item) => (
-            <li key={item.id}>
-              <Link
-                href={item.href}
-                title={`${item.title}: ${item.body}`}
-                className="flex min-w-[6.75rem] max-w-[11rem] flex-col items-center gap-1.5 rounded-xl border border-white/[0.1] bg-black/45 px-2.5 py-3 text-center transition hover:border-[#00f2ff]/40 hover:bg-[#00f2ff]/10 sm:min-w-[7.75rem] sm:max-w-[13rem] sm:gap-2 sm:px-3 sm:py-3.5 md:min-w-[9rem] md:max-w-[15rem] md:px-4 md:py-4"
-              >
-                <span className="text-[#00f2ff]/90 [&_svg]:h-6 [&_svg]:w-6 sm:[&_svg]:h-7 sm:[&_svg]:w-7 md:[&_svg]:h-8 md:[&_svg]:w-8">
-                  {item.icon}
-                </span>
-                <span className="text-[10px] font-bold uppercase leading-snug tracking-[0.05em] text-white/90 sm:text-[11px] md:text-xs">
-                  {item.shortLabel}
-                </span>
-              </Link>
+            <li key={item.id} className="min-w-0">
+              {item.kind === 'mailto' ? (
+                <a
+                  href={item.href}
+                  title={`${item.title}: ${item.body}`}
+                  className={shortcutTileClass}
+                >
+                  <span className={shortcutIconClass}>{item.icon}</span>
+                  <span className={shortcutLabelClass}>{item.shortLabel}</span>
+                </a>
+              ) : (
+                <Link
+                  href={item.href}
+                  title={`${item.title}: ${item.body}`}
+                  className={shortcutTileClass}
+                >
+                  <span className={shortcutIconClass}>{item.icon}</span>
+                  <span className={shortcutLabelClass}>{item.shortLabel}</span>
+                </Link>
+              )}
             </li>
           ))}
         </ul>
         <p className="mt-3.5 text-center text-[11px] leading-snug text-white/45 sm:mt-4 sm:text-xs md:text-[13px]">
-          Hover a shortcut for details. Use the cards below for full descriptions.
+          Tap a shortcut for details (long-press on mobile). Use the cards below for full descriptions.
         </p>
       </nav>
     );
@@ -183,8 +251,8 @@ export function ParablePortalFeatures({
         What you can do here
       </h2>
       <p className="mt-3 text-pretty text-sm leading-relaxed text-white/50 md:text-[15px]">
-        Jump to the investor portal, your scheduled video room, the financial modeler, or the interactive Parable app
-        preview—all from this site.
+        Jump to the investor portal, live or scheduled meetings, calendar booking, the financial modeler, the app preview,
+        or email the team—all from this site.
       </p>
 
       <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
@@ -195,8 +263,19 @@ export function ParablePortalFeatures({
           >
             <div className="shrink-0 text-[#00f2ff]/85">{item.icon}</div>
             <div className="min-w-0">
-              <h3 className="text-sm font-bold tracking-tight text-white/95">{item.title}</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-white/55 sm:text-sm">{item.body}</p>
+              {item.kind === 'mailto' ? (
+                <a href={item.href} className="group block">
+                  <h3 className="text-sm font-bold tracking-tight text-white/95 underline decoration-[#00f2ff]/25 decoration-1 underline-offset-4 transition group-hover:text-[#00f2ff] group-hover:decoration-[#00f2ff]/50">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-white/55 sm:text-sm">{item.body}</p>
+                </a>
+              ) : (
+                <>
+                  <h3 className="text-sm font-bold tracking-tight text-white/95">{item.title}</h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-white/55 sm:text-sm">{item.body}</p>
+                </>
+              )}
             </div>
           </li>
         ))}
