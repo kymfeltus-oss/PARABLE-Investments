@@ -2,11 +2,35 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-/** Local path (not in git if >100MB) or override via `NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL` (HTTPS). */
-const VIDEO_SRC =
-  process.env.NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL?.trim() || '/videos/Investor%20Intro.mp4';
+/** Build-time list: optional HTTPS override, then same-origin static paths (space in filename). */
+function introVideoCandidateUrls(): string[] {
+  const out: string[] = [];
+  const raw = process.env.NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL?.trim();
+  if (raw) {
+    try {
+      const u = new URL(raw);
+      if (u.protocol === 'https:' || u.protocol === 'http:') {
+        out.push(u.href);
+      }
+    } catch {
+      /* ignore invalid env */
+    }
+  }
+  const encodedPath = `/videos/${encodeURIComponent('Investor Intro.mp4')}`;
+  const dedup: string[] = [];
+  const seen = new Set<string>();
+  for (const u of [...out, encodedPath]) {
+    if (u && !seen.has(u)) {
+      seen.add(u);
+      dedup.push(u);
+    }
+  }
+  return dedup.length > 0 ? dedup : [encodedPath];
+}
+
+const INTRO_VIDEO_CANDIDATES = introVideoCandidateUrls();
 
 export type InfoIntroVideoPageProps = {
   /** “Back” link in the header (default: choice hub). */
@@ -28,11 +52,29 @@ export function InfoIntroVideoPage({
 }: InfoIntroVideoPageProps = {}) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [srcIndex, setSrcIndex] = useState(0);
   const [loadError, setLoadError] = useState(false);
+
+  const videoSrc = useMemo(
+    () => INTRO_VIDEO_CANDIDATES[Math.min(srcIndex, INTRO_VIDEO_CANDIDATES.length - 1)]!,
+    [srcIndex],
+  );
 
   const goNext = useCallback(() => {
     router.push(continueHref);
   }, [router, continueHref]);
+
+  const onVideoError = useCallback(() => {
+    setSrcIndex((prev) => {
+      const next = prev + 1;
+      if (next < INTRO_VIDEO_CANDIDATES.length) {
+        queueMicrotask(() => setLoadError(false));
+        return next;
+      }
+      queueMicrotask(() => setLoadError(true));
+      return prev;
+    });
+  }, []);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -45,19 +87,23 @@ export function InfoIntroVideoPage({
 
     if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) tryPlay();
     else el.addEventListener('canplay', tryPlay, { once: true });
-  }, []);
+    return () => {
+      el.removeEventListener('canplay', tryPlay);
+    };
+  }, [videoSrc]);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] flex-col overflow-hidden bg-black text-white">
       <video
+        key={videoSrc}
         ref={videoRef}
         className="absolute inset-0 z-0 h-full w-full object-cover object-center"
-        src={VIDEO_SRC}
+        src={videoSrc}
         playsInline
         preload="auto"
         muted
         onEnded={goNext}
-        onError={() => setLoadError(true)}
+        onError={onVideoError}
       />
 
       <div
@@ -87,9 +133,11 @@ export function InfoIntroVideoPage({
 
       <footer className="relative z-20 flex shrink-0 flex-col items-center gap-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-6">
         {loadError ? (
-          <p className="max-w-md text-center text-sm text-amber-200/90">
-            Could not load the intro video. Add <code className="rounded bg-white/10 px-1 text-xs">public/videos/Investor Intro.mp4</code> locally, set{' '}
-            <code className="rounded bg-white/10 px-1 text-xs">NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL</code> to a public HTTPS file, then refresh.
+          <p className="max-w-md text-pretty text-center text-sm leading-relaxed text-amber-200/90">
+            This deployment does not have the intro file in git (GitHub 100MB limit). Do one of: add{' '}
+            <code className="rounded bg-white/10 px-1 text-xs">public/videos/Investor Intro.mp4</code> on the server
+            build machine, or set <code className="rounded bg-white/10 px-1 text-xs">NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL</code>{' '}
+            in Vercel to a public <code className="rounded bg-white/10 px-1 text-xs">https://</code> MP4 URL, then redeploy.
           </p>
         ) : null}
         <button
