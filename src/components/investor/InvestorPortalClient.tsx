@@ -1,41 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
 type Props = {
   clientIp: string;
-  /** Read on the server each request so .env.local updates apply after refresh (no stale client inlining). */
+  /** Read on the server each request so .env.local / Vercel env apply after refresh. */
   gammaProposalUrl: string;
   /** True when running on Vercel — empty-state copy points at dashboard env + redeploy. */
   onVercel?: boolean;
 };
 
+/**
+ * Gamma embed only — no full-screen loading layer (iframes + onLoad race hid the deck).
+ */
 export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVercel = false }: Props) {
   const src = gammaProposalUrl.trim();
-  const [isLoading, setIsLoading] = useState(Boolean(src));
-  const prevSrcRef = useRef<string | null>(null);
-  const loadFallback = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /**
-   * Never call setIsLoading(true) on every effect run — that runs after iframe onLoad and would
-   * permanently re-cover the deck (onLoad does not fire again). Only show loading when `src` changes.
-   */
-  useEffect(() => {
-    if (!src) {
-      setIsLoading(false);
-      prevSrcRef.current = null;
-      return;
-    }
-    if (prevSrcRef.current !== null && prevSrcRef.current !== src) {
-      setIsLoading(true);
-    }
-    prevSrcRef.current = src;
-
-    loadFallback.current = window.setTimeout(() => setIsLoading(false), 14_000);
-    return () => {
-      if (loadFallback.current) window.clearTimeout(loadFallback.current);
-    };
-  }, [src]);
 
   return (
     <div className="mx-auto w-full max-w-7xl bg-[#050505] px-4 py-8">
@@ -69,26 +46,14 @@ export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVer
             </p>
           </div>
         ) : (
-          <>
-            <iframe
-              key={src}
-              src={src}
-              className="relative z-0 block h-[85vh] min-h-[480px] w-full border-none"
-              onLoad={() => setIsLoading(false)}
-              allow="fullscreen; clipboard-write"
-              allowFullScreen
-              title="PROJECT PARABLE"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-            {isLoading ? (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#050505]">
-                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-cyan-500/20 border-t-cyan-400" />
-                <p className="animate-pulse font-mono text-[10px] tracking-[0.3em] text-cyan-400">
-                  DECRYPTING SOVEREIGN ARCHITECTURE…
-                </p>
-              </div>
-            ) : null}
-          </>
+          <iframe
+            key={src}
+            src={src}
+            className="block h-[85vh] min-h-[480px] w-full border-none"
+            allow="fullscreen; clipboard-write"
+            allowFullScreen
+            title="PROJECT PARABLE"
+          />
         )}
       </div>
       <div className="mt-4 flex items-center justify-between border-t border-cyan-500/10 pt-4">

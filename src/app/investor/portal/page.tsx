@@ -21,10 +21,26 @@ export default async function InvestorPortalPage() {
   const onVercel = Boolean(process.env.VERCEL);
 
   return (
-    <InvestorPortalClient
-      clientIp={clientIp}
-      gammaProposalUrl={gammaProposalUrl}
-      onVercel={onVercel}
-    />
+    <>
+      {process.env.NODE_ENV === 'development' ? (
+        <div className="mx-auto max-w-7xl px-4 pt-4 font-mono text-[10px] text-amber-400/90">
+          [dev] Server sees NEXT_PUBLIC_GAMMA_PROPOSAL_URL:{' '}
+          {gammaProposalUrl
+            ? `yes (${gammaProposalUrl.length} chars, starts ${gammaProposalUrl.slice(0, 32)}…)`
+            : 'no — add to .env.local and restart npm run dev'}
+        </div>
+      ) : null}
+      {onVercel && !gammaProposalUrl ? (
+        <div className="mx-auto max-w-7xl px-4 pt-4 text-center text-[11px] leading-snug text-amber-200/95">
+          This deployment has no <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_GAMMA_PROPOSAL_URL</code> on
+          the server. Set it for <strong>Production</strong> in Vercel and redeploy.
+        </div>
+      ) : null}
+      <InvestorPortalClient
+        clientIp={clientIp}
+        gammaProposalUrl={gammaProposalUrl}
+        onVercel={onVercel}
+      />
+    </>
   );
 }
