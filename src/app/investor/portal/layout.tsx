@@ -32,7 +32,7 @@ function PortalProposalResourceHints() {
 
 export default function InvestorPortalLayout({ children }: { children: ReactNode }) {
   return (
-    <div className={`${inter.className} min-h-dvh`}>
+    <div className={`${inter.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden`}>
       <PortalProposalResourceHints />
       {children}
     </div>

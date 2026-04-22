@@ -28,7 +28,7 @@ export function NdaGate({ children }: Props) {
 
   if (!allowed) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-black px-6 text-center">
+      <div className="flex min-h-[100dvh] w-full max-w-[100vw] flex-col items-center justify-center bg-black px-6 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-center">
         <p className="text-sm text-white/50">Checking confidentiality agreement…</p>
       </div>
     );
