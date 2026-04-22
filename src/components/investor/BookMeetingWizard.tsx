@@ -148,9 +148,23 @@ export function BookMeetingWizard({ embedSrc }: Props) {
             <div className="rounded-2xl border border-[#00f2ff]/25 bg-[#00f2ff]/[0.06] px-5 py-6 text-center md:px-8">
               <p className="font-serif text-lg text-white md:text-xl">Check your email</p>
               {emailStatus === 'sent' ? (
-                <p className="mt-3 text-sm text-white/55">
-                  We sent a confirmation message. Please check your inbox (and spam) for next steps.
-                </p>
+                <div className="mt-3 space-y-2 text-sm leading-relaxed text-white/55">
+                  <p>
+                    Our mail provider accepted the confirmation. Please check your inbox, <strong className="text-white/70">Promotions</strong> (Gmail), and{' '}
+                    <strong className="text-white/70">spam</strong> over the next few minutes.
+                  </p>
+                  <p className="text-[13px] text-white/45">
+                    If nothing arrives, the sending domain may still need verification in Resend, or the provider may be
+                    delaying. Use the calendar below or email{' '}
+                    <a
+                      href={`mailto:${SUPPORT_EMAIL}`}
+                      className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
+                    >
+                      {SUPPORT_EMAIL}
+                    </a>
+                    .
+                  </p>
+                </div>
               ) : emailStatus === 'failed' ? (
                 <p className="mt-3 text-sm leading-relaxed text-amber-100/90">
                   Your registration was saved, but our system could not send the confirmation email just now. Please use

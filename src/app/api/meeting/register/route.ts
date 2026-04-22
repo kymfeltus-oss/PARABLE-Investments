@@ -204,10 +204,13 @@ export async function POST(req: NextRequest) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL?.trim();
 
+  let resendConfirmationId: string | null = null;
+
   if (resendKey && from) {
     try {
       const resend = new Resend(resendKey);
-      await resend.emails.send({
+      /** Resend returns `{ data, error }` — failures often do not throw; must inspect `error`. */
+      const userResult = await resend.emails.send({
         from,
         to: email,
         subject: 'Parable — Meeting confirmation, video link & NDA scheduling record',
@@ -221,9 +224,16 @@ export async function POST(req: NextRequest) {
           },
         ],
       });
-      emailStatus = 'sent';
-      try {
-        await resend.emails.send({
+      if (userResult.error) {
+        emailStatus = 'failed';
+        console.error(
+          '[meeting/register] Resend user confirmation rejected:',
+          userResult.error.message ?? userResult.error,
+        );
+      } else {
+        emailStatus = 'sent';
+        resendConfirmationId = userResult.data?.id ?? null;
+        const teamResult = await resend.emails.send({
           from,
           to: CONTACT,
           subject: `[Meeting + NDA evidence] ${name}`,
@@ -233,8 +243,12 @@ export async function POST(req: NextRequest) {
               : ''
           }`,
         });
-      } catch (e) {
-        console.error('[meeting/register] team notify', e);
+        if (teamResult.error) {
+          console.error(
+            '[meeting/register] team notify rejected:',
+            teamResult.error.message ?? teamResult.error,
+          );
+        }
       }
     } catch (e) {
       emailStatus = 'failed';
@@ -252,6 +266,8 @@ export async function POST(req: NextRequest) {
     emailStatus,
     /** @deprecated use emailStatus === 'sent' */
     emailSent: emailStatus === 'sent',
+    /** Resend message id when `emailStatus === 'sent'` (for support / dashboard correlation). */
+    resendConfirmationId,
     meetUrl,
     roomLabel,
   });
