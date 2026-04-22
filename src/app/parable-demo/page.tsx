@@ -20,8 +20,14 @@ export default function ParableDemoPage() {
         <div className="relative z-10 mx-auto max-w-5xl px-5 pb-20 pt-10 sm:px-8 md:pt-14">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link
-              href="/explore"
+              href="/parable-app-simulation"
               className="text-[10px] font-black uppercase tracking-[0.22em] text-[#00f2ff]/80 hover:text-[#00f2ff]"
+            >
+              Full app simulation
+            </Link>
+            <Link
+              href="/explore"
+              className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40 hover:text-white/65"
             >
               ← Embedded prototype
             </Link>

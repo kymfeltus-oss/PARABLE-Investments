@@ -2,10 +2,9 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
@@ -35,8 +34,12 @@ export default function InvestorLandingPage() {
 
   return (
     <div id="top" className="relative w-full bg-black text-white">
-      <LandingHeroBackgroundVideo />
-      <InvestorAtmosphere overVideo />
+      {/* Hero uses atmosphere + SVG logo only — avoids third‑party watermarks baked into exported MP4s. */}
+      <InvestorAtmosphere />
+      <div
+        className="pointer-events-none fixed inset-0 z-[1] bg-gradient-to-b from-black/35 via-transparent to-black/45"
+        aria-hidden
+      />
 
       <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))]">
         <header className="shrink-0 pt-14 text-center">
@@ -51,14 +54,28 @@ export default function InvestorLandingPage() {
           </div>
         </header>
 
-        {/* Middle: optional static logo; otherwise open space so hero PARABLE video stays unobstructed */}
+        {/* Middle: primary mark (no full-bleed video — keeps flash clean of tool watermarks). */}
         <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center px-0 pb-3 pt-4">
           {reduceMotion ? (
             <ParableLogoMark
               className="mt-0"
               maxWidthClass="max-w-[min(28rem,calc(100vw-2rem))]"
             />
-          ) : null}
+          ) : (
+            <motion.div
+              className="w-full max-w-[min(28rem,calc(100vw-2rem))]"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                animate={{ opacity: [0.92, 1, 0.92] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <ParableLogoMark className="mt-0 w-full" maxWidthClass="max-w-full" />
+              </motion.div>
+            </motion.div>
+          )}
         </div>
 
         <footer className="shrink-0 flex flex-col items-center gap-10 pb-10">

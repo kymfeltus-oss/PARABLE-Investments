@@ -44,6 +44,18 @@ function DocIcon({ className }: { className?: string }) {
   );
 }
 
+function AppGridIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
@@ -195,6 +207,27 @@ export default function StartPageBody() {
             </span>
             <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
               Open materials <span aria-hidden>→</span>
+            </span>
+          </Link>
+
+          <Link
+            href="/parable-app-simulation"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+          >
+            <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
+              <AppGridIcon className="h-7 w-7" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
+              Full app simulation
+            </span>
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+              Click-through PARABLE prototype
+            </span>
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+              Login, hub, Testify shell, and live studio mock—runs only on this investor site. No connection to the production PARABLE deploy.
+            </span>
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+              Open simulation <span aria-hidden>→</span>
             </span>
           </Link>
 
