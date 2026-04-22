@@ -1,19 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Props = {
   clientIp: string;
   /** Read on the server each request so .env.local updates apply after refresh (no stale client inlining). */
   gammaProposalUrl: string;
+  /** True when running on Vercel — empty-state copy points at dashboard env + redeploy. */
+  onVercel?: boolean;
 };
 
-export default function InvestorPortalClient({ clientIp, gammaProposalUrl }: Props) {
+export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVercel = false }: Props) {
   const src = gammaProposalUrl.trim();
   const [isLoading, setIsLoading] = useState(Boolean(src));
+  const loadFallback = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setIsLoading(Boolean(src));
+    if (!src) return;
+    loadFallback.current = window.setTimeout(() => setIsLoading(false), 14_000);
+    return () => {
+      if (loadFallback.current) window.clearTimeout(loadFallback.current);
+    };
   }, [src]);
 
   return (
@@ -23,12 +31,28 @@ export default function InvestorPortalClient({ clientIp, gammaProposalUrl }: Pro
           <div className="flex min-h-[85vh] flex-col items-center justify-center gap-3 px-6 text-center">
             <p className="text-sm font-medium text-white/80">Proposal embed not configured</p>
             <p className="max-w-md text-xs leading-relaxed text-white/45">
-              Add{' '}
-              <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
-                NEXT_PUBLIC_GAMMA_PROPOSAL_URL=https://gamma.app/embed/…
-              </code>{' '}
-              to <code className="text-white/60">.env.local</code> in the project root, then restart{' '}
-              <code className="text-white/60">npm run dev</code> and hard-refresh this page.
+              {onVercel ? (
+                <>
+                  In the <strong className="text-white/70">Vercel</strong> project for this site, open{' '}
+                  <strong className="text-white/70">Settings → Environment Variables</strong>, add{' '}
+                  <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
+                    NEXT_PUBLIC_GAMMA_PROPOSAL_URL
+                  </code>{' '}
+                  (Gamma → Share → Embed → copy the iframe <code className="text-white/55">src</code> URL only). Enable
+                  it for <strong className="text-white/70">Production</strong>, then trigger a{' '}
+                  <strong className="text-white/70">new deployment</strong> (Redeploy).{' '}
+                  <code className="text-white/55">NEXT_PUBLIC_*</code> values are baked in at build time.
+                </>
+              ) : (
+                <>
+                  Add{' '}
+                  <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
+                    NEXT_PUBLIC_GAMMA_PROPOSAL_URL=https://gamma.app/embed/…
+                  </code>{' '}
+                  to <code className="text-white/60">.env.local</code> in the project root, then restart{' '}
+                  <code className="text-white/60">npm run dev</code> and hard-refresh this page.
+                </>
+              )}
             </p>
           </div>
         ) : (

@@ -18,6 +18,13 @@ export default async function InvestorPortalPage() {
   const h = await headers();
   const clientIp = clientIpFromHeaders(h);
   const gammaProposalUrl = process.env.NEXT_PUBLIC_GAMMA_PROPOSAL_URL?.trim() ?? '';
+  const onVercel = Boolean(process.env.VERCEL);
 
-  return <InvestorPortalClient clientIp={clientIp} gammaProposalUrl={gammaProposalUrl} />;
+  return (
+    <InvestorPortalClient
+      clientIp={clientIp}
+      gammaProposalUrl={gammaProposalUrl}
+      onVercel={onVercel}
+    />
+  );
 }
