@@ -2,11 +2,9 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
-import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -16,7 +14,6 @@ function subscribeNop() {
 
 export default function InvestorLandingPage() {
   const router = useRouter();
-  const reduceMotion = useReducedMotion();
   const continueHref = useSyncExternalStore(
     subscribeNop,
     () => (getInvestorNdaAccepted() ? '/start' : '/nda?next=/start'),
@@ -47,7 +44,6 @@ export default function InvestorLandingPage() {
           <p className="parable-landing-eyebrow mb-8">
             Confidential · Investor introduction
           </p>
-          {/* Kept high on the page so it does not sit over the PARABLE hero in the video */}
           <div className="flex w-full justify-center px-2 pb-1">
             <p className="parable-landing-tagline">
               Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
@@ -55,29 +51,7 @@ export default function InvestorLandingPage() {
           </div>
         </header>
 
-        {/* Middle: primary mark over full-bleed hero video (see LandingHeroBackgroundVideo). */}
-        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center px-0 pb-3 pt-4">
-          {reduceMotion ? (
-            <ParableLogoMark
-              className="mt-0"
-              maxWidthClass="max-w-[min(28rem,calc(100vw-2rem))]"
-            />
-          ) : (
-            <motion.div
-              className="w-full max-w-[min(28rem,calc(100vw-2rem))]"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.div
-                animate={{ opacity: [0.92, 1, 0.92] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <ParableLogoMark className="mt-0 w-full" maxWidthClass="max-w-full" />
-              </motion.div>
-            </motion.div>
-          )}
-        </div>
+        <div className="min-h-0 w-full flex-1" aria-hidden />
 
         <footer className="shrink-0 flex flex-col items-center gap-10 pb-10">
           <div className="parable-landing-continue-pulse flex w-full max-w-sm flex-col items-center">
