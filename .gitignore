@@ -18,3 +18,4 @@ Thumbs.db
 
 # Intro video exceeds GitHub 100MB limit — keep locally or host on CDN; path must match InfoIntroVideoPage.
 public/videos/Investor Intro.mp4
+public/videos/Live Meeting.mp4
