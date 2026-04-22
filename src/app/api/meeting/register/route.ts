@@ -4,7 +4,8 @@ import { Resend } from 'resend';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { buildMeetingConfirmationCalendar } from '@/lib/meeting-calendar';
-import { getDefaultScheduledRoomSuffix, getScheduledMeetUrl } from '@/lib/meeting-links';
+import { getScheduledMeetUrl } from '@/lib/meeting-links';
+import { generateInvestorRoomSuffix } from '@/lib/investor-room-suffix';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 const CONTACT = process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL ?? 'investors@parableinvestments.com';
@@ -19,6 +20,62 @@ function escapeHtml(s: string): string {
 
 function escapeHtmlAttr(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+/**
+ * `RESEND_FROM_EMAIL` (optional) — we normalize and send a plain `email@domain` to Resend. If wrong/missing, we
+ * fall back to `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL` (default `investors@parableinvestments.com`) when that parses as a
+ * valid address. Never put the `re_...` API key in the From var — use `RESEND_API_KEY` only.
+ */
+/** Vercel users sometimes paste values wrapped in straight quotes — Resend then rejects `from`. */
+function normalizeResendFromEmailEnv(value: string): string {
+  let v = value.trim();
+  if (
+    (v.startsWith('"') && v.endsWith('"') && v.length > 1) ||
+    (v.startsWith("'") && v.endsWith("'") && v.length > 1)
+  ) {
+    v = v.slice(1, -1).trim();
+  }
+  return v;
+}
+
+/**
+ * Invisible / odd whitespace in env values can make local validation pass but Resend returns
+ * 422 *Invalid `from` field* — strip BOM, zero-width, normalize plain addresses.
+ */
+function sanitizeResendFromHeader(value: string): string {
+  let v = normalizeResendFromEmailEnv(value);
+  v = v
+    .replace(/^\uFEFF/, '')
+    .replace(/\uFEFF/g, '')
+    .replace(/[\u200B-\u200D]/g, '')
+    .trim();
+  if (!v.includes('<')) {
+    v = v.replace(/[\n\r\t]+/g, '').replace(/\s+/g, ' ').trim();
+    if (v.includes('@')) v = v.toLowerCase();
+    return v;
+  }
+  const m = v.match(/^(.*)<\s*([^>]+)>\s*$/);
+  if (!m) return v;
+  const addr = m[2]
+    .trim()
+    .replace(/[\n\r\t\s]+/g, '')
+    .toLowerCase();
+  return `${m[1].trim()} <${addr}>`;
+}
+
+/**
+ * Resend accepts `email@domain` or `Name <email>`. We send **email only** to avoid
+ * punctuation / encoding quirks. Uses the same plausibility rules as `isValidInvestorEmail`.
+ */
+function toResendApiFrom(sanitized: string): string | null {
+  if (!sanitized) return null;
+  if (sanitized.trim().startsWith('re_')) {
+    return null;
+  }
+  const m = sanitized.match(/<([^>]+)>\s*$/);
+  const raw = (m ? m[1] : sanitized).trim();
+  return isValidInvestorEmail(raw) ? raw.toLowerCase() : null;
 }
 
 export async function POST(req: NextRequest) {
@@ -60,21 +117,33 @@ export async function POST(req: NextRequest) {
   const clientIp = forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
   const userAgent = req.headers.get('user-agent')?.slice(0, 512) || null;
 
-  const { error: insertError } = await admin.from('meeting_nda_evidence').insert({
-    name,
-    email,
-    nda_version: INVESTOR_AGREEMENT_VERSION,
-    acknowledged: true,
-    client_ip: clientIp,
-    user_agent: userAgent,
-  });
+  let roomSuffix = generateInvestorRoomSuffix();
+  let insertError: { message: string } | null = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    if (attempt > 0) {
+      roomSuffix = generateInvestorRoomSuffix();
+    }
+    const ins = await admin.from('meeting_nda_evidence').insert({
+      name,
+      email,
+      nda_version: INVESTOR_AGREEMENT_VERSION,
+      acknowledged: true,
+      client_ip: clientIp,
+      user_agent: userAgent,
+      room_suffix: roomSuffix,
+    });
+    insertError = ins.error;
+    if (!insertError) break;
+    if (insertError.message && /unique|duplicate/i.test(insertError.message) && attempt < 4) {
+      continue;
+    }
+    break;
+  }
 
   if (insertError) {
     console.error('[meeting/register]', insertError.message);
     return NextResponse.json({ error: 'Could not save your scheduling record. Try again.' }, { status: 500 });
   }
-
-  const roomSuffix = getDefaultScheduledRoomSuffix();
   const meetUrl = getScheduledMeetUrl(roomSuffix);
   const roomLabel = `investor-${roomSuffix.replace(/^investor-/i, '')}`;
   const schedulingUrl = process.env.NEXT_PUBLIC_SCHEDULING_URL?.trim() ?? '';
@@ -202,7 +271,25 @@ export async function POST(req: NextRequest) {
   type EmailStatus = 'sent' | 'unconfigured' | 'failed';
   let emailStatus: EmailStatus = 'unconfigured';
   const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL?.trim();
+  const fromEnv = process.env.RESEND_FROM_EMAIL
+    ? sanitizeResendFromHeader(process.env.RESEND_FROM_EMAIL)
+    : '';
+  const fromContact = sanitizeResendFromHeader(CONTACT);
+  const fromPrimary = toResendApiFrom(fromEnv);
+  const fromFallback = toResendApiFrom(fromContact);
+  let from: string | undefined;
+  if (fromPrimary) {
+    from = fromPrimary;
+  } else if (fromFallback) {
+    if (fromEnv) {
+      console.warn(
+        '[meeting/register] RESEND_FROM_EMAIL is not a valid sender; using investor contact address as from.',
+      );
+    }
+    from = fromFallback;
+  } else {
+    from = undefined;
+  }
 
   let resendConfirmationId: string | null = null;
   let resendErrorMessage: string | null = null;
@@ -268,7 +355,7 @@ export async function POST(req: NextRequest) {
     }
   } else {
     console.warn(
-      '[meeting/register] No confirmation email: set RESEND_API_KEY and RESEND_FROM_EMAIL on the server (e.g. Vercel env).'
+      '[meeting/register] No confirmation email: set RESEND_API_KEY. Optional: RESEND_FROM_EMAIL (valid address on your Resend domain); if unset/invalid, the investor contact address is used as the sender when possible.'
     );
   }
 
@@ -283,5 +370,7 @@ export async function POST(req: NextRequest) {
     resendErrorMessage,
     meetUrl,
     roomLabel,
+    /** Part after `investor-` in the LiveKit room; same as `room` in `/meet?join=scheduled&room=…`. */
+    roomSuffix: suffixOnly,
   });
 }

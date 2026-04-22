@@ -12,7 +12,6 @@ import {
   VideoConference,
   type LocalUserChoices,
 } from '@livekit/components-react';
-import '@livekit/components-styles';
 import { DisconnectReason, MediaDeviceFailure } from 'livekit-client';
 import { BackgroundBlur, VirtualBackground, supportsBackgroundProcessors } from '@livekit/track-processors';
 import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettings';
@@ -498,8 +497,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
   }
 
   if (welcomeStage) {
-    /** Portal to `document.body` so `fixed` is not trapped by MeetClient `max-w-4xl` / filters. */
-    return createPortal(
+    const welcomeContent = (
       <div
         className="fixed inset-0 z-[9999] flex min-h-[100dvh] w-full min-w-0 flex-col bg-black"
         role="dialog"
@@ -558,9 +556,13 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             ) : null}
           </div>
         </div>
-      </div>,
-      document.body,
+      </div>
     );
+    /** Portal to `document.body` so `fixed` is not trapped by MeetClient `max-w-4xl` / filters. */
+    if (typeof document !== 'undefined' && document.body) {
+      return createPortal(welcomeContent, document.body);
+    }
+    return welcomeContent;
   }
 
   return (

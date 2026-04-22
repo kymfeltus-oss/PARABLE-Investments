@@ -7,7 +7,10 @@ export function getPublicSiteOrigin(): string {
   return 'http://localhost:3003';
 }
 
-/** Room suffix for scheduled investor calls (no `investor-` prefix). */
+/**
+ * Room suffix for scheduled investor calls (no `investor-` prefix) when a URL or email
+ * does not include a per-registration value — e.g. legacy links or `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX`.
+ */
 export function getDefaultScheduledRoomSuffix(): string {
   return process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() || 'scheduled-call';
 }

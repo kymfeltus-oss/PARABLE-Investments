@@ -29,12 +29,12 @@ Set in the host’s environment:
 
 Room names are restricted to `investor-*` (e.g. `investor-team-call`). The static cover does not require LiveKit.
 
-**Scheduled URL (`/meet?join=scheduled`):** the room suffix is fixed to **`NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX`** (same as confirmation emails). Users enter the **work email** from **Book a meeting**; `POST /api/meeting/verify-join` checks **`meeting_nda_evidence`** and issues the LiveKit token with the registered display name. Other `/meet` links keep the editable name + room fields.
+**Scheduled URL (`/meet?join=scheduled&room=…`):** each **Book a meeting** registration gets a **unique room suffix** (stored in **`meeting_nda_evidence.room_suffix`**; full LiveKit name = `investor-<suffix>`). The `room` query should match the confirmation email. If the URL has no `room` param, the app uses **`NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX`** or the legacy default `scheduled-call`. `POST /api/meeting/verify-join` checks email + `room_suffix` in **`meeting_nda_evidence`**, then issues the token.
 
 ### Supabase (Legal Gate + `/nda`)
 
 1. Create a Supabase project (or use an existing one).
-2. Run **`supabase/schema-legal-signatures.sql`**, **`supabase/schema-investor-agreements.sql`**, and **`supabase/schema-meeting-nda-evidence.sql`** in the SQL editor.
+2. Run **`supabase/schema-legal-signatures.sql`**, **`supabase/schema-investor-agreements.sql`**, and **`supabase/schema-meeting-nda-evidence.sql`** in the SQL editor. If the meeting table already existed without per-room data, also run **`supabase/schema-meeting-nda-evidence-room-suffix-migration.sql`** once.
 3. **Auth → URL configuration:** set **Site URL** to your production origin (e.g. `https://parableinvestments.com`). Under **Redirect URLs**, add `https://your-domain.com/auth/callback` (and `http://localhost:3003/auth/callback` for local dev).
 4. In Vercel (and `.env.local`), set:
    - **`NEXT_PUBLIC_SUPABASE_URL`**
@@ -45,15 +45,15 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 
 **NDA step (`/nda`):** inserts **`investor_agreements`** (printed name, signature, email, document snapshot, etc.). Have counsel review `src/lib/investor-agreement-text.ts` before relying on it.
 
-### Booking (`/book`)
+### Booking (`/book` → `/book/finish`)
 
-1. User enters **name + email** and confirms the scheduling request is under their **NDA** obligations.
-2. **`POST /api/meeting/register`** inserts **`meeting_nda_evidence`** (name, email, `nda_version`, IP/UA) and, when **Resend** is configured, emails a **confirmation** with the **LiveKit join URL**, room name, and NDA version reference (supplemental evidence alongside `investor_agreements`). A copy can go to **`NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`**.
+1. User enters **name + email** and confirms the scheduling request is under their **NDA** obligations. On success, the app **redirects to `/book/finish`** on the same site: email/room summary and the **scheduling iframe** (session is stored in `sessionStorage` for that step).
+2. **`POST /api/meeting/register`** inserts **`meeting_nda_evidence`** (name, email, `nda_version`, **`room_suffix`**, IP/UA) and, when **Resend** is configured, emails a **confirmation** with the **LiveKit join URL** (including `&room=`), room name, and NDA version reference. A team copy can go to **`NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`**.
 3. **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com booking link: if the host is `cal.com`, the app adds `?embed=true` and shows the **embedded calendar** for choosing a time (your calendar provider may email the slot separately).
 4. **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional full iframe `src` (e.g. Calendly embed).
 5. **`NEXT_PUBLIC_SITE_URL`** — canonical URL for links (Vercel `VERCEL_URL` is a fallback).
 
 ### Optional env (see `.env.example`)
 
-- `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` — default room suffix for scheduled `/meet` links (full room = `investor-<suffix>`).
+- `NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX` — optional default suffix when a `/meet` link has no `&room=` (e.g. marketing links); new bookings always get a **generated** suffix in email and the API response.
 - `NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL` — mailto target and internal booking notifications.

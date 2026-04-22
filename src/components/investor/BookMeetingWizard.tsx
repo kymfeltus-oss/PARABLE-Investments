@@ -2,29 +2,21 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import { writeBookMeetingSession } from '@/lib/book-meeting-session';
 
-type Props = {
-  embedSrc: string | null;
-};
-
-const SUPPORT_EMAIL =
-  process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL?.trim() || 'investors@parableinvestments.com';
-
-export function BookMeetingWizard({ embedSrc }: Props) {
+export function BookMeetingWizard() {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ack, setAck] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [registered, setRegistered] = useState(false);
-  /** Resend outcome: only `sent` means the inbox should have received Parable's confirmation. */
-  const [emailStatus, setEmailStatus] = useState<'sent' | 'unconfigured' | 'failed' | null>(null);
-  const [resendErrorMessage, setResendErrorMessage] = useState<string | null>(null);
 
   const canRegister =
     name.trim().length >= 2 && isValidInvestorEmail(email.trim()) && ack && !submitting;
@@ -49,6 +41,9 @@ export function BookMeetingWizard({ embedSrc }: Props) {
         emailSent?: boolean;
         emailStatus?: 'sent' | 'unconfigured' | 'failed';
         resendErrorMessage?: string | null;
+        roomLabel?: string;
+        roomSuffix?: string;
+        meetUrl?: string;
       };
       if (!res.ok || !data.ok) {
         setError(data.error || 'Something went wrong. Try again.');
@@ -56,9 +51,14 @@ export function BookMeetingWizard({ embedSrc }: Props) {
         return;
       }
       const status = data.emailStatus ?? (data.emailSent ? 'sent' : 'unconfigured');
-      setEmailStatus(status);
-      setResendErrorMessage(typeof data.resendErrorMessage === 'string' ? data.resendErrorMessage : null);
-      setRegistered(true);
+      writeBookMeetingSession({
+        emailStatus: status,
+        resendErrorMessage: typeof data.resendErrorMessage === 'string' ? data.resendErrorMessage : null,
+        roomLabel: typeof data.roomLabel === 'string' && data.roomLabel ? data.roomLabel : null,
+        roomSuffix: typeof data.roomSuffix === 'string' && data.roomSuffix ? data.roomSuffix : null,
+        meetUrl: typeof data.meetUrl === 'string' && data.meetUrl ? data.meetUrl : null,
+      });
+      router.push('/book/finish');
     } catch {
       setError('Network error. Try again.');
     } finally {
@@ -84,161 +84,71 @@ export function BookMeetingWizard({ embedSrc }: Props) {
             Book a meeting
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
-            Confirm who you are for our records, then check your email for confirmation. After that, choose a time in the
-            calendar when it appears below.
+            Register below (NDA on file). We will take you to the next step on this site to <strong className="text-white/60">choose a time</strong> in the
+            calendar and to review your room details.
           </p>
         </div>
 
-        {!registered ? (
-          <motion.section
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-10 rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
-          >
-            <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 1 — Register</h2>
-            <p className="mt-2 text-sm text-white/50">
-              We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
-              records, then send confirmation by email.
-            </p>
-            <div className="mt-6 space-y-4">
-              <label className="block text-left">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Full name</span>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
-                  placeholder="Jane Investor"
-                  autoComplete="name"
-                />
-              </label>
-              <label className="block text-left">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
-                  placeholder="you@firm.com"
-                  autoComplete="email"
-                />
-              </label>
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/35 px-4 py-4">
-                <input
-                  type="checkbox"
-                  checked={ack}
-                  onChange={(e) => setAck(e.target.checked)}
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
-                />
-                <span className="text-left text-sm text-white/65">
-                  I confirm this investor meeting request is subject to the same confidentiality obligations as my Parable
-                  NDA / electronic acknowledgment (version {INVESTOR_AGREEMENT_VERSION}). I understand Parable will retain
-                  this registration as supplemental evidence.
-                </span>
-              </label>
-              {error ? <p className="text-sm text-red-300/95">{error}</p> : null}
-              <button
-                type="button"
-                disabled={!canRegister}
-                onClick={onRegister}
-                className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
-              >
-                {submitting ? 'Saving…' : 'Email confirmation & continue'}
-              </button>
-            </div>
-          </motion.section>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-10">
-            <div className="rounded-2xl border border-[#00f2ff]/25 bg-[#00f2ff]/[0.06] px-5 py-6 text-center md:px-8">
-              <p className="font-serif text-lg text-white md:text-xl">Check your email</p>
-              {emailStatus === 'sent' ? (
-                <div className="mt-3 space-y-2 text-sm leading-relaxed text-white/55">
-                  <p>
-                    Our mail provider accepted the confirmation. Please check your inbox, <strong className="text-white/70">Promotions</strong> (Gmail), and{' '}
-                    <strong className="text-white/70">spam</strong> over the next few minutes.
-                  </p>
-                  <p className="text-[13px] text-white/45">
-                    If nothing arrives, the sending domain may still need verification in Resend, or the provider may be
-                    delaying. Use the calendar below or email{' '}
-                    <a
-                      href={`mailto:${SUPPORT_EMAIL}`}
-                      className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
-                    >
-                      {SUPPORT_EMAIL}
-                    </a>
-                    .
-                  </p>
-                </div>
-              ) : emailStatus === 'failed' ? (
-                <div className="mt-3 space-y-3 text-left text-sm leading-relaxed text-amber-100/90">
-                  <p>
-                    Your registration was saved, but the <strong>confirmation email was not sent</strong>. This site
-                    uses <strong>Resend</strong> to deliver mail to the address you entered. You do <strong>not</strong>
-                    need “Enable Receiving” / inbound MX in Resend for the guest to get this message—only a verified
-                    <strong> sending</strong> domain and correct env on Vercel
-                    (<code className="rounded bg-black/40 px-1 text-[12px] text-amber-50/95">RESEND_API_KEY</code>,{' '}
-                    <code className="rounded bg-black/40 px-1 text-[12px] text-amber-50/95">RESEND_FROM_EMAIL</code>
-                    ).
-                  </p>
-                  {resendErrorMessage ? (
-                    <p className="rounded-lg border border-amber-500/30 bg-amber-950/40 p-3 font-mono text-[12px] leading-snug text-amber-50/95">
-                      <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-amber-200/80">
-                        Resend said
-                      </span>
-                      <br />
-                      {resendErrorMessage}
-                    </p>
-                  ) : null}
-                  <p>
-                    Please use the calendar below if it appears, or email{' '}
-                    <a
-                      href={`mailto:${SUPPORT_EMAIL}`}
-                      className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
-                    >
-                      {SUPPORT_EMAIL}
-                    </a>
-                    , and check the Resend dashboard (Emails / Logs) for the same error.
-                  </p>
-                </div>
-              ) : (
-                <p className="mt-3 text-sm leading-relaxed text-white/55">
-                  Your registration was saved. An automated confirmation email was not sent from this site (mail may not
-                  be configured yet). Use the calendar below when it appears, or contact{' '}
-                  <a
-                    href={`mailto:${SUPPORT_EMAIL}`}
-                    className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
-                  >
-                    {SUPPORT_EMAIL}
-                  </a>{' '}
-                  so we can confirm and send your meeting details.
-                </p>
-              )}
-            </div>
-
-            {embedSrc ? (
-              <section className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4 shadow-[0_8px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 2 — Choose a time</h2>
-                <p className="mt-2 text-sm text-white/50">
-                  Pick an open slot. Your calendar app may send a separate confirmation for the time.
-                </p>
-                <div className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-                  <iframe
-                    title="Schedule a meeting"
-                    src={embedSrc}
-                    className="h-[min(720px,80vh)] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
-              </section>
-            ) : null}
-
-            <Link
-              href="/start"
-              className="block text-center text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80"
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-10 rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
+        >
+          <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 1 — Register</h2>
+          <p className="mt-2 text-sm text-white/50">
+            We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
+            records, then send you to <strong className="text-white/60">Finish booking</strong> on this same website.
+          </p>
+          <div className="mt-6 space-y-4">
+            <label className="block text-left">
+              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Full name</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+                placeholder="Jane Investor"
+                autoComplete="name"
+              />
+            </label>
+            <label className="block text-left">
+              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+                placeholder="you@firm.com"
+                autoComplete="email"
+              />
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/35 px-4 py-4">
+              <input
+                type="checkbox"
+                checked={ack}
+                onChange={(e) => setAck(e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
+              />
+              <span className="text-left text-sm text-white/65">
+                I confirm this investor meeting request is subject to the same confidentiality obligations as my Parable
+                NDA / electronic acknowledgment (version {INVESTOR_AGREEMENT_VERSION}). I understand Parable will retain
+                this registration as supplemental evidence.
+              </span>
+            </label>
+            {error ? <p className="text-sm text-red-300/95">{error}</p> : null}
+            <button
+              type="button"
+              disabled={!canRegister}
+              onClick={onRegister}
+              className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
             >
-              ← Back to choice hub
-            </Link>
-          </motion.div>
-        )}
+              {submitting ? 'Saving…' : 'Confirm & go to finish booking'}
+            </button>
+          </div>
+        </motion.section>
+
+        <p className="mt-8 text-center text-xs text-white/30">
+          After we save your registration, you are taken to the next page on this site to choose a time in the calendar.
+        </p>
       </div>
     </div>
   );

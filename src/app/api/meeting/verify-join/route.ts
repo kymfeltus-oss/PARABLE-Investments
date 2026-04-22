@@ -1,14 +1,14 @@
 import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
-import { getDefaultScheduledRoomSuffix } from '@/lib/meeting-links';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 function normalizeSuffix(raw: string): string {
   return raw
     .trim()
+    .toLowerCase()
     .replace(/^investor-/i, '')
-    .replace(/[^a-zA-Z0-9_-]/g, '');
+    .replace(/[^a-z0-9_-]/g, '');
 }
 
 function isMeetingMasterKeyValid(provided: string): boolean {
@@ -109,14 +109,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Room is missing.' }, { status: 400 });
   }
 
-  const expected = normalizeSuffix(getDefaultScheduledRoomSuffix());
-  if (roomSuffix !== expected) {
+  const n = normalizeSuffix(roomSuffix);
+  if (!n) {
     return NextResponse.json(
-      {
-        error:
-          'This room does not match your confirmation email. Use the video link from the email we sent you.',
-      },
-      { status: 403 }
+      { error: 'This room is not valid. Open the /meet link from your confirmation email.' },
+      { status: 400 },
     );
   }
 
@@ -124,6 +121,9 @@ export async function POST(req: NextRequest) {
     .from('meeting_nda_evidence')
     .select('name')
     .eq('email', email)
+    .eq('room_suffix', n)
+    .order('created_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) {

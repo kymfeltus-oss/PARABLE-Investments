@@ -6,6 +6,7 @@ import { Suspense, useCallback, useState } from 'react';
 import type { IntroExitDetail } from '@/components/investor/InfoIntroVideoPage';
 import { InfoIntroVideoPage } from '@/components/investor/InfoIntroVideoPage';
 import { InvestorPortalView } from '@/components/investor/InvestorPortalView';
+import { ProposalPresentationSection } from '@/components/investor/ProposalPresentationSection';
 
 type Props = {
   clientIp: string;
@@ -65,6 +66,7 @@ function InvestorProposalRouteClientInner({ clientIp, gammaProposalUrl, onVercel
           Rewatch intro
         </Link>
       </div>
+      <ProposalPresentationSection />
       {process.env.NODE_ENV === 'development' ? (
         <div className="mx-auto max-w-7xl px-4 pt-4 font-mono text-[10px] text-amber-400/90">
           [dev] Embed URL on server:{' '}

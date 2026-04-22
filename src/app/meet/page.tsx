@@ -7,11 +7,17 @@ import MeetClient from './MeetClient';
 export const dynamic = 'force-dynamic';
 
 type PageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  /** Next may pass a Promise (App Router) or a plain object depending on version. */
+  searchParams?: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined>;
 };
 
-export default async function MeetPage({ searchParams }: PageProps) {
-  const sp = await searchParams;
+export default async function MeetPage({ searchParams: searchParamsProp }: PageProps) {
+  const sp: Record<string, string | string[] | undefined> =
+    searchParamsProp == null
+      ? {}
+      : typeof (searchParamsProp as Promise<unknown>)?.then === 'function'
+        ? await (searchParamsProp as Promise<Record<string, string | string[] | undefined>>)
+        : (searchParamsProp as Record<string, string | string[] | undefined>);
   /** `NEXT_PUBLIC_*` or server-only `LIVEKIT_URL` (e.g. Vercel) — URL is passed as a prop, not inlined in client bundles. */
   const serverUrl = normalizeLiveKitServerUrl(
     process.env.NEXT_PUBLIC_LIVEKIT_URL ?? process.env.LIVEKIT_URL,
@@ -24,15 +30,22 @@ export default async function MeetPage({ searchParams }: PageProps) {
       : Array.isArray(joinRaw)
         ? (joinRaw[0] ?? '').trim().toLowerCase()
         : '';
-  const scheduledSuffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() ?? '';
+  const roomRaw = sp.room;
+  const roomParam =
+    typeof roomRaw === 'string'
+      ? roomRaw.trim()
+      : Array.isArray(roomRaw)
+        ? (roomRaw[0] ?? '').trim()
+        : '';
+  const envDefault = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() ?? '';
 
   /** Open “enter any room suffix” lobby removed — only scheduled investor joins are supported here. */
   if (join !== 'scheduled') {
     redirect('/start');
   }
 
-  /** Same suffix as confirmation emails; `room` query is not used to pick a different room. */
-  const initialRoomSuffix = scheduledSuffix || 'scheduled-call';
+  /** `room` in the query is the part after `investor-` (per confirmation email / Book a meeting). */
+  const initialRoomSuffix = (roomParam || envDefault || 'scheduled-call').replace(/^investor-/i, '');
 
   return (
     <NdaGate>
