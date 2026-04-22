@@ -110,6 +110,10 @@ export function InfoIntroVideoPage({
         className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/75 via-black/20 to-black/85"
         aria-hidden
       />
+      <div
+        className="pointer-events-none absolute bottom-0 right-0 z-[2] h-[min(34vh,11rem)] w-[min(60vw,17rem)] bg-gradient-to-tl from-black from-[8%] via-black/93 to-transparent md:hidden"
+        aria-hidden
+      />
 
       <header
         className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6"

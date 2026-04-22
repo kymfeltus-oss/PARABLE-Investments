@@ -134,8 +134,13 @@ export function LandingHeroBackgroundVideo() {
           <source src={desktopSrc} type="video/mp4" />
         </video>
       </div>
+      {/* Descript (and similar) trial watermarks are baked into the MP4 — mask BR on small screens until you re-export clean video. */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
+        className="pointer-events-none absolute bottom-0 right-0 z-[1] h-[min(30vh,10rem)] w-[min(56vw,15rem)] bg-gradient-to-tl from-[#070708] from-[10%] via-[#070708]/92 to-transparent md:hidden"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
         aria-hidden
       />
     </div>
