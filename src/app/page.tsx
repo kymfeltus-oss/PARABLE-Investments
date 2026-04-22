@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
+import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
@@ -34,8 +35,8 @@ export default function InvestorLandingPage() {
 
   return (
     <div id="top" className="relative w-full bg-black text-white">
-      {/* Hero uses atmosphere + SVG logo only — avoids third‑party watermarks baked into exported MP4s. */}
-      <InvestorAtmosphere />
+      <LandingHeroBackgroundVideo />
+      <InvestorAtmosphere overVideo />
       <div
         className="pointer-events-none fixed inset-0 z-[1] bg-gradient-to-b from-black/35 via-transparent to-black/45"
         aria-hidden
@@ -54,7 +55,7 @@ export default function InvestorLandingPage() {
           </div>
         </header>
 
-        {/* Middle: primary mark (no full-bleed video — keeps flash clean of tool watermarks). */}
+        {/* Middle: primary mark over full-bleed hero video (see LandingHeroBackgroundVideo). */}
         <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center px-0 pb-3 pt-4">
           {reduceMotion ? (
             <ParableLogoMark

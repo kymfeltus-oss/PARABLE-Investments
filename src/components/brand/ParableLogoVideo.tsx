@@ -10,9 +10,14 @@ type Props = {
   maxWidthClass?: string;
 };
 
-/** Public path — file: `public/videos/PARABLE Logo.mp4` */
-export const PARABLE_LOGO_VIDEO_SRC =
-  '/videos/' + encodeURIComponent('PARABLE Logo.mp4');
+/** Desktop hero tries `PARABLE Logo1.mp4` first, then legacy `PARABLE Logo.mp4`. */
+export const PARABLE_LOGO_DESKTOP_CANDIDATES = [
+  '/videos/' + encodeURIComponent('PARABLE Logo1.mp4'),
+  '/videos/' + encodeURIComponent('PARABLE Logo.mp4'),
+] as const;
+
+/** Default desktop path (first candidate) — inline logo + external references. */
+export const PARABLE_LOGO_VIDEO_SRC = PARABLE_LOGO_DESKTOP_CANDIDATES[0];
 
 /** Portrait / mobile hero — file: `public/videos/PARABLE Mobile logo.mp4` */
 export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
@@ -23,12 +28,17 @@ export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
  * Prefers unmuted playback so sound plays when the browser allows; if autoplay with sound is
  * blocked, falls back to muted playback and unmutes on first user gesture (tap/click/key).
  * Mobile: `PARABLE Mobile logo.mp4` + `object-contain` so the full frame fits (logo not blown up).
- * md+: `PARABLE Logo.mp4` + `object-cover` for full-bleed hero.
+ * md+: desktop candidates above + `object-cover` for full-bleed hero.
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
+  const [desktopIdx, setDesktopIdx] = useState(0);
+  const desktopSrc =
+    PARABLE_LOGO_DESKTOP_CANDIDATES[
+      Math.min(desktopIdx, PARABLE_LOGO_DESKTOP_CANDIDATES.length - 1)
+    ];
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
@@ -47,6 +57,7 @@ export function LandingHeroBackgroundVideo() {
     const el = videoRef.current;
     if (!el) return;
 
+    el.load();
     const onReady = () => tryPlayPreferSound();
     if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) onReady();
     else el.addEventListener('canplay', onReady, { once: true });
@@ -54,7 +65,7 @@ export function LandingHeroBackgroundVideo() {
     return () => {
       el.removeEventListener('canplay', onReady);
     };
-  }, [tryPlayPreferSound]);
+  }, [tryPlayPreferSound, desktopIdx]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -89,6 +100,14 @@ export function LandingHeroBackgroundVideo() {
     return () => mq.removeEventListener('change', onChange);
   }, [tryPlayPreferSound]);
 
+  const bumpDesktopOnError = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(max-width: 767px)').matches) return;
+    setDesktopIdx((i) =>
+      i + 1 < PARABLE_LOGO_DESKTOP_CANDIDATES.length ? i + 1 : i
+    );
+  }, []);
+
   if (reduceMotion) {
     return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
   }
@@ -105,13 +124,14 @@ export function LandingHeroBackgroundVideo() {
           playsInline
           preload="auto"
           aria-label="PARABLE background"
+          onError={bumpDesktopOnError}
         >
           <source
             src={PARABLE_LOGO_VIDEO_MOBILE_SRC}
             type="video/mp4"
             media="(max-width: 767px)"
           />
-          <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
+          <source src={desktopSrc} type="video/mp4" />
         </video>
       </div>
       <div
@@ -145,7 +165,7 @@ export function ParableLogoVideo({
         aria-hidden
       />
       <video
-        className="relative h-auto w-full object-contain mix-blend-lighten drop-shadow-[0_0_28px_rgba(0,242,255,0.4)]"
+        className="relative h-auto w-full object-contain drop-shadow-[0_0_28px_rgba(0,242,255,0.4)]"
         autoPlay
         muted
         loop
