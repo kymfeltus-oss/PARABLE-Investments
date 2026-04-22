@@ -230,9 +230,10 @@ export function InvestorPortalClient({ clientIp }: Props) {
           {gammaSrc ? (
             <div className="flex min-w-0 flex-col">
               <div
-                className={`${briefingMono.className} relative isolate h-[90dvh] min-h-[480px] max-h-[90dvh] w-full min-w-0 overflow-hidden rounded-xl bg-[#050505]`}
+                className={`${briefingMono.className} relative isolate w-full min-w-0 min-h-[85vh] overflow-hidden rounded-xl bg-[#050505]`}
                 style={{
                   boxShadow: `
+                    0 0 40px rgba(0,255,255,0.1),
                     inset 0 0 100px 32px rgba(0,0,0,0.88),
                     inset 0 0 0 1px rgba(0,255,255,0.08),
                     inset 0 0 48px rgba(0,255,255,0.04)
@@ -243,7 +244,7 @@ export function InvestorPortalClient({ clientIp }: Props) {
                 <iframe
                   key={gammaSrc}
                   src={gammaSrc}
-                  className="absolute inset-0 z-0 block h-full min-h-0 w-full min-w-0 rounded-xl border-none shadow-[0_0_50px_rgba(0,255,255,0.1)]"
+                  className="absolute inset-0 z-0 block h-full min-h-0 w-full min-w-0 rounded-xl border-none"
                   allowFullScreen
                   title="PROJECT PARABLE"
                   loading="eager"
@@ -300,9 +301,9 @@ export function InvestorPortalClient({ clientIp }: Props) {
           ) : (
             <>
               <div
-                className="flex h-[90dvh] min-h-[480px] max-h-[90dvh] w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed border-[#00FFFF]/25 bg-[#050505]/90 px-6 text-center"
+                className="flex min-h-[85vh] w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed border-[#00FFFF]/25 bg-[#050505]/90 px-6 text-center"
                 style={{
-                  boxShadow: `inset 0 0 80px 24px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(0,255,255,0.06)`,
+                  boxShadow: `0 0 40px rgba(0,255,255,0.1), inset 0 0 80px 24px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(0,255,255,0.06)`,
                 }}
               >
                 <p className="text-sm font-medium text-white/80">Proposal embed not configured</p>
