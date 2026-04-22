@@ -1,17 +1,15 @@
-'use client';
-
-type Props = {
-  clientIp: string;
-  /** Read on the server each request so .env.local / Vercel env apply after refresh. */
-  gammaProposalUrl: string;
-  /** True when running on Vercel — empty-state copy points at dashboard env + redeploy. */
-  onVercel?: boolean;
-};
-
 /**
- * Gamma embed only — no full-screen loading layer (iframes + onLoad race hid the deck).
+ * Server-rendered Gamma embed — `src` is written in the initial HTML (no client `process.env` timing).
  */
-export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVercel = false }: Props) {
+export function InvestorPortalView({
+  clientIp,
+  gammaProposalUrl,
+  onVercel,
+}: {
+  clientIp: string;
+  gammaProposalUrl: string;
+  onVercel: boolean;
+}) {
   const src = gammaProposalUrl.trim();
 
   return (
@@ -28,10 +26,9 @@ export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVer
                   <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
                     NEXT_PUBLIC_GAMMA_PROPOSAL_URL
                   </code>{' '}
-                  (Gamma → Share → Embed → copy the iframe <code className="text-white/55">src</code> URL only). Enable
-                  it for <strong className="text-white/70">Production</strong>, then trigger a{' '}
-                  <strong className="text-white/70">new deployment</strong> (Redeploy).{' '}
-                  <code className="text-white/55">NEXT_PUBLIC_*</code> values are baked in at build time.
+                  or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code>{' '}
+                  (Gamma → Share → Embed → iframe <code className="text-white/55">src</code> only). Enable for{' '}
+                  <strong className="text-white/70">Production</strong>, then <strong className="text-white/70">Redeploy</strong>.
                 </>
               ) : (
                 <>
@@ -39,15 +36,14 @@ export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVer
                   <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
                     NEXT_PUBLIC_GAMMA_PROPOSAL_URL=https://gamma.app/embed/…
                   </code>{' '}
-                  to <code className="text-white/60">.env.local</code> in the project root, then restart{' '}
-                  <code className="text-white/60">npm run dev</code> and hard-refresh this page.
+                  or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code> to{' '}
+                  <code className="text-white/60">.env.local</code>, then restart <code className="text-white/60">npm run dev</code>.
                 </>
               )}
             </p>
           </div>
         ) : (
           <iframe
-            key={src}
             src={src}
             className="block h-[85vh] min-h-[480px] w-full border-none"
             allow="fullscreen; clipboard-write"
