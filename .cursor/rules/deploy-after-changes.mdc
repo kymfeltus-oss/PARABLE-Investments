@@ -1,5 +1,5 @@
 ---
-description: After code changes, verify locally; deploy to GitHub only when asked.
+description: After code changes, verify locally; commit and push to GitHub by default.
 alwaysApply: true
 ---
 
@@ -13,6 +13,10 @@ When you finish implementing requested changes in this repo:
    - Stop the server with **Ctrl+C** in the terminal.
 3. **Day-to-day dev (hot reload):** `npm run dev` — same port **3003**.
 
-**Push to GitHub / Vercel** only when the user explicitly asks (e.g. “push”, “deploy to Vercel”). Then: stage, commit, `git push investments main`.
+## GitHub (default for this project)
+
+When the user asks to **commit** (or when finishing work that should be saved to the remote), **stage, commit, and push** to the tracked remote (usually **`git push origin main`**). If a different remote/branch is configured, match `git branch -vv` / `git remote -v`.
+
+**Vercel** still only when the user explicitly asks (e.g. “deploy to Vercel”).
 
 Do not commit junk dumps or local-only scratch files unless the user asked.
