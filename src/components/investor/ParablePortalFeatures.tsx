@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 
 function StreamIcon({ className }: { className?: string }) {
   return (
@@ -112,8 +113,8 @@ type Props = {
   className?: string;
   variant?: 'full' | 'compact';
   /**
-   * Live meeting URL for the “Meet” shortcut (e.g. `/meet?join=scheduled&room=…`).
-   * Defaults to `/meet` when omitted.
+   * Live meeting URL for the “Meet” shortcut (`/meet?join=scheduled` + optional room).
+   * Defaults to {@link getInvestorScheduledMeetHref} when omitted.
    */
   meetHref?: string;
 };
@@ -123,7 +124,11 @@ type Props = {
  * **compact** (choice hub): thin top-style nav with icon + label; each item is a real link.
  * **full** (`/info`): card grid with longer copy.
  */
-export function ParablePortalFeatures({ className = '', variant = 'full', meetHref = '/meet' }: Props) {
+export function ParablePortalFeatures({
+  className = '',
+  variant = 'full',
+  meetHref = getInvestorScheduledMeetHref(),
+}: Props) {
   const compact = variant === 'compact';
   const navItems = buildPortalItems(meetHref);
   const fullItems = navItems.map((item) => ({

@@ -70,13 +70,7 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
         <h1 className="mb-3 text-center text-lg font-black uppercase tracking-[0.25em] text-[#00f2ff] drop-shadow-[0_0_12px_rgba(0,242,255,0.35)] md:text-xl md:tracking-[0.35em]">
           Parable meeting
         </h1>
-        {!scheduledVerification ? (
-          <p className="mb-10 max-w-lg text-center text-sm text-white/50">
-            Enter your name and the room suffix for this call, then continue to the welcome screen before joining the room.
-          </p>
-        ) : (
-          <div className="mb-10" aria-hidden />
-        )}
+        <div className="mb-10" aria-hidden />
 
         <div className="w-full">
           <MeetRoom

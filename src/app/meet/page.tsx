@@ -1,5 +1,6 @@
 import { NdaGate } from '@/components/investor/NdaGate';
 import { normalizeLiveKitServerUrl } from '@/lib/livekit-server-url';
+import { redirect } from 'next/navigation';
 import MeetClient from './MeetClient';
 
 /** Avoid serving a long-cached HTML shell for the meeting flow (`?live=1`, scheduled joins, etc.). */
@@ -17,25 +18,22 @@ export default async function MeetPage({ searchParams }: PageProps) {
   );
 
   const join = typeof sp.join === 'string' ? sp.join : '';
-  const roomParam = typeof sp.room === 'string' ? sp.room : '';
   const scheduledSuffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() ?? '';
 
-  const isScheduled = join === 'scheduled';
-
-  /** Same suffix as confirmation emails; do not allow a different `room` query to bypass checks. */
-  let initialRoomSuffix: string | undefined;
-  if (isScheduled) {
-    initialRoomSuffix = scheduledSuffix || 'scheduled-call';
-  } else if (roomParam) {
-    initialRoomSuffix = roomParam;
+  /** Open “enter any room suffix” lobby removed — only scheduled investor joins are supported here. */
+  if (join !== 'scheduled') {
+    redirect('/start');
   }
+
+  /** Same suffix as confirmation emails; `room` query is not used to pick a different room. */
+  const initialRoomSuffix = scheduledSuffix || 'scheduled-call';
 
   return (
     <NdaGate>
       <MeetClient
         serverUrl={serverUrl}
         initialRoomSuffix={initialRoomSuffix}
-        scheduledVerification={isScheduled}
+        scheduledVerification
       />
     </NdaGate>
   );

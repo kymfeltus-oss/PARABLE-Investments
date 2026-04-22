@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 import { ParablePortalFeatures } from '@/components/investor/ParablePortalFeatures';
 
 /** Full investment intro / materials — used on `/info`. */
@@ -78,7 +79,7 @@ export function InvestorIntroContent() {
           App prototype →
         </Link>
         <Link
-          href="/meet"
+          href={getInvestorScheduledMeetHref()}
           className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#00f2ff]/75 hover:text-[#00f2ff] md:text-[11px]"
         >
           Investor video room →
