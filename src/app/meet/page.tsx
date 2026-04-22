@@ -17,7 +17,13 @@ export default async function MeetPage({ searchParams }: PageProps) {
     process.env.NEXT_PUBLIC_LIVEKIT_URL ?? process.env.LIVEKIT_URL,
   );
 
-  const join = typeof sp.join === 'string' ? sp.join : '';
+  const joinRaw = sp.join;
+  const join =
+    typeof joinRaw === 'string'
+      ? joinRaw.trim().toLowerCase()
+      : Array.isArray(joinRaw)
+        ? (joinRaw[0] ?? '').trim().toLowerCase()
+        : '';
   const scheduledSuffix = process.env.NEXT_PUBLIC_SCHEDULED_MEET_ROOM_SUFFIX?.trim() ?? '';
 
   /** Open “enter any room suffix” lobby removed — only scheduled investor joins are supported here. */
