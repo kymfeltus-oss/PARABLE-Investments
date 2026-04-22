@@ -13,11 +13,24 @@ type Props = {
 export default function InvestorPortalClient({ clientIp, gammaProposalUrl, onVercel = false }: Props) {
   const src = gammaProposalUrl.trim();
   const [isLoading, setIsLoading] = useState(Boolean(src));
+  const prevSrcRef = useRef<string | null>(null);
   const loadFallback = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /**
+   * Never call setIsLoading(true) on every effect run — that runs after iframe onLoad and would
+   * permanently re-cover the deck (onLoad does not fire again). Only show loading when `src` changes.
+   */
   useEffect(() => {
-    setIsLoading(Boolean(src));
-    if (!src) return;
+    if (!src) {
+      setIsLoading(false);
+      prevSrcRef.current = null;
+      return;
+    }
+    if (prevSrcRef.current !== null && prevSrcRef.current !== src) {
+      setIsLoading(true);
+    }
+    prevSrcRef.current = src;
+
     loadFallback.current = window.setTimeout(() => setIsLoading(false), 14_000);
     return () => {
       if (loadFallback.current) window.clearTimeout(loadFallback.current);
