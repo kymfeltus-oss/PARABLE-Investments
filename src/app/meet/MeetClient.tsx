@@ -1,12 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
-import { LiveMeetingIntroScreen } from '@/components/meet/LiveMeetingIntroScreen';
-import { LIVE_MEETING_INTRO_SESSION_KEY } from '@/lib/meet-scheduled-intro';
 import MeetRoom from './MeetRoom';
 
 type Props = {
@@ -18,30 +16,6 @@ type Props = {
 
 export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   const router = useRouter();
-  const [scheduledIntroDone, setScheduledIntroDone] = useState(() => !scheduledVerification);
-
-  useEffect(() => {
-    if (!scheduledVerification) {
-      queueMicrotask(() => setScheduledIntroDone(true));
-      return;
-    }
-    try {
-      if (sessionStorage.getItem(LIVE_MEETING_INTRO_SESSION_KEY) === '1') {
-        queueMicrotask(() => setScheduledIntroDone(true));
-      }
-    } catch {
-      /* ignore */
-    }
-  }, [scheduledVerification]);
-
-  const completeScheduledIntro = useCallback(() => {
-    try {
-      sessionStorage.setItem(LIVE_MEETING_INTRO_SESSION_KEY, '1');
-    } catch {
-      /* ignore */
-    }
-    setScheduledIntroDone(true);
-  }, []);
 
   /** Back/forward cache can restore a stale `/meet` document; refresh server components so UI matches the latest deploy. */
   useEffect(() => {
@@ -52,11 +26,6 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
     return () => window.removeEventListener('pageshow', onPageShow);
   }, [router]);
 
-  if (scheduledVerification && !scheduledIntroDone) {
-    return <LiveMeetingIntroScreen onComplete={completeScheduledIntro} backHref="/start" />;
-  }
-
-  /** Same Parable meeting shell + {@link MeetRoom} “Before you join” lobby as before; intro video is an extra first step only for `join=scheduled`. */
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
       <InvestorAtmosphere sparkleCount={40} />

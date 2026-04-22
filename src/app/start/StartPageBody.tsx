@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
@@ -8,7 +7,6 @@ import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { ExplorePrototypeIcon } from '@/components/investor/ExplorePrototypeBody';
 import { ParablePortalFeatures } from '@/components/investor/ParablePortalFeatures';
 import { RequestMeetingBlock } from '@/components/investor/RequestMeetingBlock';
-import { LIVE_MEETING_INTRO_SESSION_KEY } from '@/lib/meet-scheduled-intro';
 import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 
 function VideoIcon({ className }: { className?: string }) {
@@ -76,15 +74,6 @@ export default function StartPageBody() {
   const trans = reduceMotion
     ? { duration: 0 }
     : { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const };
-
-  /** Next scheduled meet visit should play `Live Meeting.mp4` again after returning to the hub. */
-  useEffect(() => {
-    try {
-      sessionStorage.removeItem(LIVE_MEETING_INTRO_SESSION_KEY);
-    } catch {
-      /* ignore */
-    }
-  }, []);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#050506] text-white">

@@ -17,7 +17,7 @@ import { DisconnectReason, MediaDeviceFailure } from 'livekit-client';
 import { BackgroundBlur, VirtualBackground, supportsBackgroundProcessors } from '@livekit/track-processors';
 import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettings';
 import { MeetPreJoinSetupPanel } from '@/components/meet/MeetPreJoinSetupPanel';
-import { MeetWelcomeClip } from '@/components/meet/MeetWelcomeClip';
+import { LiveMeetingVideoBackdrop } from '@/components/meet/LiveMeetingVideoBackdrop';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import {
   BLUR_STRENGTH,
@@ -503,7 +503,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         aria-labelledby="meet-welcome-title"
       >
         <div className="absolute inset-0 min-h-[100dvh] w-full">
-          <MeetWelcomeClip fullscreen />
+          <LiveMeetingVideoBackdrop loop />
         </div>
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/55"
@@ -515,7 +515,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
               Welcome to Parable
             </p>
             <p className="text-sm text-white/80">
-              Watch the welcome clip, then continue to set up your microphone and camera.
+              Watch the live meeting briefing, then continue to set up your microphone and camera.
             </p>
           </div>
 
