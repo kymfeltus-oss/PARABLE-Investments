@@ -31,6 +31,10 @@ export function normalizeProposalEmbedSrc(raw: string): string {
   if (src && /made[-_]with[-_]gamma/i.test(src)) {
     url.searchParams.delete('utm_source');
   }
+  const startHash = process.env.NEXT_PUBLIC_GAMMA_PROPOSAL_START_HASH?.trim();
+  if (startHash && !url.hash) {
+    url.hash = startHash.startsWith('#') ? startHash : `#${startHash}`;
+  }
   return url.toString();
 }
 

@@ -43,15 +43,17 @@ export function InvestorPortalClient({ src }: Props) {
   }, [src]);
 
   return (
-    <iframe
-      ref={frameRef}
-      src={src}
-      className="block h-[85vh] min-h-[480px] w-full border-none"
-      allow="fullscreen; clipboard-write"
-      allowFullScreen
-      title="PROJECT PARABLE"
-      loading="eager"
-      referrerPolicy="strict-origin-when-cross-origin"
-    />
+    <div className="relative w-full min-h-[22rem] flex-1 sm:min-h-[28rem]" style={{ height: 'calc(100dvh - 12rem)' }}>
+      <iframe
+        ref={frameRef}
+        src={src}
+        className="absolute inset-0 h-full w-full border-none"
+        allow="fullscreen; clipboard-write"
+        allowFullScreen
+        title="PROJECT PARABLE"
+        loading="eager"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    </div>
   );
 }

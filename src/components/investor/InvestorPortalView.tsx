@@ -16,10 +16,12 @@ export function InvestorPortalView({
   const src = gammaProposalUrl.trim();
 
   return (
-    <div className="mx-auto w-full max-w-7xl bg-[#050505] px-4 py-8">
-      <div className="relative w-full min-h-[85vh] overflow-hidden rounded-xl border border-cyan-500/10 shadow-[0_0_40px_rgba(0,255,255,0.1)]">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col bg-[#050505] px-4 py-4 sm:py-6">
+      <div
+        className={`relative flex w-full flex-1 flex-col overflow-hidden rounded-xl border border-cyan-500/10 shadow-[0_0_40px_rgba(0,255,255,0.1)] ${!src ? 'min-h-[50vh]' : ''}`}
+      >
         {!src ? (
-          <div className="flex min-h-[85vh] flex-col items-center justify-center gap-3 px-6 text-center">
+          <div className="flex min-h-[50vh] flex-1 flex-col items-center justify-center gap-3 px-6 py-12 text-center">
             <p className="text-sm font-medium text-white/80">Proposal embed not configured</p>
             <p className="max-w-md text-xs leading-relaxed text-white/45">
               {onVercel ? (
@@ -52,7 +54,7 @@ export function InvestorPortalView({
           <InvestorPortalClient src={src} />
         )}
       </div>
-      <div className="mt-4 flex items-center justify-between border-t border-cyan-500/10 pt-4">
+      <div className="mt-4 flex shrink-0 items-center justify-between border-t border-cyan-500/10 pt-4">
         <div className="flex flex-col gap-1">
           <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
             Secure Infrastructure Environment

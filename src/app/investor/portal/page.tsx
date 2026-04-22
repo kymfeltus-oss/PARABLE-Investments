@@ -21,7 +21,7 @@ export default async function InvestorPortalPage() {
   const gammaProposalUrl = proposalEmbedUrlFromEnv();
   const onVercel = Boolean(process.env.VERCEL);
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       {process.env.NODE_ENV === 'development' ? (
         <div className="mx-auto max-w-7xl px-4 pt-4 font-mono text-[10px] text-amber-400/90">
           [dev] Embed URL on server:{' '}
@@ -40,6 +40,6 @@ export default async function InvestorPortalPage() {
         </div>
       ) : null}
       <InvestorPortalView clientIp={clientIp} gammaProposalUrl={gammaProposalUrl} onVercel={onVercel} />
-    </>
+    </div>
   );
 }
