@@ -134,29 +134,29 @@ export function ParablePortalFeatures({ className = '', variant = 'full', meetHr
   if (compact) {
     return (
       <nav
-        className={`rounded-xl border border-[#00f2ff]/20 bg-black/35 px-2 py-3 shadow-[0_0_24px_rgba(0,242,255,0.06)] backdrop-blur-sm sm:px-3 ${className}`}
+        className={`rounded-xl border border-[#00f2ff]/20 bg-black/35 px-2 py-3 shadow-[0_0_24px_rgba(0,242,255,0.06)] backdrop-blur-sm sm:px-3 md:px-5 md:py-4 ${className}`}
         aria-label="Portal shortcuts"
       >
-        <p className="text-center text-[9px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/65">
+        <p className="text-center text-[9px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/65 md:text-[10px] md:tracking-[0.32em]">
           PARABLE · This portal — jump to
         </p>
-        <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 md:mt-4 md:gap-3">
           {navItems.map((item) => (
             <li key={item.id}>
               <Link
                 href={item.href}
                 title={`${item.title}: ${item.body}`}
-                className="flex min-w-[5.5rem] max-w-[9.5rem] flex-col items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-2 text-center transition hover:border-[#00f2ff]/35 hover:bg-[#00f2ff]/10 sm:min-w-[6.5rem] sm:max-w-[11rem] sm:px-2.5"
+                className="flex min-w-[5.5rem] max-w-[9.5rem] flex-col items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-2 text-center transition hover:border-[#00f2ff]/35 hover:bg-[#00f2ff]/10 sm:min-w-[6.5rem] sm:max-w-[11rem] sm:px-2.5 md:min-w-[7.25rem] md:max-w-[13rem] md:px-3 md:py-2.5"
               >
-                <span className="text-[#00f2ff]/90">{item.icon}</span>
-                <span className="text-[8px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:text-[9px]">
+                <span className="text-[#00f2ff]/90 md:[&_svg]:h-6 md:[&_svg]:w-6">{item.icon}</span>
+                <span className="text-[8px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:text-[9px] md:text-[10px]">
                   {item.shortLabel}
                 </span>
               </Link>
             </li>
           ))}
         </ul>
-        <p className="mt-2.5 text-center text-[10px] leading-snug text-white/40">
+        <p className="mt-2.5 text-center text-[10px] leading-snug text-white/40 md:mt-3 md:text-[11px]">
           Hover a shortcut for details. Use the cards below for full descriptions.
         </p>
       </nav>

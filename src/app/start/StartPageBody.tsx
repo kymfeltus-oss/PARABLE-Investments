@@ -87,7 +87,7 @@ export default function StartPageBody() {
       />
       <InvestorAtmosphere sparkleCount={40} />
 
-      <div className="relative z-20 mx-auto flex min-h-screen max-w-2xl flex-col px-5 pb-16 pt-10 sm:px-8 md:px-10 md:pb-20 md:pt-14">
+      <div className="relative z-20 mx-auto flex min-h-screen max-w-2xl flex-col px-5 pb-16 pt-10 sm:px-8 md:max-w-4xl md:px-10 md:pb-20 md:pt-14 lg:max-w-5xl xl:max-w-6xl">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ export default function StartPageBody() {
             }}
             aria-hidden
           />
-          <ParableLogoMark className="relative w-full max-w-[min(20rem,88vw)] opacity-95 sm:max-w-sm" />
+          <ParableLogoMark className="relative w-full max-w-[min(20rem,88vw)] opacity-95 sm:max-w-sm md:max-w-md lg:max-w-xl" />
         </motion.div>
 
         <motion.div
@@ -151,10 +151,10 @@ export default function StartPageBody() {
           animate={fadeUp.animate}
           transition={{ ...trans, delay: reduceMotion ? 0 : 0.18 }}
         >
-          <h1 className="text-balance text-2xl font-black uppercase leading-tight tracking-[0.12em] text-[#00f2ff] drop-shadow-[0_0_24px_rgba(0,242,255,0.2)] sm:text-3xl sm:tracking-[0.16em]">
+          <h1 className="text-balance text-2xl font-black uppercase leading-tight tracking-[0.12em] text-[#00f2ff] drop-shadow-[0_0_24px_rgba(0,242,255,0.2)] sm:text-3xl sm:tracking-[0.16em] md:text-4xl md:tracking-[0.14em] lg:text-5xl">
             You&apos;re cleared to continue
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-pretty text-sm leading-relaxed text-white/55 sm:text-[15px]">
+          <p className="mx-auto mt-4 max-w-xl text-pretty text-sm leading-relaxed text-white/55 sm:text-[15px] md:max-w-3xl md:text-base lg:text-lg">
             Your confidentiality agreement is on file. Choose how you&apos;d like to move forward—join
             the live session, review materials on your own timeline, or book a dedicated conversation.
           </p>
@@ -177,107 +177,107 @@ export default function StartPageBody() {
         >
           <Link
             href={meetHref}
-            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-9 lg:py-10"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
-              <VideoIcon className="h-7 w-7" />
+              <VideoIcon className="h-7 w-7 md:h-8 md:w-8" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
               Scheduled session
             </span>
-            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white md:text-xl lg:text-2xl">
               Join the live meeting
             </span>
-            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50 md:max-w-xl md:text-[15px] lg:max-w-2xl lg:text-base">
               Enter the Parable video room for your investor session—same link your calendar invite uses.
             </span>
-            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3 md:text-xs md:tracking-[0.22em]">
               Open video room <span aria-hidden>→</span>
             </span>
           </Link>
 
           <Link
             href="/investor/portal"
-            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-9 lg:py-10"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
-              <DocIcon className="h-7 w-7" />
+              <DocIcon className="h-7 w-7 md:h-8 md:w-8" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
               Investor portal
             </span>
-            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white md:text-xl lg:text-2xl">
               Investor Portal
             </span>
-            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50 md:max-w-xl md:text-[15px] lg:max-w-2xl lg:text-base">
               Confidential strategic proposal deck—same embed experience as your Gamma share link, hosted on this site
               after you are cleared.
             </span>
-            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3 md:text-xs md:tracking-[0.22em]">
               Open investor portal <span aria-hidden>→</span>
             </span>
           </Link>
 
           <Link
             href="/investor/financial-calculator"
-            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-9 lg:py-10"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
-              <CalculatorIcon className="h-7 w-7" />
+              <CalculatorIcon className="h-7 w-7 md:h-8 md:w-8" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
               Financial model
             </span>
-            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white md:text-xl lg:text-2xl">
               Financial calculator
             </span>
-            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50 md:max-w-xl md:text-[15px] lg:max-w-2xl lg:text-base">
               Sovereign yield modeler—adjust adoption and recovery to see implied gross yield, overhead, and NOI framing on
               this site.
             </span>
-            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3 md:text-xs md:tracking-[0.22em]">
               Open financial calculator <span aria-hidden>→</span>
             </span>
           </Link>
 
           <Link
             href="/parable-app-simulation"
-            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-9 lg:py-10"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
-              <AppGridIcon className="h-7 w-7" />
+              <AppGridIcon className="h-7 w-7 md:h-8 md:w-8" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
               Full app simulation
             </span>
-            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white md:text-xl lg:text-2xl">
               Click-through PARABLE prototype
             </span>
-            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50 md:max-w-xl md:text-[15px] lg:max-w-2xl lg:text-base">
               Login, hub, Testify shell, and live studio mock—runs only on this investor site. No connection to the production PARABLE deploy.
             </span>
-            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3 md:text-xs md:tracking-[0.22em]">
               Open simulation <span aria-hidden>→</span>
             </span>
           </Link>
 
           <Link
             href="/explore"
-            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-9 lg:py-10"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
-              <ExplorePrototypeIcon className="h-7 w-7" />
+              <ExplorePrototypeIcon className="h-7 w-7 md:h-8 md:w-8" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
               Interactive prototype
             </span>
-            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white md:text-xl lg:text-2xl">
               Explore the Parable app
             </span>
-            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50 md:max-w-xl md:text-[15px] lg:max-w-2xl lg:text-base">
               Real app embed when a prototype URL is set; otherwise the brand-matched in-browser preview (hub shell + nav).
             </span>
-            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3 md:text-xs md:tracking-[0.22em]">
               Open prototype <span aria-hidden>→</span>
             </span>
           </Link>
