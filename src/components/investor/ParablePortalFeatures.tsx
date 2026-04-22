@@ -134,29 +134,31 @@ export function ParablePortalFeatures({ className = '', variant = 'full', meetHr
   if (compact) {
     return (
       <nav
-        className={`rounded-xl border border-[#00f2ff]/20 bg-black/35 px-2 py-3 shadow-[0_0_24px_rgba(0,242,255,0.06)] backdrop-blur-sm sm:px-3 md:px-5 md:py-4 ${className}`}
+        className={`rounded-2xl border border-[#00f2ff]/25 bg-black/35 px-3 py-4 shadow-[0_0_32px_rgba(0,242,255,0.08)] backdrop-blur-sm sm:px-5 sm:py-5 md:px-7 md:py-6 ${className}`}
         aria-label="Portal shortcuts"
       >
-        <p className="text-center text-[9px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/65 md:text-[10px] md:tracking-[0.32em]">
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.26em] text-[#00f2ff]/70 sm:text-[11px] sm:tracking-[0.28em] md:text-xs md:tracking-[0.3em]">
           PARABLE · This portal — jump to
         </p>
-        <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 md:mt-4 md:gap-3">
+        <ul className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4">
           {navItems.map((item) => (
             <li key={item.id}>
               <Link
                 href={item.href}
                 title={`${item.title}: ${item.body}`}
-                className="flex min-w-[5.5rem] max-w-[9.5rem] flex-col items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-2 text-center transition hover:border-[#00f2ff]/35 hover:bg-[#00f2ff]/10 sm:min-w-[6.5rem] sm:max-w-[11rem] sm:px-2.5 md:min-w-[7.25rem] md:max-w-[13rem] md:px-3 md:py-2.5"
+                className="flex min-w-[6.75rem] max-w-[11rem] flex-col items-center gap-1.5 rounded-xl border border-white/[0.1] bg-black/45 px-2.5 py-3 text-center transition hover:border-[#00f2ff]/40 hover:bg-[#00f2ff]/10 sm:min-w-[7.75rem] sm:max-w-[13rem] sm:gap-2 sm:px-3 sm:py-3.5 md:min-w-[9rem] md:max-w-[15rem] md:px-4 md:py-4"
               >
-                <span className="text-[#00f2ff]/90 md:[&_svg]:h-6 md:[&_svg]:w-6">{item.icon}</span>
-                <span className="text-[8px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:text-[9px] md:text-[10px]">
+                <span className="text-[#00f2ff]/90 [&_svg]:h-6 [&_svg]:w-6 sm:[&_svg]:h-7 sm:[&_svg]:w-7 md:[&_svg]:h-8 md:[&_svg]:w-8">
+                  {item.icon}
+                </span>
+                <span className="text-[10px] font-bold uppercase leading-snug tracking-[0.05em] text-white/90 sm:text-[11px] md:text-xs">
                   {item.shortLabel}
                 </span>
               </Link>
             </li>
           ))}
         </ul>
-        <p className="mt-2.5 text-center text-[10px] leading-snug text-white/40 md:mt-3 md:text-[11px]">
+        <p className="mt-3.5 text-center text-[11px] leading-snug text-white/45 sm:mt-4 sm:text-xs md:text-[13px]">
           Hover a shortcut for details. Use the cards below for full descriptions.
         </p>
       </nav>
