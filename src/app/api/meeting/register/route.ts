@@ -217,6 +217,8 @@ export async function POST(req: NextRequest) {
     try {
       const resend = new Resend(resendKey);
       /** Resend returns `{ data, error }` — failures often do not throw; must inspect `error`. */
+      /** Resend requires attachment `content` as Base64; raw .ics string returns 422. */
+      const icsBase64 = Buffer.from(calendar.ics, 'utf8').toString('base64');
       const userResult = await resend.emails.send({
         from,
         to: email,
@@ -226,7 +228,7 @@ export async function POST(req: NextRequest) {
         attachments: [
           {
             filename: icsFilename,
-            content: calendar.ics,
+            content: icsBase64,
             contentType: 'text/calendar; charset=utf-8',
           },
         ],
