@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 
-const VIDEO_SRC = '/videos/Welcome.mp4';
+const VIDEO_SRC = '/videos/Investor%20Intro.mp4';
 
 export type InfoIntroVideoPageProps = {
   /** “Back” link in the header (default: choice hub). */
