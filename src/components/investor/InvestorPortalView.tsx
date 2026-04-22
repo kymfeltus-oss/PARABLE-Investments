@@ -1,5 +1,8 @@
+import { InvestorPortalClient } from '@/components/investor/InvestorPortalClient';
+
 /**
- * Server-rendered Gamma embed — `src` is written in the initial HTML (no client `process.env` timing).
+ * Proposal deck shell: URL comes from env on the server; the iframe mounts via a client boundary
+ * for priority loading + early preconnect on the embed origin.
  */
 export function InvestorPortalView({
   clientIp,
@@ -27,14 +30,14 @@ export function InvestorPortalView({
                     NEXT_PUBLIC_GAMMA_PROPOSAL_URL
                   </code>{' '}
                   or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code>{' '}
-                  (Gamma → Share → Embed → iframe <code className="text-white/55">src</code> only). Enable for{' '}
+                  (full iframe <code className="text-white/55">src</code> on your white-labeled host). Enable for{' '}
                   <strong className="text-white/70">Production</strong>, then <strong className="text-white/70">Redeploy</strong>.
                 </>
               ) : (
                 <>
                   Add{' '}
                   <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
-                    NEXT_PUBLIC_GAMMA_PROPOSAL_URL=https://gamma.app/embed/…
+                    NEXT_PUBLIC_GAMMA_PROPOSAL_URL=https://yourproject.com/…
                   </code>{' '}
                   or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code> to{' '}
                   <code className="text-white/60">.env.local</code>, then restart <code className="text-white/60">npm run dev</code>.
@@ -43,13 +46,7 @@ export function InvestorPortalView({
             </p>
           </div>
         ) : (
-          <iframe
-            src={src}
-            className="block h-[85vh] min-h-[480px] w-full border-none"
-            allow="fullscreen; clipboard-write"
-            allowFullScreen
-            title="PROJECT PARABLE"
-          />
+          <InvestorPortalClient src={src} />
         )}
       </div>
       <div className="mt-4 flex items-center justify-between border-t border-cyan-500/10 pt-4">

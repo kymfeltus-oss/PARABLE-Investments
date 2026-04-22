@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { InvestorPortalView } from '@/components/investor/InvestorPortalView';
+import { proposalEmbedUrlFromEnv } from '@/lib/proposal-embed';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,18 +15,10 @@ function clientIpFromHeaders(h: Headers): string {
   return '127.0.0.1';
 }
 
-/** Prefer public URL; allow server-only `GAMMA_EMBED_URL` on Vercel (no NEXT_PUBLIC_ required). */
-function gammaEmbedUrlFromEnv(): string {
-  const a = process.env.NEXT_PUBLIC_GAMMA_PROPOSAL_URL?.trim() ?? '';
-  if (a) return a;
-  const b = process.env.GAMMA_EMBED_URL?.trim() ?? '';
-  return b;
-}
-
 export default async function InvestorPortalPage() {
   const h = await headers();
   const clientIp = clientIpFromHeaders(h);
-  const gammaProposalUrl = gammaEmbedUrlFromEnv();
+  const gammaProposalUrl = proposalEmbedUrlFromEnv();
   const onVercel = Boolean(process.env.VERCEL);
   return (
     <>

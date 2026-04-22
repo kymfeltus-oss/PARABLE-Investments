@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
+import { proposalEmbedOriginFromEnv } from '@/lib/proposal-embed';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,6 +19,22 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+function PortalProposalResourceHints() {
+  const origin = proposalEmbedOriginFromEnv();
+  if (!origin) return null;
+  return (
+    <>
+      <link rel="dns-prefetch" href={origin} data-proposal-embed={origin} />
+      <link rel="preconnect" href={origin} crossOrigin="anonymous" data-proposal-embed={origin} />
+    </>
+  );
+}
+
 export default function InvestorPortalLayout({ children }: { children: ReactNode }) {
-  return <div className={`${inter.className} min-h-dvh`}>{children}</div>;
+  return (
+    <div className={`${inter.className} min-h-dvh`}>
+      <PortalProposalResourceHints />
+      {children}
+    </div>
+  );
 }
