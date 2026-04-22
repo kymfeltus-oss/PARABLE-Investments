@@ -56,6 +56,7 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
     return <LiveMeetingIntroScreen onComplete={completeScheduledIntro} backHref="/start" />;
   }
 
+  /** Same Parable meeting shell + {@link MeetRoom} “Before you join” lobby as before; intro video is an extra first step only for `join=scheduled`. */
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
       <InvestorAtmosphere sparkleCount={40} />
