@@ -232,7 +232,7 @@ export function SovereignYieldModeler() {
             }}
           >
             <ZapWatermark className="pointer-events-none absolute -right-2 -top-2 h-28 w-28 rotate-12 text-[#00FFFF]/[0.06]" />
-            <p className="mb-2 text-[8px] font-medium uppercase leading-tight tracking-[0.2em] text-white/45 md:text-[9px] md:tracking-[0.24em]">
+            <p className="mb-2 text-[8px] font-bold uppercase leading-tight tracking-[0.22em] text-white/55 md:text-[9px] md:tracking-[0.26em]">
               Annual net operating income (NOI)
             </p>
             <div
@@ -269,12 +269,15 @@ export function SovereignYieldModeler() {
                 {metrics.paybackLabel} mo
               </span>
             </div>
-            <p className="mx-auto mt-3 max-w-[17rem] text-[9px] leading-relaxed text-white/42 md:max-w-md md:text-[10px] md:leading-relaxed">
+            <p className="mx-auto mt-3 max-w-[18rem] text-[9px] leading-relaxed text-white/45 md:max-w-md md:text-[10px] md:leading-relaxed">
               At 1% market penetration, the $5M upfront acquisition cost is recovered in{' '}
               <span className={`${yieldMono.className} font-semibold text-[#00FFFF]/90`}>
                 {metrics.paybackAt1PctLabel}
               </span>{' '}
-              months. Even if you are 99% wrong about the market, you still win.
+              months.
+            </p>
+            <p className="mx-auto mt-1.5 max-w-[18rem] text-[9px] leading-relaxed text-white/38 md:max-w-md md:text-[10px]">
+              Why: even if you are 99% wrong about the market, the buyer still wins.
             </p>
             <p className="mt-2 text-[9px] leading-relaxed text-white/28 md:text-[10px]">
               $5,000,000 ÷ (annual NOI ÷ 12). Illustrative model only.
