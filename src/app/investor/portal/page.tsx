@@ -32,10 +32,11 @@ export default async function InvestorPortalPage() {
       ) : null}
       {onVercel && !gammaProposalUrl ? (
         <div className="mx-auto max-w-7xl px-4 pt-4 text-center text-[11px] leading-snug text-amber-200/95">
-          This deployment has no embed URL on the server. In Vercel add{' '}
-          <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_GAMMA_PROPOSAL_URL</code> or{' '}
-          <code className="rounded bg-white/10 px-1">GAMMA_EMBED_URL</code> for <strong>Production</strong>, then
-          redeploy.
+          This deployment has no proposal embed URL. In Vercel add{' '}
+          <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_GAMMA_PROPOSAL_URL</code> (full <code className="rounded bg-white/10 px-1">https://</code>{' '}
+          iframe <code className="rounded bg-white/10 px-1">src</code>) or server-only{' '}
+          <code className="rounded bg-white/10 px-1">GAMMA_EMBED_URL</code>. Enable for <strong>Production</strong> and{' '}
+          <strong>Preview</strong> if you use preview deployments, then redeploy.
         </div>
       ) : null}
       <InvestorPortalView clientIp={clientIp} gammaProposalUrl={gammaProposalUrl} onVercel={onVercel} />

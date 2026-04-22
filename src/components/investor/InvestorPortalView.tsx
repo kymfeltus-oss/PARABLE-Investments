@@ -24,14 +24,17 @@ export function InvestorPortalView({
             <p className="max-w-md text-xs leading-relaxed text-white/45">
               {onVercel ? (
                 <>
-                  In the <strong className="text-white/70">Vercel</strong> project for this site, open{' '}
+                  In <strong className="text-white/70">Vercel</strong> → this project →{' '}
                   <strong className="text-white/70">Settings → Environment Variables</strong>, add{' '}
                   <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">
                     NEXT_PUBLIC_GAMMA_PROPOSAL_URL
                   </code>{' '}
-                  or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code>{' '}
-                  (full iframe <code className="text-white/55">src</code> on your white-labeled host). Enable for{' '}
-                  <strong className="text-white/70">Production</strong>, then <strong className="text-white/70">Redeploy</strong>.
+                  (recommended) or <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-cyan-400/90">GAMMA_EMBED_URL</code>
+                  . Value must be the full document URL (starts with <code className="text-white/55">https://</code>), same as
+                  your embed iframe <code className="text-white/55">src</code> (white-label or Gamma Share → Embed). Enable it
+                  for <strong className="text-white/70">Production</strong>, and for{' '}
+                  <strong className="text-white/70">Preview</strong> if you test on preview URLs, then{' '}
+                  <strong className="text-white/70">Redeploy</strong>.
                 </>
               ) : (
                 <>
