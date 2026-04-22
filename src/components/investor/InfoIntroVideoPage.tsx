@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/** Public file in `public/videos/` (space encoded for URL). */
-const VIDEO_SRC = '/videos/Investor%20Intro.mp4';
+/** Local path (not in git if >100MB) or override via `NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL` (HTTPS). */
+const VIDEO_SRC =
+  process.env.NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL?.trim() || '/videos/Investor%20Intro.mp4';
 
 export type InfoIntroVideoPageProps = {
   /** “Back” link in the header (default: choice hub). */
@@ -87,7 +88,8 @@ export function InfoIntroVideoPage({
       <footer className="relative z-20 flex shrink-0 flex-col items-center gap-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-6">
         {loadError ? (
           <p className="max-w-md text-center text-sm text-amber-200/90">
-            Could not load the intro video. Confirm <code className="rounded bg-white/10 px-1 text-xs">public/videos/Investor Intro.mp4</code> is deployed, then refresh.
+            Could not load the intro video. Add <code className="rounded bg-white/10 px-1 text-xs">public/videos/Investor Intro.mp4</code> locally, set{' '}
+            <code className="rounded bg-white/10 px-1 text-xs">NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL</code> to a public HTTPS file, then refresh.
           </p>
         ) : null}
         <button
