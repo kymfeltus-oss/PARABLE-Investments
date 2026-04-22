@@ -56,6 +56,20 @@ function AppGridIcon({ className }: { className?: string }) {
   );
 }
 
+function CalculatorIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 19V5M4 19h16M8 15V9m4 8V7m4 6v-4m4 4v-8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
@@ -190,23 +204,46 @@ export default function StartPageBody() {
           </Link>
 
           <Link
-            href="/info/intro"
+            href="/investor/portal"
             className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
           >
             <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
               <DocIcon className="h-7 w-7" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
-              Materials
+              Investor portal
             </span>
             <span className="mt-2 block text-lg font-bold tracking-tight text-white">
-              Review the investment overview
+              Investor Portal
             </span>
             <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
-              Objectives, structure, and session details—read at your pace before we talk live.
+              Confidential strategic proposal deck—same embed experience as your Gamma share link, hosted on this site
+              after you are cleared.
             </span>
             <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
-              Open materials <span aria-hidden>→</span>
+              Open investor portal <span aria-hidden>→</span>
+            </span>
+          </Link>
+
+          <Link
+            href="/investor/financial-calculator"
+            className="parable-glass-panel group relative block overflow-hidden px-6 py-7 transition hover:-translate-y-0.5 hover:border-[#00f2ff]/50 hover:shadow-[0_0_40px_rgba(0,242,255,0.14)] md:px-8 md:py-8"
+          >
+            <div className="absolute right-5 top-5 text-[#00f2ff]/40 transition group-hover:text-[#00f2ff]/70">
+              <CalculatorIcon className="h-7 w-7" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/90">
+              Financial model
+            </span>
+            <span className="mt-2 block text-lg font-bold tracking-tight text-white">
+              Financial calculator
+            </span>
+            <span className="mt-2 block max-w-md text-sm leading-relaxed text-white/50">
+              Sovereign yield modeler—adjust adoption and recovery to see implied gross yield, overhead, and NOI framing on
+              this site.
+            </span>
+            <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#00f2ff] transition group-hover:gap-3">
+              Open financial calculator <span aria-hidden>→</span>
             </span>
           </Link>
 

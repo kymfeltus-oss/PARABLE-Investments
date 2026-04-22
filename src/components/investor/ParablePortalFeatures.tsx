@@ -66,6 +66,20 @@ function AppGridIcon({ className }: { className?: string }) {
   );
 }
 
+function CalculatorIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 19V5M4 19h16M8 15V9m4 8V7m4 6v-4m4 4v-8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export type PortalNavItem = {
   id: string;
   title: string;
@@ -95,12 +109,20 @@ function buildPortalItems(meetHref: string): PortalNavItem[] {
       href: meetHref,
     },
     {
-      id: 'materials',
-      title: 'Materials & narrative',
-      shortLabel: 'Materials',
-      body: 'Structured overview, welcome video, and objectives you can read before or after a live session—depth at your pace.',
+      id: 'portal',
+      title: 'Investor portal',
+      shortLabel: 'Portal',
+      body: 'Confidential strategic proposal—embedded deck on this site after you are cleared.',
       icon: <LayersIcon className="h-5 w-5" />,
-      href: '/info/intro',
+      href: '/investor/portal',
+    },
+    {
+      id: 'calculator',
+      title: 'Financial calculator',
+      shortLabel: 'Calculator',
+      body: 'Sovereign yield modeler with adoption and recovery sliders—explore implied NOI and payback framing.',
+      icon: <CalculatorIcon className="h-5 w-5" />,
+      href: '/investor/financial-calculator',
     },
     {
       id: 'book',
@@ -124,7 +146,8 @@ function buildPortalItems(meetHref: string): PortalNavItem[] {
 const FULL_ICONS: Record<string, ReactNode> = {
   access: <ShieldIcon className="h-6 w-6" />,
   meet: <StreamIcon className="h-6 w-6" />,
-  materials: <LayersIcon className="h-6 w-6" />,
+  portal: <LayersIcon className="h-6 w-6" />,
+  calculator: <CalculatorIcon className="h-6 w-6" />,
   book: <CalendarIcon className="h-6 w-6" />,
   prototype: <AppGridIcon className="h-6 w-6" />,
 };
