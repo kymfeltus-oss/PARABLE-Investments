@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
 
 function liveMeetingIntroCandidateUrls(): string[] {
   const out: string[] = [];
@@ -39,7 +40,6 @@ type Props = {
  * Plays before the scheduled `/meet` lobby: optional CDN URL, then `public/videos/Live Meeting.mp4`.
  */
 export function LiveMeetingIntroScreen({ onComplete, backHref = '/start' }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [srcIndex, setSrcIndex] = useState(0);
   const [loadError, setLoadError] = useState(false);
 
@@ -47,6 +47,8 @@ export function LiveMeetingIntroScreen({ onComplete, backHref = '/start' }: Prop
     () => VIDEO_CANDIDATES[Math.min(srcIndex, VIDEO_CANDIDATES.length - 1)]!,
     [srcIndex],
   );
+
+  const { videoRef, muted, toggleMute } = useParableVideoAudio(videoSrc);
 
   const finish = useCallback(() => {
     onComplete();
@@ -64,18 +66,6 @@ export function LiveMeetingIntroScreen({ onComplete, backHref = '/start' }: Prop
     });
   }, []);
 
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    const tryPlay = () => {
-      el.muted = true;
-      void el.play().catch(() => {});
-    };
-    if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) tryPlay();
-    else el.addEventListener('canplay', tryPlay, { once: true });
-    return () => el.removeEventListener('canplay', tryPlay);
-  }, [videoSrc]);
-
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] flex-col overflow-hidden bg-black text-white">
       <video
@@ -85,7 +75,7 @@ export function LiveMeetingIntroScreen({ onComplete, backHref = '/start' }: Prop
         src={videoSrc}
         playsInline
         preload="auto"
-        muted
+        muted={muted}
         onEnded={finish}
         onError={onVideoError}
       />
@@ -128,16 +118,11 @@ export function LiveMeetingIntroScreen({ onComplete, backHref = '/start' }: Prop
         ) : null}
         <button
           type="button"
-          onClick={() => {
-            const el = videoRef.current;
-            if (el) {
-              el.muted = !el.muted;
-              void el.play().catch(() => {});
-            }
-          }}
+          onClick={toggleMute}
+          aria-pressed={muted}
           className="text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff]/90 hover:text-[#00f2ff]"
         >
-          Toggle sound
+          {muted ? 'Unmute' : 'Mute'}
         </button>
         <button
           type="button"

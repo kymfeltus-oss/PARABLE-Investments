@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
 
 type Props = {
   className?: string;
@@ -143,6 +144,24 @@ export function LandingHeroBackgroundVideo() {
         className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-black/40 via-black/[0.18] to-black/50"
         aria-hidden
       />
+      <div className="pointer-events-auto absolute bottom-[max(5.5rem,env(safe-area-inset-bottom)+4rem)] left-4 z-[3] sm:left-6">
+        <button
+          type="button"
+          onClick={() => {
+            const el = videoRef.current;
+            if (!el) return;
+            const next = !el.muted;
+            el.muted = next;
+            el.volume = 1;
+            setMuted(next);
+            void el.play().catch(() => {});
+          }}
+          aria-pressed={muted}
+          className="rounded-lg border border-white/20 bg-black/55 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-black/70"
+        >
+          {muted ? 'Unmute' : 'Mute'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -156,6 +175,7 @@ export function ParableLogoVideo({
   maxWidthClass = 'max-w-md',
 }: Props) {
   const reduceMotion = useReducedMotion();
+  const { videoRef, muted, toggleMute } = useParableVideoAudio(PARABLE_LOGO_VIDEO_SRC);
 
   if (reduceMotion) {
     return (
@@ -170,9 +190,10 @@ export function ParableLogoVideo({
         aria-hidden
       />
       <video
+        ref={videoRef}
         className="relative h-auto w-full object-contain drop-shadow-[0_0_28px_rgba(0,242,255,0.4)]"
         autoPlay
-        muted
+        muted={muted}
         loop
         playsInline
         preload="auto"
@@ -180,6 +201,14 @@ export function ParableLogoVideo({
       >
         <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
       </video>
+      <button
+        type="button"
+        onClick={toggleMute}
+        aria-pressed={muted}
+        className="absolute bottom-2 right-2 z-10 rounded-md border border-white/15 bg-black/60 px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-white/85 backdrop-blur-sm hover:bg-black/75"
+      >
+        {muted ? 'Unmute' : 'Mute'}
+      </button>
     </div>
   );
 }

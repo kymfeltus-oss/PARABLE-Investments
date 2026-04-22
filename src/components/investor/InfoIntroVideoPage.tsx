@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
 
 /** Build-time list: optional HTTPS override, then same-origin static paths (space in filename). */
 function introVideoCandidateUrls(): string[] {
@@ -43,7 +44,7 @@ export type InfoIntroVideoPageProps = {
 
 /**
  * Full-viewport welcome video — `/info/intro` and `/investor/portal` (before proposal).
- * Uses `object-cover` edge-to-edge in the stage; controls sit in safe-area overlays for phone + desktop.
+ * Tries unmuted playback at full volume first; **Mute** / **Unmute** in the footer. Uses `object-cover` edge-to-edge.
  */
 export function InfoIntroVideoPage({
   backHref = '/start',
@@ -51,7 +52,6 @@ export function InfoIntroVideoPage({
   continueButtonLabel = 'Continue to materials',
 }: InfoIntroVideoPageProps = {}) {
   const router = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [srcIndex, setSrcIndex] = useState(0);
   const [loadError, setLoadError] = useState(false);
 
@@ -59,6 +59,8 @@ export function InfoIntroVideoPage({
     () => INTRO_VIDEO_CANDIDATES[Math.min(srcIndex, INTRO_VIDEO_CANDIDATES.length - 1)]!,
     [srcIndex],
   );
+
+  const { videoRef, muted, toggleMute } = useParableVideoAudio(videoSrc);
 
   const goNext = useCallback(() => {
     router.push(continueHref);
@@ -76,22 +78,6 @@ export function InfoIntroVideoPage({
     });
   }, []);
 
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-
-    const tryPlay = () => {
-      el.muted = true;
-      void el.play().catch(() => {});
-    };
-
-    if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) tryPlay();
-    else el.addEventListener('canplay', tryPlay, { once: true });
-    return () => {
-      el.removeEventListener('canplay', tryPlay);
-    };
-  }, [videoSrc]);
-
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] flex-col overflow-hidden bg-black text-white">
       <video
@@ -101,7 +87,7 @@ export function InfoIntroVideoPage({
         src={videoSrc}
         playsInline
         preload="auto"
-        muted
+        muted={muted}
         onEnded={goNext}
         onError={onVideoError}
       />
@@ -146,16 +132,11 @@ export function InfoIntroVideoPage({
         ) : null}
         <button
           type="button"
-          onClick={() => {
-            const el = videoRef.current;
-            if (el) {
-              el.muted = !el.muted;
-              void el.play().catch(() => {});
-            }
-          }}
+          onClick={toggleMute}
+          aria-pressed={muted}
           className="text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff]/90 hover:text-[#00f2ff]"
         >
-          Toggle sound
+          {muted ? 'Unmute' : 'Mute'}
         </button>
         <button
           type="button"

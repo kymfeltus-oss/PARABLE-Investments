@@ -10,24 +10,23 @@ type Props = {
 };
 
 /**
- * Welcome loop before joining — prefers audible playback; falls back to muted autoplay
- * when the browser blocks sound until the user taps “Enable sound”.
+ * Welcome loop before joining — volume on by default when autoplay allows; otherwise muted until Unmute.
+ * Mute / Unmute is always available.
  */
 export function MeetWelcomeClip({ fullscreen = false }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
-  const [soundBlocked, setSoundBlocked] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
+    el.volume = 1;
     el.muted = false;
     setMuted(false);
     void el.play().catch(() => {
       el.muted = true;
       setMuted(true);
-      setSoundBlocked(true);
       void el.play().catch(() => {});
     });
   }, []);
@@ -57,13 +56,22 @@ export function MeetWelcomeClip({ fullscreen = false }: Props) {
     tryPlayPreferSound();
   }, [tryPlayPreferSound]);
 
-  const enableSound = useCallback(() => {
+  const toggleMute = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
-    el.muted = false;
-    setMuted(false);
-    setSoundBlocked(false);
-    void el.play().catch(() => {});
+    if (el.muted) {
+      el.volume = 1;
+      el.muted = false;
+      setMuted(false);
+      void el.play().catch(() => {
+        el.muted = true;
+        setMuted(true);
+        void el.play().catch(() => {});
+      });
+    } else {
+      el.muted = true;
+      setMuted(true);
+    }
   }, []);
 
   if (fullscreen) {
@@ -79,28 +87,25 @@ export function MeetWelcomeClip({ fullscreen = false }: Props) {
           preload="auto"
           aria-label="Welcome to Parable"
         />
-        {soundBlocked || muted || hasEnded ? (
-          <div className="absolute bottom-[max(7.5rem,calc(env(safe-area-inset-bottom)+6rem))] left-0 right-0 z-20 flex flex-wrap items-center justify-center gap-2 px-3">
-            {soundBlocked || muted ? (
-              <button
-                type="button"
-                onClick={enableSound}
-                className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
-              >
-                Enable sound
-              </button>
-            ) : null}
-            {hasEnded ? (
-              <button
-                type="button"
-                onClick={replay}
-                className="rounded-lg border border-white/25 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-white/10"
-              >
-                Replay welcome
-              </button>
-            ) : null}
-          </div>
-        ) : null}
+        <div className="absolute bottom-[max(7.5rem,calc(env(safe-area-inset-bottom)+6rem))] left-0 right-0 z-20 flex flex-wrap items-center justify-center gap-2 px-3">
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-pressed={muted}
+            className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
+          >
+            {muted ? 'Unmute' : 'Mute'}
+          </button>
+          {hasEnded ? (
+            <button
+              type="button"
+              onClick={replay}
+              className="rounded-lg border border-white/25 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-white/10"
+            >
+              Replay welcome
+            </button>
+          ) : null}
+        </div>
       </div>
     );
   }
@@ -119,28 +124,25 @@ export function MeetWelcomeClip({ fullscreen = false }: Props) {
           aria-label="Welcome to Parable"
         />
       </div>
-      {soundBlocked || muted || hasEnded ? (
-        <div className="absolute bottom-3 left-0 right-0 flex flex-wrap items-center justify-center gap-2 px-3">
-          {soundBlocked || muted ? (
-            <button
-              type="button"
-              onClick={enableSound}
-              className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
-            >
-              Enable sound
-            </button>
-          ) : null}
-          {hasEnded ? (
-            <button
-              type="button"
-              onClick={replay}
-              className="rounded-lg border border-white/25 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-white/10"
-            >
-              Replay welcome
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+      <div className="absolute bottom-3 left-0 right-0 flex flex-wrap items-center justify-center gap-2 px-3">
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-pressed={muted}
+          className="rounded-lg border border-[#00f2ff]/40 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#00f2ff] backdrop-blur-sm hover:bg-[#00f2ff]/10"
+        >
+          {muted ? 'Unmute' : 'Mute'}
+        </button>
+        {hasEnded ? (
+          <button
+            type="button"
+            onClick={replay}
+            className="rounded-lg border border-white/25 bg-black/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 backdrop-blur-sm hover:bg-white/10"
+          >
+            Replay welcome
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
