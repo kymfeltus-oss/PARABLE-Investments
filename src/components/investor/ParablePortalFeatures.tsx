@@ -1,19 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 
-function ShieldIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function StreamIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -36,19 +23,6 @@ function LayersIcon({ className }: { className?: string }) {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CalendarIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M8 7V5m8 2V5M5 11h14M5 21h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
       />
     </svg>
   );
@@ -93,50 +67,34 @@ export type PortalNavItem = {
 function buildPortalItems(meetHref: string): PortalNavItem[] {
   return [
     {
-      id: 'access',
-      title: 'Confidential investor access',
-      shortLabel: 'Access',
-      body: 'Electronic NDA, gated routes, and session links scoped for qualified conversations—not a public download site.',
-      icon: <ShieldIcon className="h-5 w-5" />,
-      href: '/info',
-    },
-    {
-      id: 'meet',
-      title: 'Live Parable meeting room',
-      shortLabel: 'Meet',
-      body: 'HD video with screen share, chat, and device controls. Scheduled joins can verify your booking email; open rooms use a shared investor room name.',
-      icon: <StreamIcon className="h-5 w-5" />,
-      href: meetHref,
-    },
-    {
       id: 'portal',
-      title: 'Investor portal',
-      shortLabel: 'Portal',
-      body: 'Confidential strategic proposal—embedded deck on this site after you are cleared.',
+      title: 'Investor Portal',
+      shortLabel: 'Investor Portal',
+      body: 'Welcome video, then the confidential strategic proposal deck embedded on this site.',
       icon: <LayersIcon className="h-5 w-5" />,
       href: '/investor/portal',
     },
     {
+      id: 'meet',
+      title: 'Join scheduled meeting',
+      shortLabel: 'Join Scheduled Meeting',
+      body: 'HD video with screen share, chat, and device controls—use the link from your calendar invite when a room is configured.',
+      icon: <StreamIcon className="h-5 w-5" />,
+      href: meetHref,
+    },
+    {
       id: 'calculator',
       title: 'Financial calculator',
-      shortLabel: 'Calculator',
+      shortLabel: 'Financial Calculator',
       body: 'Sovereign yield modeler with adoption and recovery sliders—explore implied NOI and payback framing.',
       icon: <CalculatorIcon className="h-5 w-5" />,
       href: '/investor/financial-calculator',
     },
     {
-      id: 'book',
-      title: 'Book follow-up time',
-      shortLabel: 'Book',
-      body: 'Request a dedicated conversation; confirmations align with your registration and the same portal experience.',
-      icon: <CalendarIcon className="h-5 w-5" />,
-      href: '#book-meeting',
-    },
-    {
-      id: 'prototype',
-      title: 'Interactive app prototype',
-      shortLabel: 'Prototype',
-      body: 'Open /explore: with NEXT_PUBLIC_PARABLE_PROTOTYPE_URL you get the real Parable app embedded; without it, a brand-matched phone preview runs locally.',
+      id: 'explore',
+      title: 'Explore PARABLE app',
+      shortLabel: 'Explore PARABLE app',
+      body: 'With NEXT_PUBLIC_PARABLE_PROTOTYPE_URL set you get the real app embedded; otherwise a brand-matched in-browser preview.',
       icon: <AppGridIcon className="h-5 w-5" />,
       href: '/explore',
     },
@@ -144,12 +102,10 @@ function buildPortalItems(meetHref: string): PortalNavItem[] {
 }
 
 const FULL_ICONS: Record<string, ReactNode> = {
-  access: <ShieldIcon className="h-6 w-6" />,
-  meet: <StreamIcon className="h-6 w-6" />,
   portal: <LayersIcon className="h-6 w-6" />,
+  meet: <StreamIcon className="h-6 w-6" />,
   calculator: <CalculatorIcon className="h-6 w-6" />,
-  book: <CalendarIcon className="h-6 w-6" />,
-  prototype: <AppGridIcon className="h-6 w-6" />,
+  explore: <AppGridIcon className="h-6 w-6" />,
 };
 
 type Props = {
@@ -162,11 +118,6 @@ type Props = {
   meetHref?: string;
 };
 
-const FULL_ITEMS = buildPortalItems('/meet').map((item) => ({
-  ...item,
-  icon: FULL_ICONS[item.id] ?? item.icon,
-}));
-
 /**
  * Highlights PARABLE product themes and what this investor site delivers.
  * **compact** (choice hub): thin top-style nav with icon + label; each item is a real link.
@@ -175,6 +126,10 @@ const FULL_ITEMS = buildPortalItems('/meet').map((item) => ({
 export function ParablePortalFeatures({ className = '', variant = 'full', meetHref = '/meet' }: Props) {
   const compact = variant === 'compact';
   const navItems = buildPortalItems(meetHref);
+  const fullItems = navItems.map((item) => ({
+    ...item,
+    icon: FULL_ICONS[item.id] ?? item.icon,
+  }));
 
   if (compact) {
     return (
@@ -191,10 +146,10 @@ export function ParablePortalFeatures({ className = '', variant = 'full', meetHr
               <Link
                 href={item.href}
                 title={`${item.title}: ${item.body}`}
-                className="flex min-w-[4.5rem] flex-col items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 px-2.5 py-2 text-center transition hover:border-[#00f2ff]/35 hover:bg-[#00f2ff]/10 sm:min-w-[5.25rem] sm:px-3"
+                className="flex min-w-[5.5rem] max-w-[9.5rem] flex-col items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 px-2 py-2 text-center transition hover:border-[#00f2ff]/35 hover:bg-[#00f2ff]/10 sm:min-w-[6.5rem] sm:max-w-[11rem] sm:px-2.5"
               >
                 <span className="text-[#00f2ff]/90">{item.icon}</span>
-                <span className="max-w-[5.5rem] text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-white/90 sm:max-w-none sm:text-[10px]">
+                <span className="text-[8px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:text-[9px]">
                   {item.shortLabel}
                 </span>
               </Link>
@@ -221,12 +176,12 @@ export function ParablePortalFeatures({ className = '', variant = 'full', meetHr
         What you can do here
       </h2>
       <p className="mt-3 text-pretty text-sm leading-relaxed text-white/50 md:text-[15px]">
-        Parable is built around streaming, community, testimony, and live creation—this site is your confidential entry
-        to sessions, materials, and next steps with the team.
+        Jump to the investor portal, your scheduled video room, the financial modeler, or the interactive Parable app
+        preview—all from this site.
       </p>
 
       <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-        {FULL_ITEMS.map((item) => (
+        {fullItems.map((item) => (
           <li
             key={item.id}
             className="flex gap-4 rounded-xl border border-white/[0.07] bg-black/30 px-4 py-4 md:px-5 md:py-5"
