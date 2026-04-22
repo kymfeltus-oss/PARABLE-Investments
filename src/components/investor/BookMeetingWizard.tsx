@@ -24,6 +24,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
   const [registered, setRegistered] = useState(false);
   /** Resend outcome: only `sent` means the inbox should have received Parable's confirmation. */
   const [emailStatus, setEmailStatus] = useState<'sent' | 'unconfigured' | 'failed' | null>(null);
+  const [resendErrorMessage, setResendErrorMessage] = useState<string | null>(null);
 
   const canRegister =
     name.trim().length >= 2 && isValidInvestorEmail(email.trim()) && ack && !submitting;
@@ -47,6 +48,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
         ok?: boolean;
         emailSent?: boolean;
         emailStatus?: 'sent' | 'unconfigured' | 'failed';
+        resendErrorMessage?: string | null;
       };
       if (!res.ok || !data.ok) {
         setError(data.error || 'Something went wrong. Try again.');
@@ -55,6 +57,7 @@ export function BookMeetingWizard({ embedSrc }: Props) {
       }
       const status = data.emailStatus ?? (data.emailSent ? 'sent' : 'unconfigured');
       setEmailStatus(status);
+      setResendErrorMessage(typeof data.resendErrorMessage === 'string' ? data.resendErrorMessage : null);
       setRegistered(true);
     } catch {
       setError('Network error. Try again.');
@@ -166,17 +169,36 @@ export function BookMeetingWizard({ embedSrc }: Props) {
                   </p>
                 </div>
               ) : emailStatus === 'failed' ? (
-                <p className="mt-3 text-sm leading-relaxed text-amber-100/90">
-                  Your registration was saved, but our system could not send the confirmation email just now. Please use
-                  the calendar below if it appears, or email{' '}
-                  <a
-                    href={`mailto:${SUPPORT_EMAIL}`}
-                    className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
-                  >
-                    {SUPPORT_EMAIL}
-                  </a>{' '}
-                  so we can confirm your slot and resend the meeting link.
-                </p>
+                <div className="mt-3 space-y-3 text-left text-sm leading-relaxed text-amber-100/90">
+                  <p>
+                    Your registration was saved, but the <strong>confirmation email was not sent</strong>. This site
+                    uses <strong>Resend</strong> to deliver mail to the address you entered. You do <strong>not</strong>
+                    need “Enable Receiving” / inbound MX in Resend for the guest to get this message—only a verified
+                    <strong> sending</strong> domain and correct env on Vercel
+                    (<code className="rounded bg-black/40 px-1 text-[12px] text-amber-50/95">RESEND_API_KEY</code>,{' '}
+                    <code className="rounded bg-black/40 px-1 text-[12px] text-amber-50/95">RESEND_FROM_EMAIL</code>
+                    ).
+                  </p>
+                  {resendErrorMessage ? (
+                    <p className="rounded-lg border border-amber-500/30 bg-amber-950/40 p-3 font-mono text-[12px] leading-snug text-amber-50/95">
+                      <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-amber-200/80">
+                        Resend said
+                      </span>
+                      <br />
+                      {resendErrorMessage}
+                    </p>
+                  ) : null}
+                  <p>
+                    Please use the calendar below if it appears, or email{' '}
+                    <a
+                      href={`mailto:${SUPPORT_EMAIL}`}
+                      className="font-medium text-[#00f2ff]/90 underline decoration-[#00f2ff]/40 underline-offset-2 hover:text-[#00f2ff]"
+                    >
+                      {SUPPORT_EMAIL}
+                    </a>
+                    , and check the Resend dashboard (Emails / Logs) for the same error.
+                  </p>
+                </div>
               ) : (
                 <p className="mt-3 text-sm leading-relaxed text-white/55">
                   Your registration was saved. An automated confirmation email was not sent from this site (mail may not

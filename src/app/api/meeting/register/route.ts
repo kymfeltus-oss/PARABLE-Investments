@@ -205,6 +205,13 @@ export async function POST(req: NextRequest) {
   const from = process.env.RESEND_FROM_EMAIL?.trim();
 
   let resendConfirmationId: string | null = null;
+  let resendErrorMessage: string | null = null;
+
+  function pickResendError(e: { message?: string; name?: string } | null | undefined): string {
+    if (!e) return 'Unknown Resend error';
+    const m = e.message?.trim() || e.name || 'Resend rejected the request';
+    return m.length > 600 ? `${m.slice(0, 600)}…` : m;
+  }
 
   if (resendKey && from) {
     try {
@@ -226,6 +233,7 @@ export async function POST(req: NextRequest) {
       });
       if (userResult.error) {
         emailStatus = 'failed';
+        resendErrorMessage = pickResendError(userResult.error);
         console.error(
           '[meeting/register] Resend user confirmation rejected:',
           userResult.error.message ?? userResult.error,
@@ -253,6 +261,7 @@ export async function POST(req: NextRequest) {
     } catch (e) {
       emailStatus = 'failed';
       const msg = e instanceof Error ? e.message : String(e);
+      resendErrorMessage = msg.length > 600 ? `${msg.slice(0, 600)}…` : msg;
       console.error('[meeting/register] Resend user confirmation failed:', msg, e);
     }
   } else {
@@ -268,6 +277,8 @@ export async function POST(req: NextRequest) {
     emailSent: emailStatus === 'sent',
     /** Resend message id when `emailStatus === 'sent'` (for support / dashboard correlation). */
     resendConfirmationId,
+    /** Set when `emailStatus === 'failed'` — use to fix `RESEND_FROM_EMAIL` / domain / key in Resend. */
+    resendErrorMessage,
     meetUrl,
     roomLabel,
   });
