@@ -24,6 +24,11 @@ alter table public.meeting_nda_evidence add column if not exists confirmation_em
 comment on column public.meeting_nda_evidence.confirmation_email_sent_at is
   'Set when the Parable confirmation + .ics email was sent (immediately on register, or after choose-a-time on /book/finish).';
 
+alter table public.meeting_nda_evidence add column if not exists last_cal_notified_uid text;
+
+comment on column public.meeting_nda_evidence.last_cal_notified_uid is
+  'Last Cal.com booking uid (BOOKING_CREATED) we emailed via POST /api/webhooks/cal; avoids duplicate Resend on webhook retries.';
+
 create index if not exists meeting_nda_evidence_created_at_idx on public.meeting_nda_evidence (created_at desc);
 create index if not exists meeting_nda_evidence_email_idx on public.meeting_nda_evidence (email);
 create index if not exists meeting_nda_evidence_email_room_idx
