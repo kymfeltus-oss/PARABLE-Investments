@@ -33,6 +33,7 @@ export function BookMeetingWizard() {
           name: name.trim(),
           email: email.trim().toLowerCase(),
           acknowledged: true,
+          deferEmailUntilAfterSlot: true,
         }),
       });
       const data = (await res.json()) as {
@@ -40,11 +41,12 @@ export function BookMeetingWizard() {
         supabaseCode?: string;
         ok?: boolean;
         emailSent?: boolean;
-        emailStatus?: 'sent' | 'unconfigured' | 'failed';
+        emailStatus?: 'sent' | 'unconfigured' | 'failed' | 'deferred';
         resendErrorMessage?: string | null;
         roomLabel?: string;
         roomSuffix?: string;
         meetUrl?: string;
+        registrationId?: string;
       };
       if (!res.ok || !data.ok) {
         setError(
@@ -62,6 +64,8 @@ export function BookMeetingWizard() {
         roomLabel: typeof data.roomLabel === 'string' && data.roomLabel ? data.roomLabel : null,
         roomSuffix: typeof data.roomSuffix === 'string' && data.roomSuffix ? data.roomSuffix : null,
         meetUrl: typeof data.meetUrl === 'string' && data.meetUrl ? data.meetUrl : null,
+        registrationId: typeof data.registrationId === 'string' && data.registrationId ? data.registrationId : null,
+        contactEmail: email.trim().toLowerCase(),
       });
       router.push('/book/finish');
     } catch {
@@ -89,8 +93,8 @@ export function BookMeetingWizard() {
             Book a meeting
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
-            Register below (NDA on file). We will take you to the next step on this site to <strong className="text-white/60">choose a time</strong> in the
-            calendar and to review your room details.
+            Register below (NDA on file). Next, you will <strong className="text-white/60">choose a time</strong> in the
+            calendar, then you can have our confirmation email with your <strong className="text-white/60">video room and meeting details</strong>.
           </p>
         </div>
 
@@ -102,7 +106,8 @@ export function BookMeetingWizard() {
           <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 1 — Register</h2>
           <p className="mt-2 text-sm text-white/50">
             We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
-            records, then send you to <strong className="text-white/60">Finish booking</strong> on this same website.
+            records, then take you to <strong className="text-white/60">choose a time</strong> and request your
+            confirmation email.
           </p>
           <div className="mt-6 space-y-4">
             <label className="block text-left">
@@ -152,7 +157,7 @@ export function BookMeetingWizard() {
         </motion.section>
 
         <p className="mt-8 text-center text-xs text-white/30">
-          After we save your registration, you are taken to the next page on this site to choose a time in the calendar.
+          After this step, you will pick a time, then you can request the Parable email with your room and join link.
         </p>
       </div>
     </div>

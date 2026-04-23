@@ -79,10 +79,11 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
         <div className="text-center">
           <p className="parable-eyebrow mb-2 text-[#00f2ff]/85">Investor relations</p>
           <h1 className="text-2xl font-black uppercase tracking-[0.18em] text-white md:text-3xl md:tracking-[0.22em]">
-            Finish booking
+            Choose a time
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
-            You are on our site. Confirm the details below, then select a time in the calendar to complete scheduling.
+            Use the calendar first. After you have a slot, request the Parable confirmation email for your video room and
+            room ID. Your calendar provider may send a separate time confirmation.
           </p>
         </div>
         <BookMeetingPostRegisterView
@@ -92,6 +93,8 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
           roomLabel={payload.roomLabel}
           roomSuffix={payload.roomSuffix}
           meetUrl={payload.meetUrl}
+          registrationId={payload.registrationId}
+          contactEmail={payload.contactEmail}
         />
       </div>
     </div>

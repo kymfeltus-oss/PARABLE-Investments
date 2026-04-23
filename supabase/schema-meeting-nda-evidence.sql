@@ -19,6 +19,10 @@ alter table public.meeting_nda_evidence add column if not exists client_ip text;
 alter table public.meeting_nda_evidence add column if not exists user_agent text;
 alter table public.meeting_nda_evidence add column if not exists nda_version text;
 alter table public.meeting_nda_evidence add column if not exists acknowledged boolean not null default false;
+alter table public.meeting_nda_evidence add column if not exists confirmation_email_sent_at timestamptz;
+
+comment on column public.meeting_nda_evidence.confirmation_email_sent_at is
+  'Set when the Parable confirmation + .ics email was sent (immediately on register, or after choose-a-time on /book/finish).';
 
 create index if not exists meeting_nda_evidence_created_at_idx on public.meeting_nda_evidence (created_at desc);
 create index if not exists meeting_nda_evidence_email_idx on public.meeting_nda_evidence (email);
