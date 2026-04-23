@@ -65,7 +65,7 @@ export function InvestorPortalHub() {
               href="/start"
               className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.12] bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/85 backdrop-blur-sm transition hover:border-[#00f2ff]/35 hover:text-[#00f2ff] sm:text-[10px]"
             >
-              <span aria-hidden>←</span> Choice surface
+              <span aria-hidden>←</span> Home
             </Link>
             <div className="hidden h-8 w-px bg-white/10 sm:block" aria-hidden />
             <ParableLogoMark
