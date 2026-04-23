@@ -5,6 +5,28 @@ import { useCallback, useMemo, useState } from 'react';
 /** On-disk filename (typo preserved to match `public/videos`). */
 const PROPOSAL_INTRO_LOCAL = 'Propsal Intro Video.mp4';
 
+/** Same Vercel Blob bucket as `NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL` — upload one of these keys next to `Investor Intro.mp4`. */
+function proposalIntroBlobSiblingUrls(): string[] {
+  const intro = process.env.NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL?.trim();
+  if (!intro || !/^https?:\/\//i.test(intro)) return [];
+  const leaves = [
+    'Propsal%20Intro%20Video.mp4',
+    'Proposal%20Intro%20Video.mp4',
+    'Proposal%20Presentation.mp4',
+  ];
+  const out: string[] = [];
+  for (const leaf of leaves) {
+    let href: string | null = null;
+    if (/Investor%20Intro\.mp4$/i.test(intro)) {
+      href = intro.replace(/Investor%20Intro\.mp4$/i, leaf);
+    } else if (/InvestorIntro\.mp4$/i.test(intro)) {
+      href = intro.replace(/InvestorIntro\.mp4$/i, leaf);
+    }
+    if (href && href !== intro && !out.includes(href)) out.push(href);
+  }
+  return out;
+}
+
 function proposalIntroCandidateUrls(): string[] {
   const out: string[] = [];
   const raw = process.env.NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL?.trim();
@@ -17,6 +39,9 @@ function proposalIntroCandidateUrls(): string[] {
     } catch {
       /* ignore invalid env */
     }
+  }
+  for (const u of proposalIntroBlobSiblingUrls()) {
+    if (!out.includes(u)) out.push(u);
   }
   const locals = [
     `/videos/${encodeURIComponent(PROPOSAL_INTRO_LOCAL)}`,
@@ -67,9 +92,10 @@ export function ProposalIntroVideo() {
       >
         <p className="text-xs font-semibold uppercase tracking-wider text-amber-200/90">Video unavailable</p>
         <p className="max-w-md text-pretty text-[11px] leading-relaxed text-white/45 sm:text-xs">
-          Add <code className="rounded bg-white/10 px-1">public/videos/{PROPOSAL_INTRO_LOCAL}</code> or set{' '}
-          <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL</code> to a public MP4
-          URL, then redeploy.
+          Upload the MP4 to the same store as <code className="rounded bg-white/10 px-1">Investor Intro</code> (e.g.{' '}
+          <code className="rounded bg-white/10 px-1">Propsal%20Intro%20Video.mp4</code> next to it), add{' '}
+          <code className="rounded bg-white/10 px-1">public/videos/{PROPOSAL_INTRO_LOCAL}</code> with Git LFS, or set{' '}
+          <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL</code>, then redeploy.
         </p>
       </div>
     );
