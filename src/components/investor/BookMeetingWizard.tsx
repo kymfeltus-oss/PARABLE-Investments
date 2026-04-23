@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -8,11 +8,19 @@ import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import { getInvestorBookingEmailHint } from '@/lib/investor-booking-email-hint';
 import { writeBookMeetingSession } from '@/lib/book-meeting-session';
 import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
 import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
-export function BookMeetingWizard() {
+export type BookMeetingWizardProps = {
+  /** When true, only the form card (parent supplies page chrome). Used on `/book` before session exists. */
+  compact?: boolean;
+  /** After successful `POST /api/meeting/register`, call this instead of navigating (e.g. stay on `/book`). */
+  onRegistered?: () => void;
+};
+
+export function BookMeetingWizard({ compact = false, onRegistered }: BookMeetingWizardProps = {}) {
   const router = useRouter();
   const sp = useSearchParams();
   const fromProposal = sp.get('fromProposal') === '1';
@@ -21,6 +29,15 @@ export function BookMeetingWizard() {
   const [ack, setAck] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (compact) {
+      const hint = getInvestorBookingEmailHint();
+      if (hint && isValidInvestorEmail(hint)) {
+        setEmail((prev) => (prev.trim() ? prev : hint));
+      }
+    }
+  }, [compact]);
 
   const canRegister =
     name.trim().length >= 2 && isValidInvestorEmail(email.trim()) && ack && !submitting;
@@ -71,13 +88,94 @@ export function BookMeetingWizard() {
         registrationId: typeof data.registrationId === 'string' && data.registrationId ? data.registrationId : null,
         contactEmail: email.trim().toLowerCase(),
       });
-      router.push(hrefWithFromProposal('/book', fromProposal));
+      if (onRegistered) {
+        onRegistered();
+      } else {
+        router.push(hrefWithFromProposal('/book', fromProposal));
+      }
     } catch {
       setError('Network error. Try again.');
     } finally {
       setSubmitting(false);
     }
   };
+
+  const formCard = (
+    <motion.section
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
+    >
+      <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">
+        {compact ? 'Meeting record — name & email' : 'Step 1 — Register'}
+      </h2>
+      <p className="mt-2 text-sm text-white/50">
+        {compact ? (
+          <>
+            Use the <strong className="text-white/65">same email as your NDA</strong> when possible (we pre-fill it when
+            this browser signed the NDA). You may edit it. We store this with NDA version{' '}
+            <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span>, then you can request the Parable
+            confirmation for your video room below.
+          </>
+        ) : (
+          <>
+            We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
+            records, then take you to <strong className="text-white/60">choose a time</strong> and request your
+            confirmation email.
+          </>
+        )}
+      </p>
+      <div className="mt-6 space-y-4">
+        <label className="block text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Full name</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+            placeholder="Jane Investor"
+            autoComplete="name"
+          />
+        </label>
+        <label className="block text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+            placeholder="you@firm.com"
+            autoComplete="email"
+          />
+        </label>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/35 px-4 py-4">
+          <input
+            type="checkbox"
+            checked={ack}
+            onChange={(e) => setAck(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
+          />
+          <span className="text-left text-sm text-white/65">
+            I confirm this investor meeting request is subject to the same confidentiality obligations as my Parable NDA /
+            electronic acknowledgment (version {INVESTOR_AGREEMENT_VERSION}). I understand Parable will retain this
+            registration as supplemental evidence.
+          </span>
+        </label>
+        {error ? <p className="whitespace-pre-line text-sm text-red-300/95">{error}</p> : null}
+        <button
+          type="button"
+          disabled={!canRegister}
+          onClick={onRegister}
+          className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
+        >
+          {submitting ? 'Saving…' : compact ? 'Save & show confirmation options' : 'Confirm & go to calendar'}
+        </button>
+      </div>
+    </motion.section>
+  );
+
+  if (compact) {
+    return <div className="mt-10 space-y-4">{formCard}</div>;
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -99,67 +197,12 @@ export function BookMeetingWizard() {
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
             Register below (NDA on file). Next, you will <strong className="text-white/60">choose a time</strong> in the
-            calendar, then you can have our confirmation email with your <strong className="text-white/60">video room and meeting details</strong>.
+            calendar, then you can have our confirmation email with your{' '}
+            <strong className="text-white/60">video room and meeting details</strong>.
           </p>
         </div>
 
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-10 rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
-        >
-          <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 1 — Register</h2>
-          <p className="mt-2 text-sm text-white/50">
-            We store this with NDA version <span className="text-white/70">{INVESTOR_AGREEMENT_VERSION}</span> for our
-            records, then take you to <strong className="text-white/60">choose a time</strong> and request your
-            confirmation email.
-          </p>
-          <div className="mt-6 space-y-4">
-            <label className="block text-left">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Full name</span>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
-                placeholder="Jane Investor"
-                autoComplete="name"
-              />
-            </label>
-            <label className="block text-left">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white/40">Email</span>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
-                placeholder="you@firm.com"
-                autoComplete="email"
-              />
-            </label>
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/35 px-4 py-4">
-              <input
-                type="checkbox"
-                checked={ack}
-                onChange={(e) => setAck(e.target.checked)}
-                className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
-              />
-              <span className="text-left text-sm text-white/65">
-                I confirm this investor meeting request is subject to the same confidentiality obligations as my Parable
-                NDA / electronic acknowledgment (version {INVESTOR_AGREEMENT_VERSION}). I understand Parable will retain
-                this registration as supplemental evidence.
-              </span>
-            </label>
-            {error ? <p className="whitespace-pre-line text-sm text-red-300/95">{error}</p> : null}
-            <button
-              type="button"
-              disabled={!canRegister}
-              onClick={onRegister}
-              className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              {submitting ? 'Saving…' : 'Confirm & go to calendar'}
-            </button>
-          </div>
-        </motion.section>
+        <div className="mt-10">{formCard}</div>
 
         <p className="mt-8 text-center text-xs text-white/30">
           After this step, you will pick a time, then you can request the Parable email with your room and join link.

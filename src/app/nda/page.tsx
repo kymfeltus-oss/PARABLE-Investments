@@ -12,6 +12,7 @@ import {
   validateNdaFields,
   type NdaFieldErrors,
 } from '@/lib/investor-agreement-validation';
+import { setInvestorBookingEmailHint } from '@/lib/investor-booking-email-hint';
 import {
   getInvestorNdaAccepted,
   sanitizeNextPath,
@@ -86,6 +87,7 @@ function NdaForm() {
         return;
       }
       setInvestorNdaAccepted();
+      setInvestorBookingEmailHint(email.trim().toLowerCase());
       router.push(nextPath);
     } catch {
       setError('Network error. Check your connection and try again.');

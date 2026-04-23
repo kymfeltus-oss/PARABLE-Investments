@@ -1,6 +1,6 @@
 # Parable Investments
 
-Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/explore`** (optional embedded Parable app prototype; set `NEXT_PUBLIC_PARABLE_PROTOTYPE_URL`) → **`/book`** (choose a time in the embedded calendar, then request **confirmation email**; first visit from a device uses **`/book/register`** for name/email + NDA acknowledgment) → **`/info`** and **`/meet`** (LiveKit).
+Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/explore`** (optional embedded Parable app prototype; set `NEXT_PUBLIC_PARABLE_PROTOTYPE_URL`) → **`/book`** (embedded calendar first, then inline name/email + NDA acknowledgment for the meeting record; confirmation email uses that address; **`/nda`** stores an email hint in this browser when you sign) → **`/info`** and **`/meet`** (LiveKit). Legacy **`/book/register`** redirects to **`/book`**.
 
 ## Run locally
 
@@ -58,15 +58,14 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 
 **NDA step (`/nda`):** inserts **`investor_agreements`** (printed name, signature, email, document snapshot, etc.). Have counsel review `src/lib/investor-agreement-text.ts` before relying on it.
 
-### Booking (`/book` + `/book/register`)
+### Booking (`/book`)
 
-1. **`/book`** shows the **scheduling iframe** (when configured) and post-booking actions; session from **`/book/register`** is read from `sessionStorage`. If there is no session yet, the page links to **`/book/register`**.
-2. On **`/book/register`**, the user enters **name + email** and confirms the scheduling request is under their **NDA** obligations. On success, the app **redirects to `/book`** with the same session so they can pick a time and request the Parable confirmation email.
-3. Legacy **`/book/finish`** redirects to **`/book`** (optional `?fromProposal=1` preserved).
-4. **`POST /api/meeting/register`** inserts **`meeting_nda_evidence`** (name, email, `nda_version`, **`room_suffix`**, IP/UA) and, when **Resend** is configured, emails a **confirmation** with the **LiveKit join URL** (including `&room=`), room name, and NDA version reference. A team copy can go to **`NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`**.
-5. **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com booking link: if the host is `cal.com`, the app adds `?embed=true` and shows the **embedded calendar** for choosing a time (your calendar provider may email the slot separately).
-6. **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional full iframe `src` (e.g. Calendly embed).
-7. **`NEXT_PUBLIC_SITE_URL`** — canonical URL for links (Vercel `VERCEL_URL` is a fallback).
+1. **`/book`** shows the **scheduling iframe** first (when configured), then an **inline** name + email + NDA acknowledgment form. After **`POST /api/meeting/register`**, the same page shows room details and the Parable confirmation email controls (`sessionStorage`). Email is pre-filled from **`/nda`** when this browser has just signed (local hint only).
+2. Legacy **`/book/register`** and **`/book/finish`** redirect to **`/book`** (optional `?fromProposal=1` preserved).
+3. **`POST /api/meeting/register`** inserts **`meeting_nda_evidence`** (name, email, `nda_version`, **`room_suffix`**, IP/UA) and, when **Resend** is configured, may email a **confirmation** with the **LiveKit join URL** (including `&room=`), room name, and NDA version reference. A team copy can go to **`NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL`**.
+4. **`NEXT_PUBLIC_SCHEDULING_URL`** — Cal.com booking link: if the host is `cal.com`, the app adds `?embed=true` and shows the **embedded calendar** for choosing a time (your calendar provider may email the slot separately).
+5. **`NEXT_PUBLIC_SCHEDULING_EMBED_URL`** — optional full iframe `src` (e.g. Calendly embed).
+6. **`NEXT_PUBLIC_SITE_URL`** — canonical URL for links (Vercel `VERCEL_URL` is a fallback).
 
 ### Optional env (see `.env.example`)
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { BookSchedulingEmbed } from '@/components/investor/BookSchedulingEmbed';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { mergeBookMeetingSession, type BookMeetingSessionPayload } from '@/lib/book-meeting-session';
 
@@ -18,10 +19,12 @@ type Props = {
   meetUrl: string | null;
   registrationId: string | null;
   contactEmail: string | null;
-  /** “Register again” target — `/book/register` (calendar lives at `/book`). */
+  /** “Register again” link when `onRegisterAgain` is not used. */
   backHref?: string;
   backLabel?: string;
   registerAgainHref?: string;
+  /** When set, “Register again” clears the booking session and runs this (stay on `/book`). */
+  onRegisterAgain?: () => void;
 };
 
 function EmailOutcomeBlock({
@@ -133,7 +136,8 @@ export function BookMeetingPostRegisterView({
   contactEmail,
   backHref = '/start',
   backLabel = '← Back to choice hub',
-  registerAgainHref = '/book/register',
+  registerAgainHref = '/book',
+  onRegisterAgain,
 }: Props) {
   const [sending, setSending] = useState(false);
   const [viewStatus, setViewStatus] = useState<BookMeetingSessionPayload['emailStatus']>(initialStatus);
@@ -202,26 +206,7 @@ export function BookMeetingPostRegisterView({
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-10">
-      {embedSrc ? (
-        <section
-          id="book-schedule-embed"
-          className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4 shadow-[0_8px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-6"
-        >
-          <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">Step 2 — Choose a time</h2>
-          <p className="mt-2 text-sm text-white/50">
-            Pick a slot. Your provider may send a separate message with the date and time. Then request your Parable
-            confirmation below for the video room and room ID.
-          </p>
-          <div className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-            <iframe
-              title="Schedule a meeting"
-              src={embedSrc}
-              className="h-[min(720px,80vh)] w-full border-0"
-              loading="lazy"
-            />
-          </div>
-        </section>
-      ) : null}
+      {embedSrc ? <BookSchedulingEmbed embedSrc={embedSrc} stepLabel="Step 2 — Choose a time" /> : null}
 
       {roomSuffix || roomLabel || meetUrl ? (
         <div className="rounded-2xl border border-white/[0.1] bg-black/35 p-5 text-left md:p-6">
@@ -271,12 +256,22 @@ export function BookMeetingPostRegisterView({
       ) : null}
 
       <div className="flex flex-col gap-3 text-center sm:flex-row sm:justify-center sm:gap-6">
-        <Link
-          href={registerAgainHref}
-          className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80"
-        >
-          ← Register again
-        </Link>
+        {onRegisterAgain ? (
+          <button
+            type="button"
+            onClick={onRegisterAgain}
+            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80"
+          >
+            ← Register again
+          </button>
+        ) : (
+          <Link
+            href={registerAgainHref}
+            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80"
+          >
+            ← Register again
+          </Link>
+        )}
         <Link href={backHref} className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80">
           {backLabel}
         </Link>
