@@ -12,10 +12,13 @@ create table if not exists public.meeting_nda_evidence (
   room_suffix text
 );
 
--- If this table was created from an older script without `room_suffix`, `CREATE TABLE IF NOT EXISTS` does
--- not add the column; add it here so the indexes and comments below always succeed.
-alter table public.meeting_nda_evidence
-  add column if not exists room_suffix text;
+-- If this table was created from an older script, `CREATE TABLE IF NOT EXISTS` does not add new columns.
+-- PGRST204: PostgREST "unknown column" — ensure every column /api/meeting/register sends exists.
+alter table public.meeting_nda_evidence add column if not exists room_suffix text;
+alter table public.meeting_nda_evidence add column if not exists client_ip text;
+alter table public.meeting_nda_evidence add column if not exists user_agent text;
+alter table public.meeting_nda_evidence add column if not exists nda_version text;
+alter table public.meeting_nda_evidence add column if not exists acknowledged boolean not null default false;
 
 create index if not exists meeting_nda_evidence_created_at_idx on public.meeting_nda_evidence (created_at desc);
 create index if not exists meeting_nda_evidence_email_idx on public.meeting_nda_evidence (email);
@@ -36,4 +39,7 @@ alter table public.meeting_nda_evidence enable row level security;
 -- • If the API returns a row-level security error, the server is not using the real service_role key
 --   (wrong Vercel value, or anon key pasted in SUPABASE_SERVICE_ROLE_KEY). Fix the env and redeploy.
 -- • "Authentication > Policies" in the UI is the same RLS: zero policies = deny for end-user keys; the service role still works.
--- • You do not need: GRANT INSERT ... TO authenticated/anon for this app path; that would expand exposure.
+-- • You do not need: GRANT INSERT ... TO authenticated/anon for this app path: that would expand exposure.
+
+-- PostgREST: if the API still returns PGRST204 (unknown column) but Table Editor shows the columns, tell PostgREST to reload:
+NOTIFY pgrst, 'reload schema';

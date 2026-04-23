@@ -18,6 +18,19 @@ export function mapMeetingNdaInsertError(
     .join(' | ')
     .toLowerCase();
 
+  if (
+    supabaseCode === 'PGRST204' ||
+    m.includes('pgrst204') ||
+    m.includes('schema cache') ||
+    (m.includes("could not find the") && m.includes('column'))
+  ) {
+    return {
+      error:
+        "PostgREST (PGRST204): a column the app sends is missing from the database or the API's schema cache. In the Supabase SQL editor: (1) run the current supabase/schema-meeting-nda-evidence.sql (it adds any missing columns), (2) run supabase/reload-postgrest-schema.sql (NOTIFY pgrst to reload the schema), then retry. Verify Table Editor → meeting_nda_evidence has columns: name, email, nda_version, acknowledged, client_ip, user_agent, room_suffix.",
+      supabaseCode: supabaseCode || 'PGRST204',
+    };
+  }
+
   if (m.includes('row-level security') || (m.includes('new row') && m.includes('violates'))) {
     return {
       error:
