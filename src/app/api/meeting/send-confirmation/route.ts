@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
     name: name.trim(),
     email: row.email as string,
     roomSuffix,
+    registrationId,
     logLabel: '[meeting/send-confirmation]',
   });
 

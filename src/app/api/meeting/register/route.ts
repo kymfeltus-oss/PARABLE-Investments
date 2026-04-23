@@ -113,6 +113,7 @@ export async function POST(req: NextRequest) {
     name,
     email,
     roomSuffix: roomSuffix,
+    registrationId,
     logLabel: '[meeting/register]',
   });
 
