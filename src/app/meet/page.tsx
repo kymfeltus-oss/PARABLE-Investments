@@ -18,10 +18,9 @@ export default async function MeetPage({ searchParams: searchParamsProp }: PageP
       : typeof (searchParamsProp as Promise<unknown>)?.then === 'function'
         ? await (searchParamsProp as Promise<Record<string, string | string[] | undefined>>)
         : (searchParamsProp as Record<string, string | string[] | undefined>);
-  /** `NEXT_PUBLIC_*` or server-only `LIVEKIT_URL` (e.g. Vercel) — URL is passed as a prop, not inlined in client bundles. */
-  const serverUrl = normalizeLiveKitServerUrl(
-    process.env.NEXT_PUBLIC_LIVEKIT_URL ?? process.env.LIVEKIT_URL,
-  );
+  /** Prefer public URL; use `||` so an empty `NEXT_PUBLIC_LIVEKIT_URL` does not block `LIVEKIT_URL`. */
+  const liveKitEnvRaw = process.env.NEXT_PUBLIC_LIVEKIT_URL?.trim() || process.env.LIVEKIT_URL?.trim() || undefined;
+  const serverUrl = normalizeLiveKitServerUrl(liveKitEnvRaw);
 
   const joinRaw = sp.join;
   const join =
