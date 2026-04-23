@@ -16,6 +16,6 @@ coverage
 Thumbs.db
 *.tsbuildinfo
 
-# Intro video exceeds GitHub 100MB limit — keep locally or host on CDN; path must match InfoIntroVideoPage.
+# `public/videos/*.mp4` uses Git LFS (see `.gitattributes`). These stay ignored so clones work without multi‑hundred‑MB pulls; use CDN env or remove lines to commit via LFS.
 public/videos/Investor Intro.mp4
 public/videos/Live Meeting.mp4

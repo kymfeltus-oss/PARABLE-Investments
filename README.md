@@ -11,6 +11,17 @@ npm run dev
 
 Open [http://localhost:3003](http://localhost:3003).
 
+### Git LFS (videos in `public/videos/`)
+
+MP4s under **`public/videos/*.mp4`** are tracked with [**Git LFS**](https://git-lfs.com/) (see `.gitattributes`). Install the Git LFS CLI, then once per clone:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+Contributors need **`git lfs install`** before **`git push`** so large binaries upload to LFS, not the Git blob store.
+
 ## Deploy
 
 Connect the repo to **Vercel** (or any Next.js host). **Canonical URL:** `https://parableinvestments.com` (see `src/lib/investor-site.ts`).
