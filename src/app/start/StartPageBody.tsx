@@ -262,12 +262,20 @@ export default function StartPageBody() {
           animate={{ opacity: 1, y: 0 }}
           transition={trans}
         >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[#00f2ff]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[#00f2ff]/85 backdrop-blur-md transition hover:border-[#00f2ff]/45 hover:bg-black/70 hover:text-[#00f2ff] sm:px-4 sm:text-[10px]"
-          >
-            <span aria-hidden>←</span> Landing
-          </Link>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full border border-[#00f2ff]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[#00f2ff]/85 backdrop-blur-md transition hover:border-[#00f2ff]/45 hover:bg-black/70 hover:text-[#00f2ff] sm:px-4 sm:text-[10px]"
+            >
+              <span aria-hidden>←</span> Landing
+            </Link>
+            <Link
+              href="/guide"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-black/40 px-3 py-2 text-[9px] font-black uppercase tracking-[0.22em] text-white/55 backdrop-blur-md transition hover:border-[#00f2ff]/35 hover:text-[#00f2ff] sm:px-4 sm:text-[10px]"
+            >
+              Site guide
+            </Link>
+          </div>
           <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-black/40 px-3 py-1.5 backdrop-blur-md sm:gap-3 sm:px-4">
             <span className="relative flex h-2 w-2">
               <span

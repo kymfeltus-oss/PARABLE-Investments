@@ -71,12 +71,20 @@ export default function InvestorLandingPage() {
 
           <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#00f2ff]/45 to-transparent" />
 
-          <a
-            href={INVESTOR_SITE_URL}
-            className="text-[11px] font-semibold tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
-          >
-            parableinvestments.com
-          </a>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
+            <Link
+              href="/guide"
+              className="text-[11px] font-semibold tracking-[0.18em] text-white/50 underline-offset-4 transition hover:text-[#00f2ff] hover:underline"
+            >
+              First-time visitor guide
+            </Link>
+            <a
+              href={INVESTOR_SITE_URL}
+              className="text-[11px] font-semibold tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
+            >
+              parableinvestments.com
+            </a>
+          </div>
         </footer>
       </section>
     </div>
