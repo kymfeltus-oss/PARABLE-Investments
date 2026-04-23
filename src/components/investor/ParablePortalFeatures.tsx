@@ -121,9 +121,9 @@ export function buildPortalItems(meetHref: string): PortalNavItem[] {
       id: 'book',
       title: 'Schedule meeting',
       shortLabel: 'Schedule Meeting',
-      body: 'Register, confirm by email, then choose a slot when the calendar opens—same booking flow as the main investor site.',
+      body: 'Pick a date and time in the calendar, then request your Parable confirmation email with the room link. If you have not booked from this browser yet, that page links you to register first.',
       icon: <CalendarIcon className="h-5 w-5" />,
-      href: '/book',
+      href: '/book/finish',
     },
     {
       id: 'calculator',

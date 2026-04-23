@@ -185,6 +185,18 @@ export function InfoIntroVideoPage({
     });
   }, [candidates]);
 
+  /** Portal flash only: on phones, bound the video between chrome so `object-contain` fits the frame; `md+` unchanged. */
+  const videoClassName =
+    variant === 'flash'
+      ? [
+          'absolute z-0 box-border min-h-0 min-w-0 bg-black',
+          'max-md:left-0 max-md:right-0 max-md:w-full max-md:max-w-full',
+          'max-md:top-[calc(env(safe-area-inset-top)+4.25rem)] max-md:bottom-[calc(env(safe-area-inset-bottom)+10.75rem)]',
+          'max-md:object-contain max-md:object-center',
+          'md:inset-0 md:h-full md:w-full md:object-cover md:object-center',
+        ].join(' ')
+      : 'absolute inset-0 z-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full object-contain object-center md:object-cover';
+
   const errorCopy =
     variant === 'flash' ? (
       <>
@@ -207,7 +219,7 @@ export function InfoIntroVideoPage({
       <video
         key={videoSrc}
         ref={videoRef}
-        className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+        className={videoClassName}
         src={videoSrc}
         playsInline
         preload="auto"

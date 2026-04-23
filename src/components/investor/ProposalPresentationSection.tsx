@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { ProposalIntroVideo } from '@/components/investor/ProposalIntroVideo';
 import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 /**
- * Top of the proposal tab: reserved video area and primary CTA into the book-a-meeting flow (`/book`).
- * Add an MP4 under public/videos or set NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL and wire a player when ready.
+ * Top of the proposal tab: proposal intro video and primary CTA into the book-a-meeting flow (`/book`).
+ * Local default: `public/videos/Propsal Intro Video.mp4` — override with `NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL`.
  */
 export function ProposalPresentationSection() {
   return (
@@ -18,20 +19,11 @@ export function ProposalPresentationSection() {
         Strategic presentation
       </h2>
       <p className="mb-4 text-center text-[11px] text-white/45 sm:text-xs">
-        Video coming soon. When your file is ready, host it in{' '}
-        <code className="rounded bg-white/10 px-1">public/videos</code> or set{' '}
-        <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_PROPOSAL_PRESENTATION_VIDEO_URL</code>, then connect it here.
+        Proposal intro video — then open the full deck from the <strong className="text-white/55">→ PROPOSAL</strong>{' '}
+        control (moment &amp; full-screen Gamma deck).
       </p>
-      <div
-        className="flex w-full min-h-[min(40dvh,22rem)] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-white/20 bg-black/40 p-6 text-center sm:min-h-0"
-        style={{ aspectRatio: '16/9' }}
-        role="img"
-        aria-label="Placeholder for upcoming strategic presentation video"
-      >
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Video placeholder</span>
-        <span className="max-w-sm text-pretty text-[11px] leading-relaxed text-white/35 sm:text-xs">
-          The deck opens from the <strong className="text-white/50">→ PROPOSAL</strong> control (moment &amp; full-screen deck). This block is a placeholder for a future video.
-        </span>
+      <div className="w-full min-w-0" aria-label="Proposal intro video">
+        <ProposalIntroVideo />
       </div>
 
       <div className="mt-6 flex w-full justify-center">

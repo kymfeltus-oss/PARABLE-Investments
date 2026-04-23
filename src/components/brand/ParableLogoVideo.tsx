@@ -114,11 +114,11 @@ export function LandingHeroBackgroundVideo() {
   }
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
+    <div className="fixed inset-0 z-0 max-h-[100dvh] max-w-[100vw] overflow-hidden">
+      <div className="absolute inset-0 min-h-0 min-w-0 overflow-hidden">
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
+          className="absolute inset-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
           autoPlay
           muted={muted}
           loop
@@ -184,14 +184,14 @@ export function ParableLogoVideo({
   }
 
   return (
-    <div className={`relative mx-auto w-full ${maxWidthClass} ${className}`}>
+    <div className={`relative mx-auto w-full min-w-0 overflow-hidden ${maxWidthClass} ${className}`}>
       <div
         className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(ellipse_80%_85%_at_50%_42%,rgba(0,242,255,0.2)_0%,rgba(18,22,32,0.92)_52%,#060708_100%)]"
         aria-hidden
       />
       <video
         ref={videoRef}
-        className="relative h-auto w-full object-contain drop-shadow-[0_0_28px_rgba(0,242,255,0.4)]"
+        className="relative box-border h-auto max-h-[min(55dvh,26rem)] w-full max-w-full object-contain object-center drop-shadow-[0_0_28px_rgba(0,242,255,0.4)] md:max-h-none"
         autoPlay
         muted={muted}
         loop
@@ -199,6 +199,7 @@ export function ParableLogoVideo({
         preload="auto"
         aria-label="PARABLE logo"
       >
+        <source src={PARABLE_LOGO_VIDEO_MOBILE_SRC} type="video/mp4" media="(max-width: 767px)" />
         <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
       </video>
       <button

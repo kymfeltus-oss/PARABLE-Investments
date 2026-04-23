@@ -40,11 +40,11 @@ export function LiveMeetingVideoBackdrop({ loop = true, className = '' }: Props)
   }, []);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden bg-black ${className}`}>
+    <div className={`absolute inset-0 min-h-0 min-w-0 overflow-hidden bg-black ${className}`}>
       <video
         key={videoSrc}
         ref={videoRef}
-        className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 z-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full object-contain object-center md:object-cover"
         src={videoSrc}
         playsInline
         preload="auto"
