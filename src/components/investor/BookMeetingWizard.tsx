@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { writeBookMeetingSession } from '@/lib/book-meeting-session';
+import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 export function BookMeetingWizard() {
   const router = useRouter();
+  const sp = useSearchParams();
+  const fromProposal = sp.get('fromProposal') === '1';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ack, setAck] = useState(false);
@@ -67,7 +71,7 @@ export function BookMeetingWizard() {
         registrationId: typeof data.registrationId === 'string' && data.registrationId ? data.registrationId : null,
         contactEmail: email.trim().toLowerCase(),
       });
-      router.push('/book/finish');
+      router.push(hrefWithFromProposal('/book/finish', fromProposal));
     } catch {
       setError('Network error. Try again.');
     } finally {
@@ -81,9 +85,10 @@ export function BookMeetingWizard() {
       <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0,242,255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
 
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-10 pb-28 md:py-14">
-        <Link href="/start" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
+        <Link href="/start" className="parable-eyebrow mb-4 inline-block hover:text-[#00f2ff]">
           ← Choice hub
         </Link>
+        <ReturnToProposalDeck className="mb-8" />
 
         <ParableLogoMark className="mx-auto mb-8 max-w-[200px] opacity-95 md:max-w-xs" />
 

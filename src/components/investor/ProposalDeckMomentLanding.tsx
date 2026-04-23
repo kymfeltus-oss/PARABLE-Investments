@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1473163928189-36b6190f2f88?auto=format&fit=crop&w=2000&q=80';
@@ -101,7 +102,7 @@ export function ProposalDeckMomentLanding() {
                   <span className="font-black tracking-[0.22em] text-black">PROPOSAL</span>
                 </Link>
                 <Link
-                  href="/book/moment"
+                  href={hrefWithFromProposal('/book/moment', true)}
                   className="inline-flex w-full min-w-0 items-center justify-center rounded-xl border border-[#00f2ff]/45 bg-black/30 px-6 py-3.5 text-sm font-bold tracking-tight text-[#00f2ff] transition hover:border-[#00f2ff]/80 hover:bg-[#00f2ff]/5 sm:w-auto sm:px-8 sm:py-4"
                 >
                   Book a meeting

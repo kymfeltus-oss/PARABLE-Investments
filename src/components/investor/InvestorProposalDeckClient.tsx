@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { InvestorPortalView } from '@/components/investor/InvestorPortalView';
 import { INVESTOR_FINANCIAL_CALCULATOR_PATH } from '@/lib/investor-site';
+import { markProposalDeckVisited } from '@/lib/proposal-deck-return';
 
 type Props = {
   clientIp: string;
@@ -12,6 +13,10 @@ type Props = {
 };
 
 function InvestorProposalDeckClientInner({ clientIp, gammaProposalUrl, onVercel }: Props) {
+  useEffect(() => {
+    markProposalDeckVisited();
+  }, []);
+
   return (
     <div className="flex h-dvh min-h-0 w-full flex-col overflow-hidden bg-[#030303]">
       <header className="flex w-full shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-white/10 px-3 py-2 sm:px-4">

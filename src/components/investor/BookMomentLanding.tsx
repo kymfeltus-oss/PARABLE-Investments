@@ -2,9 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 /** Hero atmosphere — gothic / sanctuary interior (Unsplash, replace with a local asset anytime). */
 const HERO_IMAGE =
@@ -17,6 +20,9 @@ const fade = {
 };
 
 export function BookMomentLanding() {
+  const search = useSearchParams();
+  const fromProposal = search.get('fromProposal') === '1';
+
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere sparkleCount={64} />
@@ -26,6 +32,7 @@ export function BookMomentLanding() {
       />
 
       <div className="relative z-20 mx-auto flex w-full max-w-5xl flex-col px-4 py-8 pb-16 md:py-12">
+        <ReturnToProposalDeck className="mb-4" />
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.2em]">
           <Link href="/start" className="text-[#00f2ff]/80 transition hover:text-[#00f2ff]">
             ← Choice hub
@@ -90,13 +97,13 @@ export function BookMomentLanding() {
               </p>
               <div className="mt-7 flex w-full max-w-2xl flex-col gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4">
                 <Link
-                  href="/book"
+                  href={hrefWithFromProposal('/book', fromProposal)}
                   className="inline-flex w-full min-w-0 items-center justify-center rounded-xl bg-[#00f2ff] px-6 py-3.5 text-sm font-bold tracking-tight text-black shadow-[0_0_32px_rgba(0,242,255,0.35)] transition hover:brightness-105 sm:w-auto sm:px-8 sm:py-4"
                 >
                   Begin scheduling
                 </Link>
                 <Link
-                  href="/book/finish"
+                  href={hrefWithFromProposal('/book/finish', fromProposal)}
                   className="inline-flex w-full min-w-0 items-center justify-center rounded-xl border border-[#00f2ff]/45 bg-black/30 px-6 py-3.5 text-sm font-bold tracking-tight text-[#00f2ff] transition hover:border-[#00f2ff]/80 hover:bg-[#00f2ff]/5 sm:w-auto sm:px-8 sm:py-4"
                 >
                   Already registered — calendar only

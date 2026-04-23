@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 export function RequestMeetingBlock() {
   return (
@@ -11,7 +12,7 @@ export function RequestMeetingBlock() {
       </p>
 
       <Link
-        href="/book/moment"
+        href={hrefWithFromProposal('/book/moment', true)}
         className="mt-6 flex w-full items-center justify-center rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_28px_rgba(0,242,255,0.14)] transition hover:bg-[#00f2ff]/20 hover:shadow-[0_0_36px_rgba(0,242,255,0.2)] md:mt-8 md:py-5 md:text-base"
       >
         Book with calendar

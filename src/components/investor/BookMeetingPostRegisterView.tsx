@@ -21,6 +21,7 @@ type Props = {
   /** “Book a meeting” when finishing from redirect; omit on /book if ever inlined again */
   backHref?: string;
   backLabel?: string;
+  registerAgainHref?: string;
 };
 
 function EmailOutcomeBlock({
@@ -132,6 +133,7 @@ export function BookMeetingPostRegisterView({
   contactEmail,
   backHref = '/start',
   backLabel = '← Back to choice hub',
+  registerAgainHref = '/book',
 }: Props) {
   const [sending, setSending] = useState(false);
   const [viewStatus, setViewStatus] = useState<BookMeetingSessionPayload['emailStatus']>(initialStatus);
@@ -270,7 +272,7 @@ export function BookMeetingPostRegisterView({
 
       <div className="flex flex-col gap-3 text-center sm:flex-row sm:justify-center sm:gap-6">
         <Link
-          href="/book"
+          href={registerAgainHref}
           className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00f2ff]/80"
         >
           ← Register again

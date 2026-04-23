@@ -2,19 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { BookMeetingPostRegisterView } from '@/components/investor/BookMeetingPostRegisterView';
+import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
 import {
   type BookMeetingSessionPayload,
   readBookMeetingSession,
 } from '@/lib/book-meeting-session';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 type Props = { embedSrc: string | null };
 
 export function BookMeetingFinishClient({ embedSrc }: Props) {
   const router = useRouter();
+  const search = useSearchParams();
+  const fromProposal = search.get('fromProposal') === '1';
   const [payload, setPayload] = useState<BookMeetingSessionPayload | null | undefined>(undefined);
 
   useEffect(() => {
@@ -46,6 +50,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
       <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
         <InvestorAtmosphere />
         <div className="relative z-20 mx-auto max-w-3xl px-4 py-14 text-center">
+          <ReturnToProposalDeck className="mb-6 text-left" />
           <ParableLogoMark className="mx-auto mb-6 max-w-[200px] opacity-95" />
           <h1 className="text-lg font-black uppercase tracking-[0.2em] text-white">Start from step 1</h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-white/50">
@@ -53,7 +58,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
             device or your session expired, go back to Book a meeting.
           </p>
           <Link
-            href="/book"
+            href={hrefWithFromProposal('/book', fromProposal)}
             className="mt-8 inline-block rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] hover:bg-[#00f2ff]/20"
           >
             Book a meeting
@@ -68,9 +73,10 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
       <InvestorAtmosphere />
       <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0,242,255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-10 pb-28 md:py-14">
+        <ReturnToProposalDeck className="mb-4" />
         <button
           type="button"
-          onClick={() => router.push('/book')}
+          onClick={() => router.push(hrefWithFromProposal('/book', fromProposal))}
           className="parable-eyebrow mb-8 block text-left hover:text-[#00f2ff]"
         >
           ← Book a meeting
@@ -95,6 +101,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
           meetUrl={payload.meetUrl}
           registrationId={payload.registrationId}
           contactEmail={payload.contactEmail}
+          registerAgainHref={hrefWithFromProposal('/book', fromProposal)}
         />
       </div>
     </div>

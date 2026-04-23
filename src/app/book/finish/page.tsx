@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { NdaGate } from '@/components/investor/NdaGate';
 import { BookMeetingFinishClient } from '@/components/investor/BookMeetingFinishClient';
 import { resolveSchedulingEmbedUrl } from '@/lib/meeting-links';
@@ -7,7 +8,9 @@ export default function BookFinishPage() {
 
   return (
     <NdaGate>
-      <BookMeetingFinishClient embedSrc={embedSrc} />
+      <Suspense fallback={null}>
+        <BookMeetingFinishClient embedSrc={embedSrc} />
+      </Suspense>
     </NdaGate>
   );
 }

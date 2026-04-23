@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
 /**
  * Top of the proposal tab: reserved video area and primary CTA into the book-a-meeting flow (`/book`).
@@ -35,7 +36,7 @@ export function ProposalPresentationSection() {
 
       <div className="mt-6 flex w-full justify-center">
         <Link
-          href="/book/moment"
+          href={hrefWithFromProposal('/book/moment', true)}
           className="w-full max-w-md rounded-sm bg-[#00f2ff] px-5 py-3.5 text-center text-sm font-bold tracking-tight text-black transition hover:brightness-105 active:brightness-95 sm:py-4 sm:text-base"
         >
           Begin Partnership Discussions

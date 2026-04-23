@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { NdaGate } from '@/components/investor/NdaGate';
 import { BookMomentLanding } from '@/components/investor/BookMomentLanding';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
 export default function BookMomentPage() {
   return (
     <NdaGate>
-      <BookMomentLanding />
+      <Suspense fallback={null}>
+        <BookMomentLanding />
+      </Suspense>
     </NdaGate>
   );
 }
