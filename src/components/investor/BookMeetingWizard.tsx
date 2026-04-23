@@ -31,12 +31,12 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (compact) {
-      const hint = getInvestorBookingEmailHint();
-      if (hint && isValidInvestorEmail(hint)) {
-        setEmail((prev) => (prev.trim() ? prev : hint));
-      }
-    }
+    if (!compact) return;
+    const hint = getInvestorBookingEmailHint();
+    if (!hint || !isValidInvestorEmail(hint)) return;
+    void queueMicrotask(() => {
+      setEmail((prev) => (prev.trim() ? prev : hint));
+    });
   }, [compact]);
 
   const canRegister =

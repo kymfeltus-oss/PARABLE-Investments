@@ -34,7 +34,8 @@ export function getScheduledMeetUrl(roomSuffix?: string): string {
 }
 
 /**
- * iframe `src` for embedded scheduling. Prefer explicit embed URL; for Cal.com links, append `embed=true`.
+ * iframe `src` for embedded scheduling. Prefer `NEXT_PUBLIC_SCHEDULING_EMBED_URL`; otherwise
+ * `NEXT_PUBLIC_SCHEDULING_URL` (Cal.com gets `?embed=true`, Calendly `embed=1`, other https URLs as-is).
  */
 export function resolveSchedulingEmbedUrl(): string | null {
   const explicit = process.env.NEXT_PUBLIC_SCHEDULING_EMBED_URL?.trim();
@@ -43,12 +44,17 @@ export function resolveSchedulingEmbedUrl(): string | null {
   if (!link) return null;
   try {
     const u = new URL(link);
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
     if (u.hostname.includes('cal.com')) {
       u.searchParams.set('embed', 'true');
       return u.toString();
     }
+    if (u.hostname.includes('calendly.com')) {
+      u.searchParams.set('embed', '1');
+      return u.toString();
+    }
+    return u.toString();
   } catch {
     return null;
   }
-  return null;
 }
