@@ -118,6 +118,7 @@ export function LandingHeroBackgroundVideo() {
         <video
           key={activeSrc}
           ref={videoRef}
+          suppressHydrationWarning
           className="absolute inset-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
           src={activeSrc}
           autoPlay

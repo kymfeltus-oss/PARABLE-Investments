@@ -48,7 +48,8 @@ export function InvestorPortalClient({ src, fillContainer = false }: Props) {
     <div
       className={
         fillContainer
-          ? 'relative h-full min-h-0 w-full min-w-0 flex-1'
+          ? /* flex-1 + min-h-0: iOS Safari often gives 0 height to h-full% inside nested column flex */
+            'relative min-h-0 w-full min-w-0 flex-1 overflow-hidden'
           : 'relative w-full min-h-[22rem] flex-1 sm:min-h-[28rem]'
       }
       style={fillContainer ? undefined : { height: 'calc(100dvh - 12rem)' }}
@@ -56,7 +57,7 @@ export function InvestorPortalClient({ src, fillContainer = false }: Props) {
       <iframe
         ref={frameRef}
         src={src}
-        className="absolute inset-0 h-full w-full border-none"
+        className="absolute inset-0 box-border h-full min-h-0 w-full border-none"
         allow="fullscreen; clipboard-write"
         allowFullScreen
         title="PROJECT PARABLE"
