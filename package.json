@@ -15,7 +15,8 @@
     "build": "next build",
     "start": "next start -p 3003",
     "deploy:local": "npm run build && npm run start",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "email:preview": "npx --yes tsx scripts/build-meeting-email-preview.ts"
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.19",
