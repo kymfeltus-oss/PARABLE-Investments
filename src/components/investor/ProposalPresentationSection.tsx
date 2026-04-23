@@ -29,7 +29,7 @@ export function ProposalPresentationSection() {
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Video placeholder</span>
         <span className="max-w-sm text-pretty text-[11px] leading-relaxed text-white/35 sm:text-xs">
-          The confidential Gamma deck opens on a dedicated page — use <strong className="text-white/50">Open Gamma proposal</strong> at the top. This block is a placeholder for a future video.
+          The confidential Gamma deck opens on a dedicated page — use the <strong className="text-white/50">→ PROPOSAL</strong> control at the top. This block is a placeholder for a future video.
         </span>
       </div>
 

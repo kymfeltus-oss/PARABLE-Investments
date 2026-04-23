@@ -73,9 +73,12 @@ function InvestorProposalRouteClientInner() {
           <div className="w-full sm:flex sm:justify-end">
             <Link
               href="/investor/portal/proposal/deck"
-              className="block w-full rounded-lg bg-[#00f2ff] py-3.5 text-center text-sm font-bold tracking-tight text-black shadow-[0_0_32px_rgba(0,242,255,0.22)] transition hover:brightness-105 sm:inline-flex sm:w-auto sm:min-w-[16rem] sm:px-8"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#00f2ff] py-3.5 text-center text-sm shadow-[0_0_32px_rgba(0,242,255,0.22)] transition hover:brightness-105 sm:w-auto sm:min-w-[16rem] sm:px-8"
             >
-              Open Gamma proposal
+              <span className="text-base font-extralight text-black/45" aria-hidden>
+                →
+              </span>
+              <span className="font-black tracking-[0.22em] text-black">PROPOSAL</span>
             </Link>
           </div>
         </div>
