@@ -141,8 +141,31 @@ export async function POST(req: NextRequest) {
   }
 
   if (insertError) {
-    console.error('[meeting/register]', insertError.message);
-    return NextResponse.json({ error: 'Could not save your scheduling record. Try again.' }, { status: 500 });
+    const raw = {
+      message: insertError.message,
+      ...(insertError as { code?: string; details?: string; hint?: string }),
+    };
+    console.error('[meeting/register] meeting_nda_evidence insert failed:', raw);
+
+    const m = (insertError.message || '').toLowerCase();
+    let error =
+      'Could not save your scheduling record. Try again. If it persists, the host may need the meeting table SQL in Supabase or a valid service role key.';
+
+    if (m.includes('row-level security') || m.includes('rls') || m.includes('permission denied')) {
+      error =
+        'Database access was denied. In Vercel, set SUPABASE_SERVICE_ROLE_KEY to the service role secret (Project Settings → API), not the anon key—then redeploy.';
+    } else if (m.includes('relation') && m.includes('does not exist')) {
+      error =
+        'Meeting table not found. In the Supabase SQL editor, run supabase/schema-meeting-nda-evidence.sql (and schema-meeting-nda-evidence-room-suffix-migration.sql if the table exists without room_suffix).';
+    } else if (m.includes('42p01')) {
+      error =
+        'Meeting table not found. In Supabase, run the meeting_nda_evidence schema from the repo (supabase/schema-meeting-nda-evidence.sql).';
+    } else if (m.includes('column') && m.includes('does not exist')) {
+      error =
+        'Database schema is out of date. In Supabase, run supabase/schema-meeting-nda-evidence-room-suffix-migration.sql.';
+    }
+
+    return NextResponse.json({ error }, { status: 500 });
   }
   const meetUrl = getScheduledMeetUrl(roomSuffix);
   const roomLabel = `investor-${roomSuffix.replace(/^investor-/i, '')}`;
