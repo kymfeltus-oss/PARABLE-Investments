@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
-import { LandingPageCenterVideo } from '@/components/brand/ParableLogoVideo';
+import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
 import { INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
@@ -32,6 +32,7 @@ export default function InvestorLandingPage() {
 
   return (
     <div id="top" className="relative w-full bg-black text-white">
+      <LandingHeroBackgroundVideo />
       <InvestorAtmosphere overVideo />
       <div
         className="pointer-events-none fixed inset-0 z-[1] bg-gradient-to-b from-black/35 via-transparent to-black/45"
@@ -50,7 +51,7 @@ export default function InvestorLandingPage() {
           </div>
         </header>
 
-        <LandingPageCenterVideo />
+        <div className="min-h-0 w-full flex-1" aria-hidden />
 
         <footer className="shrink-0 flex flex-col items-center gap-10 pb-10">
           <div className="parable-landing-continue-pulse flex w-full max-w-sm flex-col items-center">

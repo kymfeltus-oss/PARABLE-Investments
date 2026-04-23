@@ -2,15 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
-import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
 import { getParableLogoDesktopSourceUrls, getParableLogoMobileSourceUrls } from '@/lib/investor-blob-sibling-urls';
-
-type Props = {
-  className?: string;
-  /** Max width of the logo area (Tailwind class). */
-  maxWidthClass?: string;
-};
 
 /** Desktop hero tries `PARABLE Logo1.mp4` first, then legacy `PARABLE Logo.mp4`. */
 export const PARABLE_LOGO_DESKTOP_CANDIDATES = [
@@ -37,10 +29,11 @@ export function LandingHeroBackgroundVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
   const [desktopIdx, setDesktopIdx] = useState(0);
-  const desktopSrc =
-    PARABLE_LOGO_DESKTOP_CANDIDATES[
-      Math.min(desktopIdx, PARABLE_LOGO_DESKTOP_CANDIDATES.length - 1)
-    ];
+  const [mobileIdx, setMobileIdx] = useState(0);
+  const desktopCands = useMemo(() => getParableLogoDesktopSourceUrls(), []);
+  const mobileCands = useMemo(() => getParableLogoMobileSourceUrls(), []);
+  const desktopSrc = desktopCands[Math.min(desktopIdx, Math.max(0, desktopCands.length - 1))]!;
+  const mobileSrc = mobileCands[Math.min(mobileIdx, Math.max(0, mobileCands.length - 1))]!;
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
@@ -67,7 +60,7 @@ export function LandingHeroBackgroundVideo() {
     return () => {
       el.removeEventListener('canplay', onReady);
     };
-  }, [tryPlayPreferSound, desktopIdx]);
+  }, [tryPlayPreferSound, desktopIdx, mobileIdx]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -102,13 +95,14 @@ export function LandingHeroBackgroundVideo() {
     return () => mq.removeEventListener('change', onChange);
   }, [tryPlayPreferSound]);
 
-  const bumpDesktopOnError = useCallback(() => {
+  const onVideoError = useCallback(() => {
     if (typeof window === 'undefined') return;
-    if (window.matchMedia('(max-width: 767px)').matches) return;
-    setDesktopIdx((i) =>
-      i + 1 < PARABLE_LOGO_DESKTOP_CANDIDATES.length ? i + 1 : i
-    );
-  }, []);
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      setMobileIdx((i) => (i + 1 < mobileCands.length ? i + 1 : i));
+    } else {
+      setDesktopIdx((i) => (i + 1 < desktopCands.length ? i + 1 : i));
+    }
+  }, [mobileCands.length, desktopCands.length]);
 
   if (reduceMotion) {
     return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
@@ -126,10 +120,10 @@ export function LandingHeroBackgroundVideo() {
           playsInline
           preload="auto"
           aria-label="PARABLE background"
-          onError={bumpDesktopOnError}
+          onError={onVideoError}
         >
           <source
-            src={PARABLE_LOGO_VIDEO_MOBILE_SRC}
+            src={mobileSrc}
             type="video/mp4"
             media="(max-width: 767px)"
           />
@@ -167,102 +161,3 @@ export function LandingHeroBackgroundVideo() {
   );
 }
 
-/**
- * Landing (/) — always the **PARABLE logo loop** (`PARABLE Logo1` / `PARABLE Logo` / `PARABLE Mobile logo.mp4` via
- * `ParableLogoVideo` and blob fallbacks in `getParableLogo*SourceUrls`). Do not use `Investor Intro` here; that
- * clip is for `/info/intro` and the materials flow, not the splash.
- */
-export function LandingPageCenterVideo() {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return (
-      <div className="flex w-full flex-1 flex-col items-center justify-center py-6 min-h-0">
-        <ParableLogoMark className="w-full" maxWidthClass="max-w-[min(22rem,88vw)]" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center py-3 min-[400px]:py-6">
-      <ParableLogoVideo className="w-full" maxWidthClass="max-w-[min(90vw,36rem)]" />
-    </div>
-  );
-}
-
-function useNarrowForLogo(): boolean {
-  const [narrow, setNarrow] = useState(false);
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(max-width: 767px)');
-    const u = () => setNarrow(mq.matches);
-    u();
-    mq.addEventListener('change', u);
-    return () => mq.removeEventListener('change', u);
-  }, []);
-  return narrow;
-}
-
-export function ParableLogoVideo({
-  className = '',
-  maxWidthClass = 'max-w-md',
-}: Props) {
-  const reduceMotion = useReducedMotion();
-  const narrow = useNarrowForLogo();
-  const cands = useMemo(
-    () => (narrow ? getParableLogoMobileSourceUrls() : getParableLogoDesktopSourceUrls()),
-    [narrow],
-  );
-  const [candIndex, setCandIndex] = useState(0);
-  useEffect(() => {
-    void queueMicrotask(() => {
-      setCandIndex(0);
-    });
-  }, [narrow, cands.length]);
-
-  const maxIdx = Math.max(0, cands.length - 1);
-  const safeIn = Math.min(candIndex, maxIdx);
-  const activeSrc = cands[safeIn] ?? cands[0] ?? PARABLE_LOGO_VIDEO_SRC;
-
-  const { videoRef, muted, toggleMute } = useParableVideoAudio(activeSrc);
-
-  const onVideoError = useCallback(() => {
-    setCandIndex((j) => (j + 1 < cands.length ? j + 1 : j));
-  }, [cands.length]);
-
-  if (reduceMotion) {
-    return (
-      <ParableLogoMark className={className} maxWidthClass={maxWidthClass} />
-    );
-  }
-
-  return (
-    <div className={`relative mx-auto w-full min-w-0 overflow-hidden ${maxWidthClass} ${className}`}>
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(ellipse_80%_85%_at_50%_42%,rgba(0,242,255,0.2)_0%,rgba(18,22,32,0.92)_52%,#060708_100%)]"
-        aria-hidden
-      />
-      <video
-        key={activeSrc}
-        ref={videoRef}
-        className="relative box-border h-auto max-h-[min(55dvh,26rem)] w-full max-w-full object-contain object-center drop-shadow-[0_0_28px_rgba(0,242,255,0.4)] md:max-h-none"
-        autoPlay
-        muted={muted}
-        loop
-        playsInline
-        preload="auto"
-        aria-label="PARABLE logo"
-        src={activeSrc}
-        onError={onVideoError}
-      />
-      <button
-        type="button"
-        onClick={toggleMute}
-        aria-pressed={muted}
-        className="absolute bottom-2 right-2 z-10 rounded-md border border-white/15 bg-black/60 px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-white/85 backdrop-blur-sm hover:bg-black/75"
-      >
-        {muted ? 'Unmute' : 'Mute'}
-      </button>
-    </div>
-  );
-}
