@@ -5,17 +5,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useState } from 'react';
 import type { IntroExitDetail } from '@/components/investor/InfoIntroVideoPage';
 import { InfoIntroVideoPage } from '@/components/investor/InfoIntroVideoPage';
-import { InvestorPortalView } from '@/components/investor/InvestorPortalView';
 import { ProposalPresentationSection } from '@/components/investor/ProposalPresentationSection';
 import { INVESTOR_FINANCIAL_CALCULATOR_PATH } from '@/lib/investor-site';
 
-type Props = {
-  clientIp: string;
-  gammaProposalUrl: string;
-  onVercel: boolean;
-};
-
-function InvestorProposalRouteClientInner({ clientIp, gammaProposalUrl, onVercel }: Props) {
+function InvestorProposalRouteClientInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -45,7 +38,7 @@ function InvestorProposalRouteClientInner({ clientIp, gammaProposalUrl, onVercel
         requireFullPlayOnce
         backHref="/investor/portal/hub"
         backLabel="← Investor hub"
-        continueButtonLabel="Continue to proposal deck"
+        continueButtonLabel="Continue to proposal overview"
         onComplete={onIntroComplete}
       />
     );
@@ -53,50 +46,46 @@ function InvestorProposalRouteClientInner({ clientIp, gammaProposalUrl, onVercel
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-5 gap-y-2 px-4 pt-3">
-        <Link
-          href="/investor/portal/hub"
-          className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
-        >
-          ← Investor hub
-        </Link>
-        <Link
-          href="/investor/portal/proposal?replayIntro=1"
-          className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
-        >
-          Rewatch intro
-        </Link>
-        <Link
-          href={INVESTOR_FINANCIAL_CALCULATOR_PATH}
-          className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
-        >
-          Financial calculator
-        </Link>
+      <div className="border-b border-white/10">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 sm:gap-2">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-5 gap-y-2">
+            <Link
+              href="/investor/portal/hub"
+              className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00f2ff]/75 hover:text-[#00f2ff]"
+            >
+              ← Investor hub
+            </Link>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <Link
+                href="/investor/portal/proposal?replayIntro=1"
+                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
+              >
+                Rewatch intro
+              </Link>
+              <Link
+                href={INVESTOR_FINANCIAL_CALCULATOR_PATH}
+                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
+              >
+                Financial calculator
+              </Link>
+            </div>
+          </div>
+          <div className="w-full sm:flex sm:justify-end">
+            <Link
+              href="/investor/portal/proposal/deck"
+              className="block w-full rounded-lg bg-[#00f2ff] py-3.5 text-center text-sm font-bold tracking-tight text-black shadow-[0_0_32px_rgba(0,242,255,0.22)] transition hover:brightness-105 sm:inline-flex sm:w-auto sm:min-w-[16rem] sm:px-8"
+            >
+              Open Gamma proposal
+            </Link>
+          </div>
+        </div>
       </div>
       <ProposalPresentationSection />
-      {process.env.NODE_ENV === 'development' ? (
-        <div className="mx-auto max-w-7xl px-4 pt-4 font-mono text-[10px] text-amber-400/90">
-          [dev] Embed URL on server:{' '}
-          {gammaProposalUrl
-            ? `yes (${gammaProposalUrl.length} chars; first ${gammaProposalUrl.slice(0, 40)}…)`
-            : 'no — set NEXT_PUBLIC_GAMMA_PROPOSAL_URL or GAMMA_EMBED_URL in .env.local and restart npm run dev'}
-        </div>
-      ) : null}
-      {onVercel && !gammaProposalUrl ? (
-        <div className="mx-auto max-w-7xl px-4 pt-4 text-center text-[11px] leading-snug text-amber-200/95">
-          This deployment has no proposal embed URL. In Vercel add{' '}
-          <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_GAMMA_PROPOSAL_URL</code> (full{' '}
-          <code className="rounded bg-white/10 px-1">https://</code> iframe <code className="rounded bg-white/10 px-1">src</code>) or server-only{' '}
-          <code className="rounded bg-white/10 px-1">GAMMA_EMBED_URL</code>. Enable for <strong>Production</strong> and{' '}
-          <strong>Preview</strong> if you use preview deployments, then redeploy.
-        </div>
-      ) : null}
-      <InvestorPortalView clientIp={clientIp} gammaProposalUrl={gammaProposalUrl} onVercel={onVercel} />
     </div>
   );
 }
 
-export function InvestorProposalRouteClient(props: Props) {
+export function InvestorProposalRouteClient() {
   return (
     <Suspense
       fallback={
@@ -105,7 +94,7 @@ export function InvestorProposalRouteClient(props: Props) {
         </div>
       }
     >
-      <InvestorProposalRouteClientInner {...props} />
+      <InvestorProposalRouteClientInner />
     </Suspense>
   );
 }
