@@ -28,3 +28,12 @@ comment on column public.meeting_nda_evidence.room_suffix is
   'Part after investor- in the LiveKit room; one per book-a-meeting flow; used in /meet?join=scheduled&room=...';
 
 alter table public.meeting_nda_evidence enable row level security;
+
+-- RLS: expected setup for this repo
+-- • Next.js API routes (e.g. POST /api/meeting/register) use SUPABASE_SERVICE_ROLE_KEY only.
+--   The Supabase service role bypasses RLS, so you do not need a policy for INSERT, SELECT, etc.
+-- • Do NOT add policies that let anon or authenticated INSERT/SELECT on this table — it stores PII.
+-- • If the API returns a row-level security error, the server is not using the real service_role key
+--   (wrong Vercel value, or anon key pasted in SUPABASE_SERVICE_ROLE_KEY). Fix the env and redeploy.
+-- • "Authentication > Policies" in the UI is the same RLS: zero policies = deny for end-user keys; the service role still works.
+-- • You do not need: GRANT INSERT ... TO authenticated/anon for this app path; that would expand exposure.
