@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { buildMeetingConfirmationCalendar } from '@/lib/meeting-calendar';
+import { buildInvestorMeetingConfirmationHtml } from '@/lib/meeting-confirmation-mail-html';
 import { getScheduledMeetUrl } from '@/lib/meeting-links';
 
 const CONTACT = process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL ?? 'investors@parableinvestments.com';
@@ -101,21 +102,6 @@ export async function sendParableInvestorMeetingConfirmation(params: {
 
   const icsFilename = `${roomLabel.replace(/[^a-zA-Z0-9_-]/g, '-')}-parable-meeting.ics`;
 
-  const hostKeySection =
-    meetingHostKey.length > 0
-      ? `
-      <p style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f6f8fa;border:1px solid #e1e4e8;border-radius:8px;font-size:13px;color:#222">
-        <strong>Parable team — scheduled video call</strong><br/>
-        <span style="color:#444"><strong>Host / meeting ID</strong> (full room name):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomLabel)}</code>
-        <span style="color:#444">Suffix (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(suffixOnly)}</code>
-        <span style="color:#444">Host key (choose &quot;Parable team&quot; on the meeting page):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(meetingHostKey)}</code>
-        <span style="font-size:11px;color:#666">Treat the host key like a password. Do not forward to people outside Parable.</span>
-      </p>`
-      : '';
-
   const plainDetailLines: string[] = [
     `Hi ${name},`,
     '',
@@ -178,49 +164,19 @@ export async function sendParableInvestorMeetingConfirmation(params: {
     durationMinutes,
   });
 
-  const calendarSection = `
-      <p style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#14532d">
-        <strong>Save to your calendar</strong><br/>
-        <span style="color:#166534">A placeholder reminder is attached (<code style="background:#dcfce7;padding:0 4px;border-radius:4px">.ics</code>). After you book, your real meeting time will come from your calendar provider.</span><br/>
-        <a href="${escapeHtmlAttr(calendar.googleCalendarUrl)}" style="display:inline-block;margin-top:0.5rem;color:#15803d;font-weight:600">Add to Google Calendar</a>
-      </p>`;
-
-  const schedulingBlock = schedulingUrl
-    ? `<p><strong>Book a time:</strong><br/><a href="${escapeHtmlAttr(schedulingUrl)}">${escapeHtml(schedulingUrl)}</a></p>`
-    : '';
-
-  const html = `
-    <div style="font-family:system-ui,sans-serif;max-width:560px;line-height:1.5;color:#111">
-      <h1 style="font-size:18px;">Parable — Meeting confirmation &amp; video access</h1>
-      <p>Hi ${escapeHtml(name)},</p>
-      <p>This email confirms your <strong>investor meeting scheduling registration</strong> and serves as a record tied to our confidentiality process.</p>
-      <p><strong>NDA / acknowledgment version on file:</strong> ${escapeHtml(INVESTOR_AGREEMENT_VERSION)}</p>
-      <p>After you pick a time in the Parable booking calendar, your calendar provider may send a <em>separate</em> message with the specific date, time, and (sometimes) its own video or meeting link.</p>
-      <p style="font-size:13px;color:#444">If you see a link such as <strong>Cal Video</strong> in that calendar message, that comes from the calendar, not this email. For the <strong>Parable</strong> investor call, use the <strong>Parable video room</strong> link below, unless the team told you to use a different method.</p>
-      <p style="padding:0.75rem 1rem;background:#fafafa;border:1px solid #eee;border-radius:8px;font-size:14px">
-        <strong>Parable — meeting &amp; room IDs</strong><br/>
-        ${
-          regId
-            ? `<span style="color:#444"><strong>Parable registration ID</strong> (include if you contact support):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(regId)}</code>`
-            : ''
-        }
-        <span style="color:#444"><strong>Host / meeting ID:</strong></span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(roomLabel)}</code>
-        <span style="color:#444"><strong>Room suffix</strong> (after <code style="background:#eee;padding:0 4px;border-radius:4px">investor-</code>):</span>
-        <code style="display:block;margin:0.35rem 0;font-size:13px;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;border:1px solid #ddd">${escapeHtml(suffixOnly)}</code>
-      </p>
-      ${schedulingBlock}
-      <p><strong>Investors — join the call</strong><br/>
-      Open the link below at meeting time. On the next page, choose <strong>Investor</strong> and enter the <strong>same email</strong> you used when booking.</p>
-      <p><strong>Parable video room:</strong><br/>
-      <a href="${escapeHtmlAttr(meetUrl)}">${escapeHtml(meetUrl)}</a></p>
-      ${hostKeySection}
-      ${calendarSection}
-      <p style="font-size:12px;color:#555">This scheduling request is retained as supplemental evidence alongside your investor NDA / electronic acknowledgment. Not legal advice.</p>
-      <p style="font-size:12px;color:#666">— Parable</p>
-    </div>
-  `;
+  const html = buildInvestorMeetingConfirmationHtml({
+    name,
+    meetUrl,
+    roomLabel,
+    suffixOnly,
+    regId,
+    schedulingUrl,
+    meetingHostKey,
+    ndaVersion: INVESTOR_AGREEMENT_VERSION,
+    googleCalendarUrl: calendar.googleCalendarUrl,
+    icsFilename,
+    reminderOffsetHours,
+  });
 
   let emailStatus: MeetingConfirmationMailResult['emailStatus'] = 'unconfigured';
   const resendKey = process.env.RESEND_API_KEY;
@@ -254,7 +210,7 @@ export async function sendParableInvestorMeetingConfirmation(params: {
       const userResult = await resend.emails.send({
         from,
         to: email,
-        subject: 'Parable — Meeting confirmation, video link & NDA scheduling record',
+        subject: 'Parable | Investor video room — confirmation & NDA record',
         text: plainBody,
         html,
         attachments: [
