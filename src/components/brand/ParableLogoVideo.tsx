@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
+import { getParableLogoDesktopSourceUrls, getParableLogoMobileSourceUrls } from '@/lib/investor-blob-sibling-urls';
 
 type Props = {
   className?: string;
@@ -233,12 +234,45 @@ export function LandingPageCenterVideo() {
   );
 }
 
+function useNarrowForLogo(): boolean {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const u = () => setNarrow(mq.matches);
+    u();
+    mq.addEventListener('change', u);
+    return () => mq.removeEventListener('change', u);
+  }, []);
+  return narrow;
+}
+
 export function ParableLogoVideo({
   className = '',
   maxWidthClass = 'max-w-md',
 }: Props) {
   const reduceMotion = useReducedMotion();
-  const { videoRef, muted, toggleMute } = useParableVideoAudio(PARABLE_LOGO_VIDEO_SRC);
+  const narrow = useNarrowForLogo();
+  const cands = useMemo(
+    () => (narrow ? getParableLogoMobileSourceUrls() : getParableLogoDesktopSourceUrls()),
+    [narrow],
+  );
+  const [candIndex, setCandIndex] = useState(0);
+  useEffect(() => {
+    void queueMicrotask(() => {
+      setCandIndex(0);
+    });
+  }, [narrow, cands.length]);
+
+  const maxIdx = Math.max(0, cands.length - 1);
+  const safeIn = Math.min(candIndex, maxIdx);
+  const activeSrc = cands[safeIn] ?? cands[0] ?? PARABLE_LOGO_VIDEO_SRC;
+
+  const { videoRef, muted, toggleMute } = useParableVideoAudio(activeSrc);
+
+  const onVideoError = useCallback(() => {
+    setCandIndex((j) => (j + 1 < cands.length ? j + 1 : j));
+  }, [cands.length]);
 
   if (reduceMotion) {
     return (
@@ -253,6 +287,7 @@ export function ParableLogoVideo({
         aria-hidden
       />
       <video
+        key={activeSrc}
         ref={videoRef}
         className="relative box-border h-auto max-h-[min(55dvh,26rem)] w-full max-w-full object-contain object-center drop-shadow-[0_0_28px_rgba(0,242,255,0.4)] md:max-h-none"
         autoPlay
@@ -261,10 +296,9 @@ export function ParableLogoVideo({
         playsInline
         preload="auto"
         aria-label="PARABLE logo"
-      >
-        <source src={PARABLE_LOGO_VIDEO_MOBILE_SRC} type="video/mp4" media="(max-width: 767px)" />
-        <source src={PARABLE_LOGO_VIDEO_SRC} type="video/mp4" />
-      </video>
+        src={activeSrc}
+        onError={onVideoError}
+      />
       <button
         type="button"
         onClick={toggleMute}

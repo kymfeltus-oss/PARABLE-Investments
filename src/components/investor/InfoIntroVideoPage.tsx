@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParableVideoAudio } from '@/hooks/useParableVideoAudio';
+import { getInvestorFlashVideoAllCandidateUrls } from '@/lib/investor-blob-sibling-urls';
 
 /** Persisted after `onEnded` once — unlocks Skip / Continue on future visits (intro variant only). */
 export const INTRO_FULL_PLAY_STORAGE_KEY = 'parable_investor_intro_full_play_v1';
@@ -38,28 +39,7 @@ function introVideoCandidateUrls(): string[] {
 }
 
 function flashVideoCandidateUrls(): string[] {
-  const out: string[] = [];
-  const raw = process.env.NEXT_PUBLIC_INVESTOR_FLASH_VIDEO_URL?.trim();
-  if (raw) {
-    try {
-      const u = new URL(raw);
-      if (u.protocol === 'https:' || u.protocol === 'http:') {
-        out.push(u.href);
-      }
-    } catch {
-      /* ignore invalid env */
-    }
-  }
-  const encodedPath = `/videos/${encodeURIComponent('Investor Flash.mp4')}`;
-  const dedup: string[] = [];
-  const seen = new Set<string>();
-  for (const u of [...out, encodedPath]) {
-    if (u && !seen.has(u)) {
-      seen.add(u);
-      dedup.push(u);
-    }
-  }
-  return dedup.length > 0 ? dedup : [encodedPath];
+  return getInvestorFlashVideoAllCandidateUrls();
 }
 
 export type InfoIntroVideoPageProps = {

@@ -65,8 +65,10 @@ export function LiveMeetingVideoBackdrop({ loop = true, className = '' }: Props)
 
       {loadError ? (
         <p className="pointer-events-none absolute left-4 right-4 top-[max(4rem,env(safe-area-inset-top)+2rem)] z-[5] text-pretty text-center text-[11px] leading-relaxed text-amber-200/90 drop-shadow-md sm:text-xs">
-          Add <code className="rounded bg-black/50 px-1">public/videos/Live Meeting.mp4</code> or set{' '}
-          <code className="rounded bg-black/50 px-1">NEXT_PUBLIC_LIVE_MEETING_INTRO_VIDEO_URL</code>.
+          Set <code className="rounded bg-black/50 px-1">NEXT_PUBLIC_LIVE_MEETING_INTRO_VIDEO_URL</code> or add{' '}
+          <code className="rounded bg-black/50 px-1">Live%20Meeting.mp4</code> on the same Blob as{' '}
+          <code className="rounded bg-black/50 px-1">NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL</code>, or add{' '}
+          <code className="rounded bg-black/50 px-1">public/videos/Live Meeting.mp4</code> in the build.
         </p>
       ) : null}
 
