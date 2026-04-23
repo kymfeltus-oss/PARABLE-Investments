@@ -18,11 +18,14 @@ function firstName(full: string): string {
   return t.split(/\s+/)[0] ?? t;
 }
 
-function row(label: string, valueHtml: string): string {
+/** One detail row: label (muted) + value — easier to scan than a monospace grid. */
+function field(label: string, valueHtml: string): string {
   return `
 <tr>
-<td style="padding:10px 14px;border-bottom:1px solid #1a1d28;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:12px;color:#8b93a7;vertical-align:top;width:38%;">${label}</td>
-<td style="padding:10px 14px;border-bottom:1px solid #1a1d28;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:12px;color:#e8ecf4;word-break:break-all;">${valueHtml}</td>
+<td style="padding:0 0 18px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0;font-size:11px;line-height:1.4;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#8b919c;">${label}</p>
+<p style="margin:6px 0 0;font-size:15px;line-height:1.45;color:#f1f3f7;font-weight:400;">${valueHtml}</p>
+</td>
 </tr>`;
 }
 
@@ -41,116 +44,139 @@ export type MeetingConfirmationHtmlInput = {
 };
 
 /**
- * Table-based, mostly-inline HTML for investor meeting confirmation (email clients).
+ * Table-based, inline-styled HTML for investor meeting confirmation.
+ * Prioritizes clarity and calm hierarchy over decorative “HUD” chrome.
  */
 export function buildInvestorMeetingConfirmationHtml(p: MeetingConfirmationHtmlInput): string {
   const greet = esc(firstName(p.name));
+
   const schedulingBlock = p.schedulingUrl.trim()
     ? `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 0;">
-<tr><td style="padding:16px 18px;border-radius:10px;border:1px solid #1e3a4a;background:linear-gradient(135deg,#0d1520 0%,#0a1018 100%);">
-<p style="margin:0 0 6px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#5ee7e7;">Schedule</p>
-<p style="margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#c5cdd8;">
-<strong style="color:#f0f4f8;">Book a time</strong> — <a href="${escAttr(p.schedulingUrl)}" style="color:#00f2ff;text-decoration:none;border-bottom:1px solid rgba(0,242,255,0.35);">${esc(p.schedulingUrl)}</a>
+<tr><td style="padding:28px 32px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8b919c;">Pick a time</p>
+<p style="margin:0;font-size:15px;line-height:1.55;color:#d1d5dd;">
+When you&apos;re ready, choose a slot on our calendar:<br/>
+<a href="${escAttr(p.schedulingUrl)}" style="color:#38bdf8;text-decoration:underline;text-underline-offset:3px;">${esc(p.schedulingUrl)}</a>
 </p>
-</td></tr></table>`
+</td></tr>`
     : '';
 
   const hostKeyBlock =
     p.meetingHostKey.length > 0
       ? `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 0;">
-<tr><td style="padding:16px 18px;border-radius:10px;border:1px solid #3d2a1a;background:#120f0a;">
-<p style="margin:0 0 8px;font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#f59e0b;">Parable team — host credentials</p>
-<p style="margin:0 0 10px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#d4c4b0;">
-<strong style="color:#fde68a;">Host / meeting ID</strong> (full room name)
+<tr><td style="padding:24px 32px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:8px;border:1px solid #3f3428;background:#1a1612;">
+<tr><td style="padding:16px 18px;">
+<p style="margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#d6a85c;">Parable team only</p>
+<p style="margin:0 0 12px;font-size:13px;line-height:1.5;color:#d4c9bc;">
+If you join as <strong style="color:#f5e6d3;">Parable team</strong>, use this host key on the meeting page. Treat it like a password.
 </p>
-<p style="margin:0 0 12px;padding:10px 12px;background:#050403;border:1px solid #2a2015;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#fcd34d;word-break:break-all;">${esc(p.roomLabel)}</p>
-<p style="margin:0 0 6px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#d4c4b0;"><strong style="color:#fde68a;">Suffix</strong> (after <code style="background:#1c1410;padding:2px 6px;border-radius:4px;color:#fca5a5;">investor-</code>)</p>
-<p style="margin:0 0 12px;padding:10px 12px;background:#050403;border:1px solid #2a2015;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#fcd34d;word-break:break-all;">${esc(p.suffixOnly)}</p>
-<p style="margin:0 0 6px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#d4c4b0;"><strong style="color:#fde68a;">Host key</strong> (choose &quot;Parable team&quot; on the meeting page)</p>
-<p style="margin:0 0 10px;padding:10px 12px;background:#050403;border:1px solid #2a2015;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#fcd34d;word-break:break-all;">${esc(p.meetingHostKey)}</p>
-<p style="margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:10px;color:#a38b6f;">Treat the host key like a password. Do not forward outside Parable.</p>
-</td></tr></table>`
+<p style="margin:0 0 8px;font-size:11px;color:#b49b82;">Host key</p>
+<p style="margin:0;padding:12px 14px;background:#0f0d0b;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:13px;line-height:1.4;color:#fcd9a8;word-break:break-all;border:1px solid #2d241c;">${esc(p.meetingHostKey)}</p>
+</td></tr></table>
+</td></tr>`
       : '';
 
-  const regRow = p.regId ? row('Registration ID', `<span style="color:#00f2ff;">${esc(p.regId)}</span>`) : '';
+  const regField = p.regId
+    ? field(
+        'Registration ID',
+        `<span style="font-family:ui-monospace,Consolas,monospace;font-size:14px;color:#e2e8f0;">${esc(p.regId)}</span><span style="display:block;margin-top:6px;font-size:12px;color:#8b919c;font-weight:400;">Include this if you email support.</span>`,
+      )
+    : '';
+
+  const meetLinkHtml = `<a href="${escAttr(p.meetUrl)}" style="color:#38bdf8;text-decoration:underline;text-underline-offset:3px;word-break:break-all;">${esc(p.meetUrl)}</a>`;
 
   return `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>Parable — Meeting confirmation</title>
-<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#050506;">
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#050506;opacity:0;">
-Your Parable investor video room link and NDA scheduling record are inside. Open on a trusted device.
-${'&nbsp;'.repeat(120)}
+<body style="margin:0;padding:0;background:#0a0b0d;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#0a0b0d;opacity:0;">
+Parable investor video room link and your registration details are below.
+${'&nbsp;'.repeat(100)}
 </div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#050506;">
-<tr><td align="center" style="padding:28px 16px 40px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;border-collapse:collapse;">
-<tr><td bgcolor="#00c8d4" style="height:3px;background:linear-gradient(90deg,#00f2ff,#7c3aed,#00f2ff);border-radius:2px;font-size:0;line-height:0;">&nbsp;</td></tr>
-<tr><td style="padding:0;border:1px solid #1a1d28;border-top:none;border-radius:0 0 14px 14px;background:#0b0c10;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0a0b0d;">
+<tr>
+<td align="center" style="padding:32px 16px 48px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+<tr>
+<td style="border-radius:12px;background:#13151a;border:1px solid #252a33;overflow:hidden;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="padding:28px 28px 8px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<p style="margin:0 0 6px;font-family:ui-monospace,Consolas,monospace;font-size:10px;letter-spacing:0.35em;text-transform:uppercase;color:#5ee7e7;">// confidential briefing</p>
-<h1 style="margin:0;font-size:22px;line-height:1.25;font-weight:800;letter-spacing:-0.02em;color:#f4f7fb;">You&apos;re cleared, ${greet}.</h1>
-<p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:#9aa3b2;">
-This transmission confirms your <strong style="color:#e8ecf4;">investor meeting registration</strong> and links you to the <strong style="color:#00f2ff;">Parable video room</strong>. It is retained with our confidentiality process (NDA / acknowledgment <strong style="color:#cbd5e1;">${esc(p.ndaVersion)}</strong>).
+<tr>
+<td style="padding:32px 32px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;">Parable · Investor meeting</p>
+<h1 style="margin:0;font-size:24px;line-height:1.3;font-weight:600;letter-spacing:-0.02em;color:#f8fafc;">Hi ${greet}, you&apos;re registered</h1>
+<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:#94a3b8;">
+This email confirms your investor meeting registration and ties it to our confidentiality process. <strong style="color:#cbd5e1;">NDA / acknowledgment on file:</strong> ${esc(p.ndaVersion)}.
 </p>
-</td></tr>
-<tr><td style="padding:8px 28px 24px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;" align="center">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
-<tr><td align="center" style="border-radius:10px;background:#00f2ff;">
-<a href="${escAttr(p.meetUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:16px 36px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:13px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;text-decoration:none;color:#050506;">
-Enter video room
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:28px 32px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td style="border-radius:8px;background:#0ea5e9;">
+<a href="${escAttr(p.meetUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:14px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;text-decoration:none;color:#ffffff;">
+Join Parable video room
 </a>
-</td></tr></table>
-<p style="margin:14px 0 0;font-size:11px;line-height:1.5;color:#6b7280;max-width:480px;">
-At meeting time: open the link, choose <strong style="color:#9ca3af;">Investor</strong>, and use the <strong style="color:#9ca3af;">same email</strong> you used when booking.
-</p>
-<p style="margin:8px 0 0;font-size:11px;font-family:ui-monospace,Consolas,monospace;word-break:break-all;">
-<a href="${escAttr(p.meetUrl)}" style="color:#00d4e6;text-decoration:none;border-bottom:1px solid rgba(0,242,255,0.25);">${esc(p.meetUrl)}</a>
-</p>
-</td></tr>
-<tr><td style="padding:0 28px 8px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #1f2430;border-radius:10px;overflow:hidden;background:#07080c;">
-<tr><td colspan="2" style="padding:12px 14px;background:#0f1118;border-bottom:1px solid #1a1d28;font-family:ui-monospace,Consolas,monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#7dd3fc;">Technical readout</td></tr>
-${regRow}
-${row('Host / meeting ID', esc(p.roomLabel))}
-${row('Room suffix', `<code style="color:#a5f3fc;">${esc(p.suffixOnly)}</code>`)}
-${row('NDA version', esc(p.ndaVersion))}
+</td>
+</tr>
 </table>
-</td></tr>
-<tr><td style="padding:12px 28px 20px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.65;color:#8b93a7;">
-If your calendar app shows a different link (e.g. <strong style="color:#a1a8b8;">Cal Video</strong>), that comes from the calendar provider. For the <strong style="color:#e8ecf4;">Parable</strong> investor call, use the <strong style="color:#00f2ff;">video room</strong> above unless we told you otherwise.
-</td></tr>
-<tr><td style="padding:0 28px 24px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:10px;border:1px solid #14532d;background:#071910;">
-<tr><td style="padding:16px 18px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#4ade80;">Calendar</p>
-<p style="margin:0 0 10px;font-size:13px;line-height:1.55;color:#bbf7d0;">
-Placeholder reminder attached: <code style="background:#052e16;padding:2px 6px;border-radius:4px;color:#86efac;">${esc(p.icsFilename)}</code> (${p.reminderOffsetHours}h from send). Your real slot arrives from your booking provider.
+<p style="margin:18px 0 0;font-size:14px;line-height:1.55;color:#94a3b8;max-width:440px;">
+At meeting time: open the button, choose <strong style="color:#e2e8f0;">Investor</strong>, and sign in with the <strong style="color:#e2e8f0;">same email</strong> you used when you registered.
 </p>
-<a href="${escAttr(p.googleCalendarUrl)}" style="display:inline-block;font-size:13px;font-weight:700;color:#4ade80;text-decoration:none;border-bottom:1px solid rgba(74,222,128,0.4);">Add to Google Calendar →</a>
-</td></tr></table>
-</td></tr>
-<tr><td style="padding:0 28px 28px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+</td>
+</tr>
+<tr>
+<td style="padding:8px 32px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0;font-size:12px;line-height:1.5;color:#64748b;">If your calendar shows another link (for example &quot;Cal Video&quot;), that comes from the calendar app. For the Parable call, use this link unless we told you otherwise:</p>
+<p style="margin:10px 0 0;font-size:13px;line-height:1.5;color:#cbd5e1;word-break:break-all;">${meetLinkHtml}</p>
+</td>
+</tr>
+<tr><td style="padding:28px 32px 0;"><div style="height:1px;background:#252a33;font-size:0;line-height:0;">&nbsp;</div></td></tr>
+<tr>
+<td style="padding:28px 32px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0 0 18px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8b919c;">Your details</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+${regField}
+${field('Room name (full)', `<span style="font-family:ui-monospace,Consolas,monospace;font-size:14px;color:#e2e8f0;">${esc(p.roomLabel)}</span>`)}
+${field(
+    'Short room code',
+    `<span style="font-family:ui-monospace,Consolas,monospace;font-size:14px;color:#e2e8f0;">${esc(p.suffixOnly)}</span><span style="display:block;margin-top:6px;font-size:12px;color:#8b919c;font-weight:400;">The part after <span style="font-family:ui-monospace,Consolas,monospace;">investor-</span> in the room name.</span>`,
+  )}
+</table>
+</td>
+</tr>
+<tr><td style="padding:8px 32px 0;"><div style="height:1px;background:#252a33;font-size:0;line-height:0;">&nbsp;</div></td></tr>
+<tr>
+<td style="padding:28px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8b919c;">Calendar reminder</p>
+<p style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#94a3b8;">
+We attached <strong style="color:#e2e8f0;">${esc(p.icsFilename)}</strong> — a placeholder reminder (${p.reminderOffsetHours} hours from now). After you book, your real meeting time will come from your calendar.
+</p>
+<a href="${escAttr(p.googleCalendarUrl)}" style="font-size:14px;font-weight:600;color:#38bdf8;text-decoration:underline;text-underline-offset:3px;">Add to Google Calendar</a>
+</td>
+</tr>
 ${schedulingBlock}
 ${hostKeyBlock}
-<p style="margin:24px 0 0;font-size:11px;line-height:1.6;color:#5c6370;">
-Supplemental evidence alongside your investor NDA / electronic acknowledgment. Not legal advice.<br/>
-<span style="color:#4b5563;">— Parable</span>
+<tr>
+<td style="padding:8px 32px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;">
+Kept as a record with your investor NDA / acknowledgment. Not legal advice.<br/>
+<span style="color:#475569;">— Parable</span>
 </p>
-</td></tr>
+</td>
+</tr>
 </table>
-</td></tr>
+</td>
+</tr>
 </table>
-</td></tr>
+</td>
+</tr>
 </table>
 </body>
 </html>`;
