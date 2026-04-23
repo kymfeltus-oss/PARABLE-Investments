@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
@@ -27,6 +27,26 @@ type Props = {
 
 export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   const router = useRouter();
+  const [livekitWsUrl, setLivekitWsUrl] = useState(() => serverUrl);
+  /** False until the first value is known: prop and/or `GET /api/livekit/ws-url` (reliable in Vercel). */
+  const [livekitConfigReady, setLivekitConfigReady] = useState(!!serverUrl);
+
+  useEffect(() => {
+    void fetch('/api/livekit/ws-url', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.resolve(null)))
+      .then((d: { serverUrl?: string } | null) => {
+        const fromApi = d && typeof d.serverUrl === 'string' ? d.serverUrl : '';
+        if (fromApi) {
+          setLivekitWsUrl(fromApi);
+        }
+      })
+      .catch(() => {
+        /* keep initial prop */
+      })
+      .finally(() => {
+        setLivekitConfigReady(true);
+      });
+  }, []);
 
   /** Back/forward cache can restore a stale `/meet` document; refresh server components so UI matches the latest deploy. */
   useEffect(() => {
@@ -57,11 +77,18 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
           <div className="mb-10 md:mb-12" aria-hidden />
 
           <div className="w-full max-w-4xl">
-            <MeetRoom
-              serverUrl={serverUrl}
-              initialRoomSuffix={initialRoomSuffix}
-              scheduledVerification={scheduledVerification}
-            />
+            {!livekitConfigReady ? (
+              <div className="parable-glass-panel border-[#00f2ff]/20 px-8 py-10 text-center">
+                <p className="text-sm font-medium text-white/80">Checking video service…</p>
+                <p className="mt-2 text-xs text-white/40">Loading server configuration.</p>
+              </div>
+            ) : (
+              <MeetRoom
+                serverUrl={livekitWsUrl}
+                initialRoomSuffix={initialRoomSuffix}
+                scheduledVerification={scheduledVerification}
+              />
+            )}
           </div>
         </div>
       </div>
