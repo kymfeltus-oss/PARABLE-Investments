@@ -170,6 +170,69 @@ export function LandingHeroBackgroundVideo() {
  * Inline animated logo (e.g. reduced-motion areas). Falls back to {@link ParableLogoMark}
  * when the user prefers reduced motion.
  */
+function CenteredAutoplayFromUrl({ src, label }: { src: string; label: string }) {
+  const { videoRef, muted, toggleMute } = useParableVideoAudio(src);
+
+  return (
+    <div className="relative mx-auto w-full min-w-0 max-w-5xl overflow-hidden px-1">
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[1.5rem] bg-[radial-gradient(ellipse_80%_80%_at_50%_45%,rgba(0,242,255,0.14)_0%,rgba(10,12,18,0.95)_50%,#050506_100%)]"
+        aria-hidden
+      />
+      <video
+        ref={videoRef}
+        className="relative box-border max-h-[min(52dvh,30rem)] w-full object-contain object-center shadow-[0_0_40px_rgba(0,242,255,0.15)] md:max-h-[min(50dvh,28rem)]"
+        autoPlay
+        muted={muted}
+        loop
+        playsInline
+        preload="auto"
+        aria-label={label}
+        src={src}
+      />
+      <button
+        type="button"
+        onClick={toggleMute}
+        aria-pressed={muted}
+        className="absolute bottom-3 right-3 z-10 rounded-md border border-white/15 bg-black/60 px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wider text-white/85 backdrop-blur-sm hover:bg-black/75"
+      >
+        {muted ? 'Unmute' : 'Mute'}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Primary landing (/) intro: uses `NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL` in production when set (Vercel Blob, etc.),
+ * otherwise the animated PARABLE logo loop from `public/videos`. Centered, visible "player" between headline and CTA.
+ */
+export function LandingPageCenterVideo() {
+  const reduceMotion = useReducedMotion();
+  const intro = process.env.NEXT_PUBLIC_INVESTOR_INTRO_VIDEO_URL?.trim();
+
+  if (reduceMotion) {
+    return (
+      <div className="flex w-full flex-1 flex-col items-center justify-center py-6 min-h-0">
+        <ParableLogoMark className="w-full" maxWidthClass="max-w-[min(22rem,88vw)]" />
+      </div>
+    );
+  }
+
+  if (intro && (intro.startsWith('https://') || intro.startsWith('http://'))) {
+    return (
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center py-3 min-[400px]:py-6">
+        <CenteredAutoplayFromUrl src={intro} label="Investor introduction" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center py-3 min-[400px]:py-6">
+      <ParableLogoVideo className="w-full" maxWidthClass="max-w-[min(90vw,36rem)]" />
+    </div>
+  );
+}
+
 export function ParableLogoVideo({
   className = '',
   maxWidthClass = 'max-w-md',
