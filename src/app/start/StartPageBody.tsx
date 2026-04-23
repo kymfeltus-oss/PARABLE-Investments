@@ -330,15 +330,11 @@ export default function StartPageBody() {
             Investor gateway
           </p>
           <h1 className="mx-auto mt-4 max-w-4xl text-balance font-black uppercase leading-[0.95] tracking-[0.08em] sm:tracking-[0.1em] md:max-w-5xl">
-            <span className="block text-3xl text-white/90 sm:text-4xl md:text-5xl">You&apos;re</span>
-            <span className="mt-1 block bg-gradient-to-b from-white via-[#c4fffe] to-[#00f2ff] bg-clip-text text-4xl text-transparent drop-shadow-[0_0_40px_rgba(0,242,255,0.35)] sm:text-5xl md:mt-2 md:text-6xl lg:text-7xl">
+            <span className="block text-2xl text-white/90 sm:text-3xl md:text-4xl">You&apos;re</span>
+            <span className="mt-1 block bg-gradient-to-b from-white via-[#c4fffe] to-[#00f2ff] bg-clip-text text-3xl text-transparent drop-shadow-[0_0_40px_rgba(0,242,255,0.35)] sm:text-4xl md:mt-2 md:text-5xl lg:text-6xl">
               Cleared
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-pretty text-sm leading-relaxed text-white/55 sm:max-w-xl sm:text-[15px] md:mt-6 md:max-w-2xl md:text-base lg:text-lg">
-            NDA is on file. Below is your <span className="text-white/80">live command surface</span>—deck first, then
-            room, calendar, model, app preview, or a direct line to our desk.
-          </p>
         </motion.section>
 
         {/* Featured portal — conic signal frame */}
