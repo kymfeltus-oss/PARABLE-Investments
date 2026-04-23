@@ -5,13 +5,15 @@ import { useLayoutEffect, useRef } from 'react';
 type Props = {
   /** Full iframe document URL (from `NEXT_PUBLIC_GAMMA_PROPOSAL_URL` / `GAMMA_EMBED_URL`, normalized on the server). */
   src: string;
+  /** When true, the iframe fills a flex parent with `min-h-0` (e.g. deck route). */
+  fillContainer?: boolean;
 };
 
 /**
  * Priority-loaded embed: preconnect runs before paint; iframe requests high fetch priority so the
  * browser schedules the subdocument early on the white-labeled origin.
  */
-export function InvestorPortalClient({ src }: Props) {
+export function InvestorPortalClient({ src, fillContainer = false }: Props) {
   const frameRef = useRef<HTMLIFrameElement>(null);
 
   useLayoutEffect(() => {
@@ -43,7 +45,14 @@ export function InvestorPortalClient({ src }: Props) {
   }, [src]);
 
   return (
-    <div className="relative w-full min-h-[22rem] flex-1 sm:min-h-[28rem]" style={{ height: 'calc(100dvh - 12rem)' }}>
+    <div
+      className={
+        fillContainer
+          ? 'relative h-full min-h-0 w-full min-w-0 flex-1'
+          : 'relative w-full min-h-[22rem] flex-1 sm:min-h-[28rem]'
+      }
+      style={fillContainer ? undefined : { height: 'calc(100dvh - 12rem)' }}
+    >
       <iframe
         ref={frameRef}
         src={src}
