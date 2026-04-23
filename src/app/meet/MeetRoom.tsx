@@ -367,7 +367,12 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         <p className="font-semibold uppercase tracking-wider text-[#00f2ff]/90 md:text-sm">
           Video service not configured
         </p>
-        <p className="mt-2 text-white/50 md:mt-3">This page needs a valid video service URL from the host.</p>
+        <p className="mt-2 text-white/50 md:mt-3">
+          Set <code className="text-white/70">NEXT_PUBLIC_LIVEKIT_URL</code> or <code className="text-white/70">LIVEKIT_URL</code> to
+          your LiveKit WebSocket URL (e.g. <code className="text-white/60">wss://… .livekit.cloud</code>) in the host
+          (Vercel: Environment Variables), then <strong className="text-white/70">redeploy</strong>. Optional: open{' '}
+          <code className="text-white/60">/api/livekit/ws-url</code> — it must return a non-empty <code className="text-white/60">serverUrl</code>.
+        </p>
       </div>
     );
   }

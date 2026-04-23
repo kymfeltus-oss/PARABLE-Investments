@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { normalizeLiveKitServerUrl } from '@/lib/livekit-server-url';
+import { getLiveKitUrlFromEnv } from '@/lib/livekit-server-url';
 
 /**
  * Exposes the LiveKit **WebSocket URL** (wss) for the meet UI. The URL is not secret; token minting
@@ -9,8 +9,5 @@ import { normalizeLiveKitServerUrl } from '@/lib/livekit-server-url';
 export const dynamic = 'force-dynamic';
 
 export function GET() {
-  const liveKitEnvRaw =
-    process.env.NEXT_PUBLIC_LIVEKIT_URL?.trim() || process.env.LIVEKIT_URL?.trim() || undefined;
-  const serverUrl = normalizeLiveKitServerUrl(liveKitEnvRaw);
-  return NextResponse.json({ serverUrl });
+  return NextResponse.json({ serverUrl: getLiveKitUrlFromEnv() });
 }

@@ -64,3 +64,28 @@ export function normalizeLiveKitServerUrl(raw: string | undefined): string {
 export function isValidLiveKitServerUrl(s: string): boolean {
   return normalizeLiveKitServerUrl(s) !== '';
 }
+
+/** Strips newlines / tabs that often get pasted into Vercel by accident. */
+function cleanEnvString(v: string | undefined): string | undefined {
+  if (v == null) return undefined;
+  const t = v
+    .replace(/^\uFEFF/, '')
+    .replace(/[\r\n\t]+/g, '')
+    .replace(/[\u200B-\u200D\u2060]/g, '')
+    .trim();
+  return t.length > 0 ? t : undefined;
+}
+
+/**
+ * Resolves the LiveKit WebSocket URL from `process.env` (meet page + `/api/livekit/ws-url`).
+ * Tries, in order: `NEXT_PUBLIC_LIVEKIT_URL`, `LIVEKIT_URL`, `LIVEKIT_WS_URL` (optional alias).
+ */
+export function getLiveKitUrlFromEnv(): string {
+  for (const key of ['NEXT_PUBLIC_LIVEKIT_URL', 'LIVEKIT_URL', 'LIVEKIT_WS_URL'] as const) {
+    const raw = cleanEnvString(process.env[key]);
+    if (!raw) continue;
+    const n = normalizeLiveKitServerUrl(raw);
+    if (n) return n;
+  }
+  return '';
+}
