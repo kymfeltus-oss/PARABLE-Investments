@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { getParableLogoDesktopSourceUrls, getParableLogoMobileSourceUrls } from '@/lib/investor-blob-sibling-urls';
 
@@ -17,12 +17,27 @@ export const PARABLE_LOGO_VIDEO_SRC = PARABLE_LOGO_DESKTOP_CANDIDATES[0];
 export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
   '/videos/' + encodeURIComponent('PARABLE Mobile logo.mp4');
 
+function subscribeMaxWidth767(cb: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  const mq = window.matchMedia('(max-width: 767px)');
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+}
+
+function getMaxWidth767Matches(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
 /**
  * Full-viewport looping background for the investor landing (under sparkles + copy).
  * Prefers unmuted playback so sound plays when the browser allows; if autoplay with sound is
  * blocked, falls back to muted playback and unmutes on first user gesture (tap/click/key).
  * Mobile: `PARABLE Mobile logo.mp4` + `object-contain` so the full frame fits (logo not blown up).
  * md+: desktop candidates above + `object-cover` for full-bleed hero.
+ *
+ * Uses a single `src` (not two `<source media>` children): many browsers ignore `media` on
+ * `<source>` inside `<video>` and would always load the first listed file (mobile on desktop).
  */
 export function LandingHeroBackgroundVideo() {
   const reduceMotion = useReducedMotion();
@@ -30,10 +45,12 @@ export function LandingHeroBackgroundVideo() {
   const [muted, setMuted] = useState(false);
   const [desktopIdx, setDesktopIdx] = useState(0);
   const [mobileIdx, setMobileIdx] = useState(0);
+  const narrowViewport = useSyncExternalStore(subscribeMaxWidth767, getMaxWidth767Matches, () => false);
   const desktopCands = useMemo(() => getParableLogoDesktopSourceUrls(), []);
   const mobileCands = useMemo(() => getParableLogoMobileSourceUrls(), []);
   const desktopSrc = desktopCands[Math.min(desktopIdx, Math.max(0, desktopCands.length - 1))]!;
   const mobileSrc = mobileCands[Math.min(mobileIdx, Math.max(0, mobileCands.length - 1))]!;
+  const activeSrc = narrowViewport ? mobileSrc : desktopSrc;
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
@@ -60,7 +77,7 @@ export function LandingHeroBackgroundVideo() {
     return () => {
       el.removeEventListener('canplay', onReady);
     };
-  }, [tryPlayPreferSound, desktopIdx, mobileIdx]);
+  }, [tryPlayPreferSound, activeSrc]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -82,19 +99,6 @@ export function LandingHeroBackgroundVideo() {
     };
   }, []);
 
-  /** Re-evaluate `<source media>` when crossing mobile/desktop (rotate, resize). */
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    const mq = window.matchMedia('(max-width: 767px)');
-    const onChange = () => {
-      el.load();
-      el.addEventListener('canplay', () => tryPlayPreferSound(), { once: true });
-    };
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [tryPlayPreferSound]);
-
   const onVideoError = useCallback(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia('(max-width: 767px)').matches) {
@@ -112,8 +116,10 @@ export function LandingHeroBackgroundVideo() {
     <div className="fixed inset-0 z-0 max-h-[100dvh] max-w-[100vw] overflow-hidden">
       <div className="absolute inset-0 min-h-0 min-w-0 overflow-hidden">
         <video
+          key={activeSrc}
           ref={videoRef}
           className="absolute inset-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
+          src={activeSrc}
           autoPlay
           muted={muted}
           loop
@@ -121,14 +127,7 @@ export function LandingHeroBackgroundVideo() {
           preload="auto"
           aria-label="PARABLE background"
           onError={onVideoError}
-        >
-          <source
-            src={mobileSrc}
-            type="video/mp4"
-            media="(max-width: 767px)"
-          />
-          <source src={desktopSrc} type="video/mp4" />
-        </video>
+        />
       </div>
       {/* Descript (and similar) trial watermarks are baked into the MP4 — mask BR on small screens until you re-export clean video. */}
       <div
