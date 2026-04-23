@@ -430,68 +430,66 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
       : false;
 
     return (
-      <div className="investor-meeting-shell parable-livekit-root fixed inset-0 z-[100] flex w-full max-w-none flex-col border-0 border-white/10 bg-[#1b1b1d] shadow-none">
-        <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[#2d2d30] px-[max(1rem,env(safe-area-inset-left))] pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <p className="truncate text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Parable Meeting</p>
-            <p className="truncate font-mono text-sm text-white/90">{fullRoomName}</p>
-            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-white/45">
-              <ConnectionState />
+      <div className="investor-meeting-shell parable-livekit-root fixed inset-0 z-[100] flex h-[100dvh] w-full max-w-none flex-col overflow-hidden border-0 border-white/10 bg-[#1e1e1e] shadow-none">
+        <LiveKitRoom
+          key={token}
+          className="flex h-full min-h-0 w-full flex-1 flex-col"
+          token={token}
+          serverUrl={serverUrl}
+          connect
+          audio={audioOpts}
+          video={videoOpts}
+          options={{
+            adaptiveStream: true,
+            dynacast: true,
+          }}
+          onConnected={() => setRoomError(null)}
+          onError={(err) => {
+            const msg = err instanceof Error ? err.message : String(err);
+            setRoomError(msg);
+          }}
+          onMediaDeviceFailure={(failure) => setRoomError(mediaDeviceFailureMessage(failure))}
+          onDisconnected={(reason) => {
+            if (reason === DisconnectReason.CLIENT_INITIATED) {
+              leave();
+              return;
+            }
+            const byNum = DisconnectReason as unknown as Record<number, string>;
+            const reasonLabel = reason === undefined ? 'unknown' : (byNum[reason] ?? String(reason));
+            setRoomError(
+              `Disconnected (${reasonLabel}). If you did not leave on purpose, check your network and that LiveKit is configured (NEXT_PUBLIC_LIVEKIT_URL, LIVEKIT_API_KEY/SECRET).`,
+            );
+          }}
+          data-lk-theme="default"
+        >
+          {/* `ConnectionState` and the rest of the call UI must be inside `LiveKitRoom` (RoomContext). */}
+          <header className="flex shrink-0 flex-col gap-2 border-b border-[#3d3d42] bg-[#2d2d2f] px-[max(0.75rem,env(safe-area-inset-left))] py-2.5 pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:flex-row sm:items-center sm:justify-between sm:py-3 sm:pl-4 sm:pr-4">
+            <div className="min-w-0 pl-0.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">Parable</p>
+              <p className="mt-0.5 truncate font-mono text-sm text-white/90">{fullRoomName}</p>
+              <div className="mt-0.5 flex items-center gap-2 text-[10px] text-white/45">
+                <ConnectionState />
+              </div>
             </div>
-            <p className="mt-1 hidden text-[10px] text-white/35 sm:block">
-              Bottom bar: microphone, camera, share screen, chat, settings (background & profile).
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={leave}
-            className="shrink-0 rounded-md bg-[#c42b1c] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white hover:bg-[#a92317]"
-          >
-            Leave
-          </button>
-        </header>
-        {roomError ? (
-          <div className="shrink-0 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-center text-[11px] text-amber-100">
-            {roomError}
-          </div>
-        ) : null}
-        <div className="investor-meeting-stage min-h-0 flex-1">
-          <LiveKitRoom
-            key={token}
-            token={token}
-            serverUrl={serverUrl}
-            connect
-            audio={audioOpts}
-            video={videoOpts}
-            options={{
-              adaptiveStream: true,
-              dynacast: true,
-            }}
-            onConnected={() => setRoomError(null)}
-            onError={(err) => {
-              const msg = err instanceof Error ? err.message : String(err);
-              setRoomError(msg);
-            }}
-            onMediaDeviceFailure={(failure) => setRoomError(mediaDeviceFailureMessage(failure))}
-            onDisconnected={(reason) => {
-              if (reason === DisconnectReason.CLIENT_INITIATED) {
-                leave();
-                return;
-              }
-              const byNum = DisconnectReason as unknown as Record<number, string>;
-              const reasonLabel =
-                reason === undefined ? 'unknown' : (byNum[reason] ?? String(reason));
-              setRoomError(
-                `Disconnected (${reasonLabel}). If you did not leave on purpose, check your network and that LiveKit is configured (NEXT_PUBLIC_LIVEKIT_URL, LIVEKIT_API_KEY/SECRET).`,
-              );
-            }}
-            data-lk-theme="default"
-          >
+            <button
+              type="button"
+              onClick={leave}
+              className="shrink-0 rounded border border-red-500/30 bg-[#a4262c] px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-[#8a1e23]"
+            >
+              Leave
+            </button>
+          </header>
+          {roomError ? (
+            <div className="shrink-0 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-center text-[11px] text-amber-100">
+              {roomError}
+            </div>
+          ) : null}
+          <div className="livekit-vc-surface min-h-0 flex-1 overflow-hidden">
             <VideoConference SettingsComponent={MeetParticipantSettings} />
-            <StartAudio label="Tap to enable meeting audio" />
-            <RoomAudioRenderer />
-          </LiveKitRoom>
-        </div>
+          </div>
+          <StartAudio label="Tap to enable meeting audio" />
+          <RoomAudioRenderer />
+        </LiveKitRoom>
       </div>
     );
   }

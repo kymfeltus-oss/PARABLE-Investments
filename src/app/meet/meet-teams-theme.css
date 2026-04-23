@@ -1,0 +1,60 @@
+/* Teams / Zoom–style full-height meeting: applied after @livekit/components-styles */
+
+.parable-livekit-root,
+.parable-livekit-root [data-lk-theme] {
+  --lk-bg: #1e1e1e;
+  --lk-bg2: #2d2d2f;
+  --lk-bg3: #3d3d42;
+  --lk-border-color: #3c3c3c;
+  --lk-fg: #e8e8e8;
+  --lk-fg2: #c4c4c4;
+  --lk-control-bar-height: 4.5rem;
+  --lk-border-radius: 4px;
+}
+
+/* Full-bleed video stage */
+.livekit-vc-surface {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  background: #1a1a1a;
+}
+
+.livekit-vc-surface .lk-video-conference,
+.livekit-vc-surface .lk-video-conference-inner {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+/* Main grid / focus area uses remaining space above the control bar */
+.livekit-vc-surface .lk-focus-layout-wrapper,
+.livekit-vc-surface .lk-grid-layout-wrapper {
+  background: #1a1a1a;
+}
+
+/* Bottom control strip — larger touch targets, pill-like */
+.livekit-vc-surface .lk-control-bar {
+  flex-shrink: 0;
+  min-height: 4.5rem;
+  padding: 0.5rem 1rem max(0.5rem, env(safe-area-inset-bottom));
+  background: #2d2d2f;
+  border-top: 1px solid #3d3d42;
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+.livekit-vc-surface .lk-control-bar .lk-button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+/* Chat side panel in dark chrome */
+.livekit-vc-surface .lk-chat {
+  background: #2d2d2f;
+  border-left: 1px solid #3d3d42;
+}

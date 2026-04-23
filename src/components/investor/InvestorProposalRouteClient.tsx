@@ -7,6 +7,7 @@ import type { IntroExitDetail } from '@/components/investor/InfoIntroVideoPage';
 import { InfoIntroVideoPage } from '@/components/investor/InfoIntroVideoPage';
 import { InvestorPortalView } from '@/components/investor/InvestorPortalView';
 import { ProposalPresentationSection } from '@/components/investor/ProposalPresentationSection';
+import { INVESTOR_FINANCIAL_CALCULATOR_PATH } from '@/lib/investor-site';
 
 type Props = {
   clientIp: string;
@@ -64,6 +65,12 @@ function InvestorProposalRouteClientInner({ clientIp, gammaProposalUrl, onVercel
           className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
         >
           Rewatch intro
+        </Link>
+        <Link
+          href={INVESTOR_FINANCIAL_CALCULATOR_PATH}
+          className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00f2ff]/80"
+        >
+          Financial calculator
         </Link>
       </div>
       <ProposalPresentationSection />

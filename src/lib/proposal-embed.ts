@@ -1,6 +1,11 @@
 /**
  * Investor proposal iframe — white-labeled host (e.g. https://yourproject.com/…)
  * replaces third-party gamma.app/embed for DNS locality + brand-consistent viewer chrome.
+ *
+ * **Links in the deck:** A path-only URL (e.g. `/investor/financial-calculator` or the site root `/`)
+ * resolves against the **embed** origin, not this Next app — that often looks like the marketing home
+ * or a wrong page. In Gamma, set tool buttons to a **full** `https` URL to this app (e.g. same host as
+ * `INVESTOR_SITE_URL` in `lib/investor-site.ts` + the path) and open in a **new tab** or **top** window.
  */
 
 const UTM_STRIP_VALUES = new Set(['made-with-gamma', 'made_with_gamma']);

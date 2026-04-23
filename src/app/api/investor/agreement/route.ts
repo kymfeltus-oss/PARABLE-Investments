@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvestorAgreementPlainText, INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { validateNdaFields } from '@/lib/investor-agreement-validation';
+import { sendNdaSignaturePdfCopies } from '@/lib/send-nda-signature-pdfs';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 function trimField(v: unknown, max: number): string {
@@ -58,5 +59,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not save your agreement. Try again or contact support.' }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  const signedAtUtc = new Date().toISOString();
+  let ndaPdfEmailStatus: 'sent' | 'unconfigured' | 'failed' = 'unconfigured';
+  let ndaPdfEmailError: string | null = null;
+  try {
+    const r = await sendNdaSignaturePdfCopies({
+      documentSnapshot: documentSnapshot,
+      printedName,
+      email,
+      signature,
+      signedAtUtc,
+      clientIp,
+    });
+    ndaPdfEmailStatus = r.status;
+    ndaPdfEmailError = r.errorMessage;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[investor/agreement] NDA PDF e-mail failed after save:', msg);
+    ndaPdfEmailStatus = 'failed';
+    ndaPdfEmailError = msg.length > 400 ? `${msg.slice(0, 400)}…` : msg;
+  }
+
+  return NextResponse.json({ ok: true, ndaPdfEmailStatus, ndaPdfEmailError });
 }

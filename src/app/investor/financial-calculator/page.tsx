@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { INVESTOR_SITE_URL } from '@/lib/investor-site';
+import { INVESTOR_FINANCIAL_CALCULATOR_PATH, INVESTOR_SITE_URL } from '@/lib/investor-site';
 import { SovereignYieldModeler } from '@/components/investor/SovereignYieldModeler';
 
-const canonical = new URL('/investor/financial-calculator', INVESTOR_SITE_URL);
+const canonical = new URL(INVESTOR_FINANCIAL_CALCULATOR_PATH, INVESTOR_SITE_URL);
 
 export const metadata: Metadata = {
   title: 'Financial calculator | Parable Investments',

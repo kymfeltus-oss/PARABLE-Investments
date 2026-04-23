@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { INVESTOR_FINANCIAL_CALCULATOR_PATH } from '@/lib/investor-site';
 import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 
 function StreamIcon({ className }: { className?: string }) {
@@ -130,7 +131,7 @@ export function buildPortalItems(meetHref: string): PortalNavItem[] {
       shortLabel: 'Financial Calculator',
       body: 'Sovereign yield modeler with adoption and recovery sliders—explore implied NOI and payback framing.',
       icon: <CalculatorIcon className="h-5 w-5" />,
-      href: '/investor/financial-calculator',
+      href: INVESTOR_FINANCIAL_CALCULATOR_PATH,
     },
     {
       id: 'explore',

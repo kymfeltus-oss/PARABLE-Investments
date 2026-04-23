@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { INVESTOR_FINANCIAL_CALCULATOR_PATH } from '@/lib/investor-site';
 import { getInvestorScheduledMeetHref } from '@/lib/meeting-links';
 
 const INVESTOR_CONTACT_EMAIL =
@@ -205,7 +206,7 @@ export default function StartPageBody() {
       title: 'Yield calculator',
       body: 'Stress adoption, recovery, and overhead—see implied gross yield and NOI framing.',
       cta: 'Run the model',
-      href: '/investor/financial-calculator',
+      href: INVESTOR_FINANCIAL_CALCULATOR_PATH,
       Icon: CalculatorIcon,
     },
     {
@@ -407,19 +408,7 @@ export default function StartPageBody() {
           initial={motionOff ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ ...trans, delay: motionOff ? 0 : 0.24 }}
-          aria-labelledby="start-runway-heading"
         >
-          <div className="mb-4 flex flex-col gap-1 px-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 id="start-runway-heading" className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00f2ff]/80">
-                Mission channels · 02–05
-              </h2>
-              <p className="mt-1 max-w-md text-[12px] leading-relaxed text-white/45 sm:text-[13px]">
-                On your phone, swipe the row—each card is a full route. On desktop, they expand into a grid.
-              </p>
-            </div>
-          </div>
-
           <motion.div
             className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
             variants={motionOff ? undefined : staggerWrap}
