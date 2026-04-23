@@ -12,6 +12,11 @@ create table if not exists public.meeting_nda_evidence (
   room_suffix text
 );
 
+-- If this table was created from an older script without `room_suffix`, `CREATE TABLE IF NOT EXISTS` does
+-- not add the column; add it here so the indexes and comments below always succeed.
+alter table public.meeting_nda_evidence
+  add column if not exists room_suffix text;
+
 create index if not exists meeting_nda_evidence_created_at_idx on public.meeting_nda_evidence (created_at desc);
 create index if not exists meeting_nda_evidence_email_idx on public.meeting_nda_evidence (email);
 create index if not exists meeting_nda_evidence_email_room_idx
