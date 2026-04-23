@@ -1,16 +1,14 @@
-import { Suspense } from 'react';
-import { NdaGate } from '@/components/investor/NdaGate';
-import { BookMeetingFinishClient } from '@/components/investor/BookMeetingFinishClient';
-import { resolveSchedulingEmbedUrl } from '@/lib/meeting-links';
+import { redirect } from 'next/navigation';
 
-export default function BookFinishPage() {
-  const embedSrc = resolveSchedulingEmbedUrl();
+export const dynamic = 'force-dynamic';
 
-  return (
-    <NdaGate>
-      <Suspense fallback={null}>
-        <BookMeetingFinishClient embedSrc={embedSrc} />
-      </Suspense>
-    </NdaGate>
-  );
+/** Legacy URL — calendar step now lives at `/book`. */
+export default async function BookFinishRedirectPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = (await searchParams) ?? {};
+  const fromProposal = sp.fromProposal === '1' || (Array.isArray(sp.fromProposal) && sp.fromProposal[0] === '1');
+  redirect(fromProposal ? '/book?fromProposal=1' : '/book');
 }

@@ -1,5 +1,5 @@
 /**
- * Client-only: persists post-registration data so we can redirect to `/book/finish` and still
+ * Client-only: persists post-registration data so we can redirect to `/book` (calendar step) and still
  * show meeting details + the scheduling embed.
  */
 export const BOOK_MEETING_SESSION_KEY = 'parable:book-meeting';

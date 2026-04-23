@@ -103,7 +103,7 @@ export function BookMomentLanding() {
                   Begin scheduling
                 </Link>
                 <Link
-                  href={hrefWithFromProposal('/book/finish', fromProposal)}
+                  href={hrefWithFromProposal('/book', fromProposal)}
                   className="inline-flex w-full min-w-0 items-center justify-center rounded-xl border border-[#00f2ff]/45 bg-black/30 px-6 py-3.5 text-sm font-bold tracking-tight text-[#00f2ff] transition hover:border-[#00f2ff]/80 hover:bg-[#00f2ff]/5 sm:w-auto sm:px-8 sm:py-4"
                 >
                   Already registered — calendar only

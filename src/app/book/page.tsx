@@ -1,12 +1,16 @@
 import { Suspense } from 'react';
 import { NdaGate } from '@/components/investor/NdaGate';
-import { BookMeetingWizard } from '@/components/investor/BookMeetingWizard';
+import { BookMeetingFinishClient } from '@/components/investor/BookMeetingFinishClient';
+import { resolveSchedulingEmbedUrl } from '@/lib/meeting-links';
 
+/** Calendar + confirmation email first; first-time users use `/book/register` from empty state. */
 export default function BookMeetingPage() {
+  const embedSrc = resolveSchedulingEmbedUrl();
+
   return (
     <NdaGate>
       <Suspense fallback={null}>
-        <BookMeetingWizard />
+        <BookMeetingFinishClient embedSrc={embedSrc} />
       </Suspense>
     </NdaGate>
   );

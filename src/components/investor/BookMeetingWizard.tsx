@@ -71,7 +71,7 @@ export function BookMeetingWizard() {
         registrationId: typeof data.registrationId === 'string' && data.registrationId ? data.registrationId : null,
         contactEmail: email.trim().toLowerCase(),
       });
-      router.push(hrefWithFromProposal('/book/finish', fromProposal));
+      router.push(hrefWithFromProposal('/book', fromProposal));
     } catch {
       setError('Network error. Try again.');
     } finally {
@@ -156,7 +156,7 @@ export function BookMeetingWizard() {
               onClick={onRegister}
               className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
             >
-              {submitting ? 'Saving…' : 'Confirm & go to finish booking'}
+              {submitting ? 'Saving…' : 'Confirm & go to calendar'}
             </button>
           </div>
         </motion.section>

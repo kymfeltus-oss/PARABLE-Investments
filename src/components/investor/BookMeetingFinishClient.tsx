@@ -58,7 +58,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
             device or your session expired, go back to Book a meeting.
           </p>
           <Link
-            href={hrefWithFromProposal('/book', fromProposal)}
+            href={hrefWithFromProposal('/book/register', fromProposal)}
             className="mt-8 inline-block rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-6 py-3 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] hover:bg-[#00f2ff]/20"
           >
             Book a meeting
@@ -76,7 +76,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
         <ReturnToProposalDeck className="mb-4" />
         <button
           type="button"
-          onClick={() => router.push(hrefWithFromProposal('/book', fromProposal))}
+          onClick={() => router.push(hrefWithFromProposal('/book/register', fromProposal))}
           className="parable-eyebrow mb-8 block text-left hover:text-[#00f2ff]"
         >
           ← Book a meeting
@@ -101,7 +101,7 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
           meetUrl={payload.meetUrl}
           registrationId={payload.registrationId}
           contactEmail={payload.contactEmail}
-          registerAgainHref={hrefWithFromProposal('/book', fromProposal)}
+          registerAgainHref={hrefWithFromProposal('/book/register', fromProposal)}
         />
       </div>
     </div>

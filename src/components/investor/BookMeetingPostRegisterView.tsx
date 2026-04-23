@@ -18,7 +18,7 @@ type Props = {
   meetUrl: string | null;
   registrationId: string | null;
   contactEmail: string | null;
-  /** “Book a meeting” when finishing from redirect; omit on /book if ever inlined again */
+  /** “Register again” target — `/book/register` (calendar lives at `/book`). */
   backHref?: string;
   backLabel?: string;
   registerAgainHref?: string;
@@ -133,7 +133,7 @@ export function BookMeetingPostRegisterView({
   contactEmail,
   backHref = '/start',
   backLabel = '← Back to choice hub',
-  registerAgainHref = '/book',
+  registerAgainHref = '/book/register',
 }: Props) {
   const [sending, setSending] = useState(false);
   const [viewStatus, setViewStatus] = useState<BookMeetingSessionPayload['emailStatus']>(initialStatus);
