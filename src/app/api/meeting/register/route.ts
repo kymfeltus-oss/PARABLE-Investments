@@ -7,6 +7,7 @@ import { buildMeetingConfirmationCalendar } from '@/lib/meeting-calendar';
 import { getScheduledMeetUrl } from '@/lib/meeting-links';
 import { generateInvestorRoomSuffix } from '@/lib/investor-room-suffix';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { mapMeetingNdaInsertError } from '@/lib/map-meeting-insert-error';
 
 const CONTACT = process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL ?? 'investors@parableinvestments.com';
 
@@ -141,31 +142,16 @@ export async function POST(req: NextRequest) {
   }
 
   if (insertError) {
-    const raw = {
-      message: insertError.message,
-      ...(insertError as { code?: string; details?: string; hint?: string }),
-    };
-    console.error('[meeting/register] meeting_nda_evidence insert failed:', raw);
+    const full = insertError as { message: string; code?: string; details?: string; hint?: string };
+    console.error('[meeting/register] meeting_nda_evidence insert failed:', {
+      message: full.message,
+      code: full.code,
+      details: full.details,
+      hint: full.hint,
+    });
 
-    const m = (insertError.message || '').toLowerCase();
-    let error =
-      'Could not save your scheduling record. Try again. If it persists, the host may need the meeting table SQL in Supabase or a valid service role key.';
-
-    if (m.includes('row-level security') || m.includes('rls') || m.includes('permission denied')) {
-      error =
-        'Database access was denied. In Vercel, set SUPABASE_SERVICE_ROLE_KEY to the service role secret (Project Settings → API), not the anon key—then redeploy.';
-    } else if (m.includes('relation') && m.includes('does not exist')) {
-      error =
-        'Meeting table not found. In the Supabase SQL editor, run supabase/schema-meeting-nda-evidence.sql (and schema-meeting-nda-evidence-room-suffix-migration.sql if the table exists without room_suffix).';
-    } else if (m.includes('42p01')) {
-      error =
-        'Meeting table not found. In Supabase, run the meeting_nda_evidence schema from the repo (supabase/schema-meeting-nda-evidence.sql).';
-    } else if (m.includes('column') && m.includes('does not exist')) {
-      error =
-        'Database schema is out of date. In Supabase, run supabase/schema-meeting-nda-evidence-room-suffix-migration.sql.';
-    }
-
-    return NextResponse.json({ error }, { status: 500 });
+    const { error, supabaseCode } = mapMeetingNdaInsertError(full);
+    return NextResponse.json({ error, supabaseCode }, { status: 500 });
   }
   const meetUrl = getScheduledMeetUrl(roomSuffix);
   const roomLabel = `investor-${roomSuffix.replace(/^investor-/i, '')}`;

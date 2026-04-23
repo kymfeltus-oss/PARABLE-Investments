@@ -37,6 +37,7 @@ export function BookMeetingWizard() {
       });
       const data = (await res.json()) as {
         error?: string;
+        supabaseCode?: string;
         ok?: boolean;
         emailSent?: boolean;
         emailStatus?: 'sent' | 'unconfigured' | 'failed';
@@ -46,7 +47,11 @@ export function BookMeetingWizard() {
         meetUrl?: string;
       };
       if (!res.ok || !data.ok) {
-        setError(data.error || 'Something went wrong. Try again.');
+        setError(
+          [data.error || 'Something went wrong. Try again.', data.supabaseCode ? `Supabase/Postgres: ${data.supabaseCode}` : null]
+            .filter(Boolean)
+            .join('\n\n'),
+        );
         setSubmitting(false);
         return;
       }
@@ -134,7 +139,7 @@ export function BookMeetingWizard() {
                 this registration as supplemental evidence.
               </span>
             </label>
-            {error ? <p className="text-sm text-red-300/95">{error}</p> : null}
+            {error ? <p className="whitespace-pre-line text-sm text-red-300/95">{error}</p> : null}
             <button
               type="button"
               disabled={!canRegister}
