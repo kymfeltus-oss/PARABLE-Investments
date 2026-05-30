@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ParablePillarTagline } from '@/components/brand/ParablePillarTagline';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
 function subscribeNop() {
@@ -55,11 +56,10 @@ export default function InvestorLandingPage() {
             <p className="parable-landing-eyebrow mb-4 sm:mb-5">
               Confidential · Investor introduction
             </p>
-            <div className="flex w-full justify-center px-2">
-              <p className="parable-landing-tagline">
-                Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
-              </p>
-            </div>
+            <ParablePillarTagline size="lg" className="px-2" />
+            <p className="mt-3 max-w-xl text-center font-[family-name:var(--font-subhead)] text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55 sm:text-[11px] sm:tracking-[0.24em]">
+              Building the infrastructure layer of the faith economy
+            </p>
           </header>
         </div>
       </section>

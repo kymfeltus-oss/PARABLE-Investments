@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import HubBackground from '@/components/HubBackground';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ParablePillarTagline } from '@/components/brand/ParablePillarTagline';
 
 /** Five strategic pillars — each maps to one bottom-nav destination in this preview. */
 export type PillarTab = 'live' | 'hybrid' | 'studio' | 'fellowship' | 'economy';
@@ -372,9 +373,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                   'Live faith & broadcast',
                   'Services and teaching with tools built for real gatherings—teleprompter, AI assist, Glory signals, not generic streaming.',
                 )}
-                <p className="text-2xl font-black uppercase italic tracking-[0.06em] text-[#00D4FF] drop-shadow-[0_0_18px_rgba(0, 212, 255,0.25)]">
-                  Streaming · Creating · Believing
-                </p>
+                <ParablePillarTagline size="md" className="justify-start drop-shadow-[0_0_18px_rgba(0,212,255,0.25)]" />
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"

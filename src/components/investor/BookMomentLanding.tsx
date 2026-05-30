@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
+import { ParablePillarTagline } from '@/components/brand/ParablePillarTagline';
 import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
 import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
 
@@ -82,9 +83,7 @@ export function BookMomentLanding() {
             />
             <div className="relative z-10 flex min-h-[min(52vh,28rem)] flex-col justify-end px-5 py-8 text-left sm:min-h-[32rem] sm:px-10 sm:py-12 md:justify-center md:py-14">
               <ParableLogoMark className="mb-4 max-w-[9rem] opacity-95 sm:mb-5 sm:max-w-[11rem]" maxWidthClass="max-w-full" />
-              <p className="font-serif text-sm italic tracking-wide text-white/75 sm:text-base">
-                Streaming. Creating. Believing.
-              </p>
+              <ParablePillarTagline separator="bar" size="sm" className="justify-start" />
               <h1 className="mt-4 text-balance font-black uppercase leading-[1.02] tracking-[0.06em] sm:tracking-[0.08em]">
                 <span className="block text-2xl text-white/95 sm:text-4xl md:text-5xl">This is the moment</span>
                 <span className="mt-1 block max-w-4xl bg-gradient-to-b from-white via-[#c4fffe] to-[#00D4FF] bg-clip-text text-3xl text-transparent sm:mt-2 sm:text-5xl md:text-6xl">
