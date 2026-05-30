@@ -1,8 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import { getParableLogoDesktopSourceUrls, getParableLogoMobileSourceUrls } from '@/lib/investor-blob-sibling-urls';
 
 /** Desktop hero tries `PARABLE Logo1.mp4` first, then legacy `PARABLE Logo.mp4`. */
 export const PARABLE_LOGO_DESKTOP_CANDIDATES = [
@@ -17,40 +16,48 @@ export const PARABLE_LOGO_VIDEO_SRC = PARABLE_LOGO_DESKTOP_CANDIDATES[0];
 export const PARABLE_LOGO_VIDEO_MOBILE_SRC =
   '/videos/' + encodeURIComponent('PARABLE Mobile logo.mp4');
 
-function subscribeMaxWidth767(cb: () => void) {
-  if (typeof window === 'undefined') return () => {};
-  const mq = window.matchMedia('(max-width: 767px)');
-  mq.addEventListener('change', cb);
-  return () => mq.removeEventListener('change', cb);
-}
+/** Investor landing intro — `public/intro/parable-intro.mp4` */
+export const PARABLE_LANDING_INTRO_VIDEO_SRC = '/intro/parable-intro.mp4';
 
-function getMaxWidth767Matches(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(max-width: 767px)').matches;
+function landingIntroVideoCandidateUrls(): string[] {
+  const out: string[] = [];
+  const raw = process.env.NEXT_PUBLIC_PARABLE_LANDING_INTRO_VIDEO_URL?.trim();
+  if (raw) {
+    try {
+      const u = new URL(raw);
+      if (u.protocol === 'https:' || u.protocol === 'http:') out.push(u.href);
+    } catch {
+      /* ignore invalid env */
+    }
+  }
+  const seen = new Set<string>();
+  const dedup: string[] = [];
+  for (const u of [...out, PARABLE_LANDING_INTRO_VIDEO_SRC]) {
+    if (u && !seen.has(u)) {
+      seen.add(u);
+      dedup.push(u);
+    }
+  }
+  return dedup.length > 0 ? dedup : [PARABLE_LANDING_INTRO_VIDEO_SRC];
 }
 
 /**
- * Full-viewport looping background for the investor landing (under sparkles + copy).
- * Prefers unmuted playback so sound plays when the browser allows; if autoplay with sound is
- * blocked, falls back to muted playback and unmutes on first user gesture (tap/click/key).
- * Mobile: `PARABLE Mobile logo.mp4` + `object-contain` so the full frame fits (logo not blown up).
- * md+: desktop candidates above + `object-cover` for full-bleed hero.
- *
- * Uses a single `src` (not two `<source media>` children): many browsers ignore `media` on
- * `<source>` inside `<video>` and would always load the first listed file (mobile on desktop).
+ * Full-viewport intro for the investor landing (`public/intro/parable-intro.mp4`).
+ * Plays once; optional `onEnded` for advance. Prefers unmuted autoplay; falls back to muted
+ * and unmutes on first user gesture. Override with `NEXT_PUBLIC_PARABLE_LANDING_INTRO_VIDEO_URL`.
  */
-export function LandingHeroBackgroundVideo() {
+export type LandingHeroBackgroundVideoProps = {
+  /** Fired when the intro clip finishes (landing does not loop). */
+  onEnded?: () => void;
+};
+
+export function LandingHeroBackgroundVideo({ onEnded }: LandingHeroBackgroundVideoProps = {}) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
-  const [desktopIdx, setDesktopIdx] = useState(0);
-  const [mobileIdx, setMobileIdx] = useState(0);
-  const narrowViewport = useSyncExternalStore(subscribeMaxWidth767, getMaxWidth767Matches, () => false);
-  const desktopCands = useMemo(() => getParableLogoDesktopSourceUrls(), []);
-  const mobileCands = useMemo(() => getParableLogoMobileSourceUrls(), []);
-  const desktopSrc = desktopCands[Math.min(desktopIdx, Math.max(0, desktopCands.length - 1))]!;
-  const mobileSrc = mobileCands[Math.min(mobileIdx, Math.max(0, mobileCands.length - 1))]!;
-  const activeSrc = narrowViewport ? mobileSrc : desktopSrc;
+  const [srcIndex, setSrcIndex] = useState(0);
+  const candidates = useMemo(() => landingIntroVideoCandidateUrls(), []);
+  const activeSrc = candidates[Math.min(srcIndex, candidates.length - 1)]!;
 
   const tryPlayPreferSound = useCallback(() => {
     const el = videoRef.current;
@@ -100,13 +107,8 @@ export function LandingHeroBackgroundVideo() {
   }, []);
 
   const onVideoError = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(max-width: 767px)').matches) {
-      setMobileIdx((i) => (i + 1 < mobileCands.length ? i + 1 : i));
-    } else {
-      setDesktopIdx((i) => (i + 1 < desktopCands.length ? i + 1 : i));
-    }
-  }, [mobileCands.length, desktopCands.length]);
+    setSrcIndex((i) => (i + 1 < candidates.length ? i + 1 : i));
+  }, [candidates.length]);
 
   if (reduceMotion) {
     return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
@@ -123,10 +125,10 @@ export function LandingHeroBackgroundVideo() {
           src={activeSrc}
           autoPlay
           muted={muted}
-          loop
           playsInline
           preload="auto"
-          aria-label="PARABLE background"
+          aria-label="PARABLE investor introduction"
+          onEnded={onEnded}
           onError={onVideoError}
         />
       </div>
