@@ -16,19 +16,19 @@ const canonical = new URL("/", INVESTOR_SITE_URL);
 
 export const metadata: Metadata = {
   metadataBase: new URL(INVESTOR_SITE_URL),
-  title: "Parable Investments",
+  title: "Parable ERP",
   description: "Confidential investment overview for Parable.",
   icons: {
-    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    icon: [{ url: "/logo/PARABLE%20LOGO.SVG", type: "image/png" }],
+    shortcut: "/logo/PARABLE%20LOGO.SVG",
+    apple: "/logo/PARABLE%20LOGO.SVG",
   },
   alternates: { canonical: canonical.href },
   openGraph: {
     type: "website",
     url: canonical.href,
-    siteName: "Parable Investments",
-    title: "Parable Investments",
+    siteName: "Parable ERP",
+    title: "Parable ERP",
     description: "Confidential investment overview for Parable.",
   },
 };
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
       <head>
         {/* LCP: logo is the main above-the-fold mark on investor flows; high priority + no lazy path. */}
-        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/logo/PARABLE%20LOGO.SVG" as="image" />
       </head>
       <body
         className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}

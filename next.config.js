@@ -20,9 +20,26 @@ const nextConfig = {
     NEXT_PUBLIC_GIT_SHA: resolveGitSha(),
   },
   reactStrictMode: false,
-  // Browsers request `/favicon.ico` by default; single source of truth is `public/logo.svg`.
+  // Browsers request `/favicon.ico` by default; single source of truth is `public/logo/PARABLE LOGO.SVG`.
   async rewrites() {
-    return [{ source: '/favicon.ico', destination: '/logo.svg' }];
+    return [
+      { source: '/favicon.ico', destination: '/logo/PARABLE%20LOGO.SVG' },
+      { source: '/api/ledger', destination: '/api/ministry/finance/ledger' },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/dashboard/analysis',
+        destination: '/finance/analysis',
+        permanent: false,
+      },
+      {
+        source: '/ministry/finance/analysis',
+        destination: '/finance/analysis',
+        permanent: false,
+      },
+    ];
   },
   // Prefer this app root when another lockfile exists higher in the tree (e.g. user home).
   turbopack: {

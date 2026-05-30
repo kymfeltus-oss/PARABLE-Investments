@@ -4,6 +4,7 @@ import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 import { LandingHeroBackgroundVideo } from '@/components/brand/ParableLogoVideo';
+import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 import { getInvestorNdaAccepted } from '@/lib/investor-nda-storage';
 
 function subscribeNop() {
@@ -39,19 +40,28 @@ export default function InvestorLandingPage() {
         aria-hidden
       />
 
-      <section className="relative z-20 flex min-h-[100dvh] min-h-screen flex-col overflow-hidden px-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))]">
-        <header className="shrink-0 pt-14 text-center">
-          <p className="parable-landing-eyebrow mb-8">
-            Confidential · Investor introduction
-          </p>
-          <div className="flex w-full justify-center px-2 pb-1">
-            <p className="parable-landing-tagline">
-              Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
+      <section
+        className="relative z-20 min-h-[100dvh] min-h-screen overflow-hidden px-6 sm:px-8"
+        aria-label="Investor introduction"
+      >
+        {/* Logo over the video “P”; copy sits directly beneath */}
+        <div className="pointer-events-none absolute inset-x-0 top-[max(22vh,calc(env(safe-area-inset-top)+7.5rem))] flex flex-col items-center px-4 sm:top-[26vh] md:top-[28vh] lg:top-[30vh]">
+          <ParableLogoMark
+            aspectClass="aspect-auto"
+            maxWidthClass="max-w-full"
+            className="w-[min(13.5rem,46vw)] sm:w-[min(16rem,40vw)] md:w-[min(18rem,34vw)]"
+          />
+          <header className="mt-5 w-full max-w-3xl text-center sm:mt-6 md:mt-7">
+            <p className="parable-landing-eyebrow mb-4 sm:mb-5">
+              Confidential · Investor introduction
             </p>
-          </div>
-        </header>
-
-        <div className="min-h-0 w-full flex-1" aria-hidden />
+            <div className="flex w-full justify-center px-2">
+              <p className="parable-landing-tagline">
+                Streaming&nbsp;·&nbsp;Creating&nbsp;·&nbsp;Believing
+              </p>
+            </div>
+          </header>
+        </div>
       </section>
     </div>
   );

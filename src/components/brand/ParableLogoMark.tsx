@@ -1,29 +1,38 @@
 'use client';
 
+import { PARABLE_LOGO_ASSET_SRC } from '@/lib/parable-logo';
+
 type Props = {
   className?: string;
   /** Max width of the logo area (Tailwind class). */
   maxWidthClass?: string;
+  /** Tailwind aspect ratio on the wrapper (default wide wordmark box). */
+  aspectClass?: string;
 };
 
 /**
- * Same asset and proportions as the main PARABLE app flash (`/public/logo.svg`).
- * Plain `<img>` keeps the SVG on the high-priority network path (Next/Image can defer SVG LCP).
+ * PARABLE mark from `public/logo/PARABLE LOGO.SVG`.
+ * Plain `<img>` keeps the asset on the high-priority network path (Next/Image can defer SVG LCP).
  */
-export function ParableLogoMark({ className = '', maxWidthClass = 'max-w-md' }: Props) {
+export function ParableLogoMark({
+  className = '',
+  maxWidthClass = 'max-w-md',
+  aspectClass = 'aspect-[3/1]',
+}: Props) {
+  const intrinsic = aspectClass === 'aspect-auto';
   return (
     <div
-      className={`relative mx-auto w-full min-w-0 max-w-full shrink aspect-[3/1] ${maxWidthClass} ${className}`}
+      className={`relative mx-auto w-full min-w-0 max-w-full shrink ${intrinsic ? '' : aspectClass} ${maxWidthClass} ${className}`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- SVG LCP: eager img + root preload (avoid fetchPriority SSR/client attr mismatches) */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- LCP: eager img + root preload */}
       <img
-        src="/logo.svg"
-        alt="Parable Protocol"
+        src={PARABLE_LOGO_ASSET_SRC}
+        alt="PARABLE"
         width={900}
         height={300}
         decoding="async"
         loading="eager"
-        className="h-full w-full object-contain drop-shadow-[0_0_30px_rgba(0,242,255,0.8)]"
+        className={`w-full object-contain drop-shadow-[0_0_30px_rgba(0,242,255,0.8)] ${intrinsic ? 'h-auto' : 'h-full'}`}
       />
     </div>
   );
