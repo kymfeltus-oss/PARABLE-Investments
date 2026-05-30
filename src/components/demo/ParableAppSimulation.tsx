@@ -150,7 +150,7 @@ function LoginScreen({ onEnter }: { onEnter: () => void }) {
                 <button
                   type="button"
                   onClick={() => setErr("Reset link sent (simulated).")}
-                  className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/85 hover:text-[#00f2ff]"
+                  className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/85 hover:text-[#00D4FF]"
                 >
                   Reset
                 </button>
@@ -221,17 +221,17 @@ function HubScreen({ go }: { go: (s: Screen) => void }) {
         <button
           type="button"
           onClick={() => go("login")}
-          className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-[#00f2ff]"
+          className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-[#00D4FF]"
         >
           Exit sim
         </button>
       </header>
 
       <main className="mx-auto max-w-lg px-4 pb-28 pt-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.38em] text-[#00f2ff]/70">
+        <p className="text-[10px] font-black uppercase tracking-[0.38em] text-[#00D4FF]/70">
           Creator surface
         </p>
-        <h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-[#00f2ff]">
+        <h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-[#00D4FF]">
           Quick actions
         </h1>
         <p className="mt-2 text-sm text-white/50">
@@ -244,7 +244,7 @@ function HubScreen({ go }: { go: (s: Screen) => void }) {
               key={t.id}
               type="button"
               onClick={() => go("testify")}
-              className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-6 transition hover:border-[#00f2ff]/35 hover:bg-white/[0.07]"
+              className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-6 transition hover:border-[#00D4FF]/35 hover:bg-white/[0.07]"
             >
               <span className="text-2xl">{t.icon}</span>
               <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/80">
@@ -257,7 +257,7 @@ function HubScreen({ go }: { go: (s: Screen) => void }) {
         <button
           type="button"
           onClick={() => go("liveStudio")}
-          className="mt-10 w-full rounded-2xl border border-[#00f2ff]/30 bg-[#00f2ff]/10 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-[#00f2ff] hover:bg-[#00f2ff]/15"
+          className="mt-10 w-full rounded-2xl border border-[#00D4FF]/30 bg-[#00D4FF]/10 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-[#00D4FF] hover:bg-[#00D4FF]/15"
         >
           Open live studio
         </button>
@@ -277,7 +277,7 @@ function HubScreen({ go }: { go: (s: Screen) => void }) {
               key={label}
               type="button"
               onClick={() => go(target === "testify" ? "testify" : "hub")}
-              className="flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-[9px] font-black uppercase tracking-wider text-white/45 hover:text-[#00f2ff]"
+              className="flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-[9px] font-black uppercase tracking-wider text-white/45 hover:text-[#00D4FF]"
             >
               <span
                 className="h-6 w-6 rounded-full border border-white/15 bg-white/5"
@@ -311,7 +311,7 @@ function LiveStudioScreen({ go }: { go: (s: Screen) => void }) {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#050505] text-white">
+    <div className="min-h-[100dvh] bg-[#030712] text-white">
       <div
         className="pointer-events-none fixed inset-0 opacity-40"
         style={{
@@ -322,14 +322,14 @@ function LiveStudioScreen({ go }: { go: (s: Screen) => void }) {
         <button
           type="button"
           onClick={() => go("hub")}
-          className="mb-6 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.25em] text-white/55 hover:border-[#00f2ff]/30"
+          className="mb-6 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.25em] text-white/55 hover:border-[#00D4FF]/30"
         >
           ← Back
         </button>
         <h1 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
           Live studio
         </h1>
-        <p className="mt-2 text-xl font-black text-[#00f2ff]">Broadcast desk</p>
+        <p className="mt-2 text-xl font-black text-[#00D4FF]">Broadcast desk</p>
         <div className="mt-8 flex gap-3">
           <button
             type="button"
@@ -367,7 +367,7 @@ function TestifyScreen({ go }: { go: (s: Screen) => void }) {
   return (
     <div className="min-h-[100dvh] bg-black text-white">
       <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00f2ff]">
+        <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00D4FF]">
           Testify
         </span>
         <button

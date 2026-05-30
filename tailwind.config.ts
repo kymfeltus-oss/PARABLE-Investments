@@ -11,10 +11,19 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        cyan: {
-          400: "#22d3ee",
-          500: "#06b6d4",
+        parable: {
+          space: "#030712",
+          midnight: "#0A1018",
+          slate: "#0F1419",
+          navy: "#111827",
+          cyan: "#00D4FF",
+          blue: "#00B8FF",
+          azure: "#1EA7FF",
+          purple: "#8B5CF6",
+          violet: "#A855F7",
+          "deep-violet": "#7C3AED",
         },
+        cyber: "#00D4FF",
       },
     },
   },

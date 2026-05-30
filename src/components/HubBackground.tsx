@@ -13,12 +13,12 @@ export default function HubBackground({ variant = "default", contained = false }
 
   return (
     <div
-      className={`${position} inset-0 z-0 overflow-hidden ${over ? "bg-transparent" : "bg-[#050505]"}`}
+      className={`${position} inset-0 z-0 overflow-hidden ${over ? "bg-transparent" : "bg-parable-space"}`}
       aria-hidden
     >
-      <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-[#00f2ff]/10 blur-[120px]" />
+      <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-parable-cyan/10 blur-[120px]" />
       <div
-        className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-blue-600/10 blur-[120px]"
+        className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-parable-purple/12 blur-[120px]"
         style={{ animationDelay: "2s" }}
       />
       <div

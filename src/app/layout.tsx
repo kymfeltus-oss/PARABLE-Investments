@@ -1,14 +1,27 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Rajdhani } from "next/font/google";
+import { Bebas_Neue, Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { INVESTOR_SITE_URL } from "@/lib/investor-site";
 
-/** Site-wide Rajdhani — same voice as streaming / hero tagline (logo assets unchanged). */
-const rajdhani = Rajdhani({
+const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-streaming",
+  weight: "400",
+  variable: "--font-bebas",
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -38,18 +51,20 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
-  themeColor: "#070708",
+  themeColor: "#030712",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`dark h-full ${rajdhani.variable}`}>
+    <html
+      lang="en"
+      className={`dark h-full ${bebasNeue.variable} ${montserrat.variable} ${inter.variable}`}
+    >
       <head>
-        {/* LCP: logo is the main above-the-fold mark on investor flows; high priority + no lazy path. */}
         <link rel="preload" href="/logo/PARABLE%20LOGO.SVG" as="image" />
       </head>
       <body
-        className={`${rajdhani.className} min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-white antialiased`}
+        className={`${inter.className} theme-streaming min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-[#F8FAFC] antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         {children}

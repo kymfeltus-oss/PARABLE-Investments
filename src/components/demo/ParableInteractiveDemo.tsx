@@ -39,7 +39,7 @@ function haptic(pattern: number | number[]) {
 }
 
 function NavIcon({ id, active }: { id: PillarTab; active: boolean }) {
-  const c = active ? 'text-[#00f2ff]' : 'text-white/40';
+  const c = active ? 'text-[#00D4FF]' : 'text-white/40';
   const sw = 1.6;
   switch (id) {
     case 'live':
@@ -205,13 +205,13 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
     () => (
       <div className="flex flex-col gap-3">
         <div className="parable-glass-panel p-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Now playing</p>
-          <div className="relative mt-3 aspect-video overflow-hidden rounded-lg bg-gradient-to-br from-[#0a1628] to-[#070708] ring-1 ring-white/10">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/80">Now playing</p>
+          <div className="relative mt-3 aspect-video overflow-hidden rounded-lg bg-gradient-to-br from-[#0a1628] to-[#030712] ring-1 ring-white/10">
             <div
               className="pointer-events-none absolute inset-0 opacity-40"
               style={{
                 background:
-                  'radial-gradient(circle at 30% 40%, rgba(0,242,255,0.25), transparent 55%), radial-gradient(circle at 70% 60%, rgba(212,175,55,0.12), transparent 50%)',
+                  'radial-gradient(circle at 30% 40%, rgba(0, 212, 255,0.25), transparent 55%), radial-gradient(circle at 70% 60%, rgba(212,175,55,0.12), transparent 50%)',
               }}
             />
             {liveOn ? (
@@ -223,12 +223,12 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
           <p className="mt-2 text-xs text-white/45">Presence, layout, session energy.</p>
         </div>
         <div className="parable-glass-panel p-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Session XP</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/80">Session XP</p>
           <div className="mt-3 flex items-end gap-2">
-            <div className="h-24 flex-1 rounded-lg bg-[#00f2ff]/10 ring-1 ring-[#00f2ff]/25">
+            <div className="h-24 flex-1 rounded-lg bg-[#00D4FF]/10 ring-1 ring-[#00D4FF]/25">
               <div className="flex h-full flex-col justify-end p-2">
                 <div
-                  className="rounded bg-[#00f2ff]/35 shadow-[0_0_20px_rgba(0,242,255,0.25)] transition-[height] duration-300"
+                  className="rounded bg-[#00D4FF]/35 shadow-[0_0_20px_rgba(0, 212, 255,0.25)] transition-[height] duration-300"
                   style={{ height: `${Math.min(95, 25 + (xp % 180))}%` }}
                 />
               </div>
@@ -240,15 +240,15 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                 emitSignal(1);
                 haptic(12);
               }}
-              className="shrink-0 rounded-lg border border-[#00f2ff]/35 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#00f2ff] hover:bg-[#00f2ff]/10"
+              className="shrink-0 rounded-lg border border-[#00D4FF]/35 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#00D4FF] hover:bg-[#00D4FF]/10"
             >
               Boost
             </button>
           </div>
-          <p className="mt-2 font-mono text-xs text-[#00f2ff]/90">{xp} XP</p>
+          <p className="mt-2 font-mono text-xs text-[#00D4FF]/90">{xp} XP</p>
         </div>
         <div className="parable-glass-panel p-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Social</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/80">Social</p>
           <ul className="mt-3 max-h-40 space-y-2 overflow-y-auto text-left text-[13px] text-white/55">
             {socialPosts.map((p) => (
               <li key={p.id} className="rounded-lg border border-white/[0.06] bg-black/40 px-2 py-2">
@@ -269,7 +269,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
         ? 'from-[#1e1035]/85 via-[#0d0a14]/80 to-black/90'
         : praiseBreak
           ? 'from-[#2a1f08]/80 via-[#0a1628]/75 to-black/90'
-          : 'from-[#050505]/95 via-[#070708]/95 to-[#050506]/95';
+          : 'from-[#030712]/95 via-[#030712]/95 to-[#0A1018]/95';
 
   const setNav = (id: PillarTab) => {
     setTab(id);
@@ -278,8 +278,8 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
 
   const pillarHeading = (n: string, title: string, lead: string) => (
     <div className="mb-4 border-b border-white/[0.07] pb-3">
-      <p className="font-mono text-[11px] font-bold text-[#00f2ff]/60">{n}</p>
-      <h2 className="mt-1 text-lg font-black uppercase tracking-[0.08em] text-[#00f2ff]">{title}</h2>
+      <p className="font-mono text-[11px] font-bold text-[#00D4FF]/60">{n}</p>
+      <h2 className="mt-1 text-lg font-black uppercase tracking-[0.08em] text-[#00D4FF]">{title}</h2>
       <p className="mt-2 text-[13px] leading-relaxed text-white/50">{lead}</p>
     </div>
   );
@@ -287,7 +287,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
   return (
     <div className="mx-auto w-full max-w-[420px]">
       <div
-        className={`relative overflow-hidden rounded-[2.5rem] border border-[#00f2ff]/30 bg-gradient-to-b ${atmosphereClass} shadow-[0_0_60px_rgba(0,242,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)]`}
+        className={`relative overflow-hidden rounded-[2.5rem] border border-[#00D4FF]/30 bg-gradient-to-b ${atmosphereClass} shadow-[0_0_60px_rgba(0, 212, 255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)]`}
       >
         <div className="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] overflow-hidden">
           <HubBackground contained />
@@ -298,7 +298,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
             className="parable-demo-praise-pulse pointer-events-none absolute inset-0 z-[1] mix-blend-screen opacity-[0.14]"
             style={{
               background:
-                'linear-gradient(120deg, rgba(212,175,55,0.5), rgba(0,242,255,0.35), rgba(212,175,55,0.45))',
+                'linear-gradient(120deg, rgba(212,175,55,0.5), rgba(0, 212, 255,0.35), rgba(212,175,55,0.45))',
             }}
             aria-hidden
           />
@@ -324,7 +324,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                 <ParableLogoMark className="opacity-[0.98]" maxWidthClass="max-w-[9.5rem]" />
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className="rounded-full border border-[#00f2ff]/35 bg-black/50 px-2.5 py-1 font-mono text-[10px] text-[#00f2ff]" title="Glory signals">
+                <span className="rounded-full border border-[#00D4FF]/35 bg-black/50 px-2.5 py-1 font-mono text-[10px] text-[#00D4FF]" title="Glory signals">
                   {signals}
                 </span>
                 <span className="rounded-full border border-white/15 bg-black/45 px-2.5 py-1 font-mono text-[10px] text-amber-200/90">
@@ -372,7 +372,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                   'Live faith & broadcast',
                   'Services and teaching with tools built for real gatherings—teleprompter, AI assist, Glory signals, not generic streaming.',
                 )}
-                <p className="text-2xl font-black uppercase italic tracking-[0.06em] text-[#00f2ff] drop-shadow-[0_0_18px_rgba(0,242,255,0.25)]">
+                <p className="text-2xl font-black uppercase italic tracking-[0.06em] text-[#00D4FF] drop-shadow-[0_0_18px_rgba(0, 212, 255,0.25)]">
                   Streaming · Creating · Believing
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
@@ -387,7 +387,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                     className={`rounded-xl px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition ${
                       liveOn
                         ? 'bg-red-600 text-white shadow-[0_0_28px_rgba(220,38,38,0.35)]'
-                        : 'bg-[#00f2ff]/20 text-[#00f2ff] ring-1 ring-[#00f2ff]/40'
+                        : 'bg-[#00D4FF]/20 text-[#00D4FF] ring-1 ring-[#00D4FF]/40'
                     }`}
                   >
                     {liveOn ? 'End live' : 'Go live'}
@@ -426,7 +426,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                       setTelePlaying((p) => !p);
                       haptic(10);
                     }}
-                    className="mt-2 text-xs font-semibold uppercase tracking-wider text-[#00f2ff] hover:underline"
+                    className="mt-2 text-xs font-semibold uppercase tracking-wider text-[#00D4FF] hover:underline"
                   >
                     {telePlaying ? 'Pause' : 'Play scroll'}
                   </button>
@@ -445,14 +445,14 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                     type="button"
                     disabled={aiBusy}
                     onClick={onAiAssist}
-                    className="mt-2 rounded-lg border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#00f2ff] disabled:opacity-40"
+                    className="mt-2 rounded-lg border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#00D4FF] disabled:opacity-40"
                   >
                     {aiBusy ? 'Working…' : 'Generate outline'}
                   </button>
                 </div>
 
                 <div className="parable-glass-panel px-4 py-3">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#00f2ff]/65">Global pulse</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#00D4FF]/65">Global pulse</p>
                   <p key={ticker} className="mt-2 font-mono text-[12px] leading-snug text-white/55">
                     {PULSE_EVENTS[ticker]}
                   </p>
@@ -499,7 +499,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                           name="cast"
                           checked={castKind === 'ai'}
                           onChange={() => setCastKind('ai')}
-                          className="border-[#00f2ff]/50 text-[#00f2ff]"
+                          className="border-[#00D4FF]/50 text-[#00D4FF]"
                         />
                         AI
                       </label>
@@ -509,7 +509,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                           name="cast"
                           checked={castKind === 'real'}
                           onChange={() => setCastKind('real')}
-                          className="border-[#00f2ff]/50 text-[#00f2ff]"
+                          className="border-[#00D4FF]/50 text-[#00D4FF]"
                         />
                         Live talent
                       </label>
@@ -519,7 +519,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                 <div className="parable-glass-panel px-4 py-4 text-sm text-white/60">
                   <strong className="text-white/85">Timeline:</strong>{' '}
                   {projectKind === 'short' ? 'Vertical short' : 'Episode storyboard'} ·{' '}
-                  <span className="text-[#00f2ff]">{castKind === 'ai' ? 'AI-assisted' : 'On-camera'}</span>
+                  <span className="text-[#00D4FF]">{castKind === 'ai' ? 'AI-assisted' : 'On-camera'}</span>
                 </div>
                 <button
                   type="button"
@@ -527,13 +527,13 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                     setShedOpen(true);
                     haptic(22);
                   }}
-                  className="w-full rounded-xl border border-[#00f2ff]/40 bg-black/50 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#00f2ff] hover:bg-[#00f2ff]/10"
+                  className="w-full rounded-xl border border-[#00D4FF]/40 bg-black/50 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#00D4FF] hover:bg-[#00D4FF]/10"
                 >
                   Enter Shed
                 </button>
                 {shedOpen ? (
                   <div className="parable-glass-panel p-4 text-sm text-white/70">
-                    <p className="font-semibold text-[#00f2ff]">Shed</p>
+                    <p className="font-semibold text-[#00D4FF]">Shed</p>
                     <p className="mt-2 text-white/60">Rehearsal & jam—ultra-low-latency audio lane.</p>
                     <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-white/10 pt-4">
                       <label className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wider text-white/45">
@@ -544,10 +544,10 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                           max={200}
                           value={bpm}
                           onChange={(e) => setBpm(Number(e.target.value))}
-                          className="w-full max-w-[200px] accent-[#00f2ff]"
+                          className="w-full max-w-[200px] accent-[#00D4FF]"
                         />
                       </label>
-                      <span className="font-mono text-sm text-[#00f2ff]/90">{bpm}</span>
+                      <span className="font-mono text-sm text-[#00D4FF]/90">{bpm}</span>
                       <span className="rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-200/90">
                         ~72ms
                       </span>
@@ -572,11 +572,11 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                   'Chat and real-time layers for groups—how people stay together before and after the stream.',
                 )}
                 <div className="parable-glass-panel p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Room</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/80">Room</p>
                   <div className="mt-2 flex max-h-52 flex-col gap-2 overflow-y-auto text-sm">
                     {chat.map((m) => (
                       <div key={m.id} className="text-white/75">
-                        <span className="font-semibold text-[#00f2ff]/90">{m.from}:</span> {m.text}
+                        <span className="font-semibold text-[#00D4FF]/90">{m.from}:</span> {m.text}
                       </div>
                     ))}
                   </div>
@@ -591,7 +591,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                     <button
                       type="button"
                       onClick={sendChat}
-                      className="rounded-lg border border-[#00f2ff]/35 px-4 py-2 text-xs font-bold uppercase text-[#00f2ff]"
+                      className="rounded-lg border border-[#00D4FF]/35 px-4 py-2 text-xs font-bold uppercase text-[#00D4FF]"
                     >
                       Send
                     </button>
@@ -608,7 +608,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                   'Parable Money, tickets, and seeds—value that can move inside PARABLE, not only off-platform.',
                 )}
                 <div className="parable-glass-panel p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/75">Seeds</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/75">Seeds</p>
                   <p className="mt-1 text-xs text-white/45">Support creators in the moment—demo ledger only.</p>
                   <div className="mt-3 flex flex-wrap items-end gap-3">
                     <label className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wider text-white/45">
@@ -625,12 +625,12 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                     <button
                       type="button"
                       onClick={sendSeeds}
-                      className="rounded-lg border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#00f2ff] hover:bg-[#00f2ff]/18"
+                      className="rounded-lg border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#00D4FF] hover:bg-[#00D4FF]/18"
                     >
                       Sow seeds
                     </button>
                     <span className="text-sm text-white/45">
-                      <span className="font-mono text-[#00f2ff]">{seedsSent}</span> sent
+                      <span className="font-mono text-[#00D4FF]">{seedsSent}</span> sent
                     </span>
                   </div>
                 </div>
@@ -638,7 +638,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                 <div className="parable-glass-panel p-4">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm text-white/60">Parable Money</span>
-                    <span className="font-mono text-lg text-[#00f2ff]">{pmBalance} PM</span>
+                    <span className="font-mono text-lg text-[#00D4FF]">{pmBalance} PM</span>
                   </div>
                   <div className="mt-4 border-t border-white/10 pt-4">
                     <p className="font-semibold text-white/90">Night of worship</p>
@@ -647,7 +647,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                       type="button"
                       onClick={buyTicket}
                       disabled={ticketOwned || pmBalance < 25}
-                      className="mt-3 w-full rounded-lg border border-[#00f2ff]/40 bg-[#00f2ff]/15 py-2.5 text-xs font-black uppercase tracking-[0.15em] text-[#00f2ff] disabled:cursor-not-allowed disabled:opacity-40"
+                      className="mt-3 w-full rounded-lg border border-[#00D4FF]/40 bg-[#00D4FF]/15 py-2.5 text-xs font-black uppercase tracking-[0.15em] text-[#00D4FF] disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {ticketOwned ? 'Ticket secured' : 'Get ticket'}
                     </button>
@@ -674,7 +674,7 @@ export function ParableInteractiveDemo({ previewBadge = true }: ParableInteracti
                       onClick={() => setNav(item.id)}
                       title={`${item.label}: ${item.subtitle}`}
                       className={`flex w-full flex-col items-center gap-0.5 rounded-lg py-1.5 transition sm:py-2 ${
-                        active ? 'bg-[#00f2ff]/10 text-[#00f2ff]' : 'text-white/40 hover:bg-white/[0.04] hover:text-white/70'
+                        active ? 'bg-[#00D4FF]/10 text-[#00D4FF]' : 'text-white/40 hover:bg-white/[0.04] hover:text-white/70'
                       }`}
                     >
                       <NavIcon id={item.id} active={active} />

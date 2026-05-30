@@ -4,19 +4,19 @@ import { InvestorAtmosphere } from '@/components/brand/InvestorAtmosphere';
 
 export default function InfoPageBody() {
   return (
-    <div className="relative min-h-screen w-full bg-[#070708] text-white">
+    <div className="relative min-h-screen w-full bg-[#030712] text-white">
       <div className="pointer-events-none fixed inset-0 opacity-40">
         <InvestorAtmosphere />
       </div>
-      <div className="relative z-20 border-b border-[#00f2ff]/10 px-4 py-8 md:px-8 md:py-10">
+      <div className="relative z-20 border-b border-[#00D4FF]/10 px-4 py-8 md:px-8 md:py-10">
         <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-4">
-          <Link href="/start" className="parable-eyebrow hover:text-[#00f2ff]">
+          <Link href="/start" className="parable-eyebrow hover:text-[#00D4FF]">
             ← Choice hub
           </Link>
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/info/intro"
-              className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00f2ff]/70 hover:text-[#00f2ff]"
+              className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00D4FF]/70 hover:text-[#00D4FF]"
             >
               Welcome video
             </Link>

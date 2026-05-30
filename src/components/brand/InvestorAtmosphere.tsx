@@ -63,7 +63,7 @@ export function InvestorAtmosphere({ overVideo = false, sparkleCount = 96 }: Pro
           {sparkles.map((s) => (
             <div
               key={s.id}
-              className="absolute w-1 h-1 rounded-full bg-[#00f2ff] shadow-[0_0_8px_#00f2ff]"
+              className="absolute w-1 h-1 rounded-full bg-[#00D4FF] shadow-[0_0_8px_#00D4FF]"
               style={{
                 left: s.left,
                 top: s.top,
@@ -74,7 +74,7 @@ export function InvestorAtmosphere({ overVideo = false, sparkleCount = 96 }: Pro
             />
           ))}
           <div
-            className="absolute bottom-[-2vh] left-[-20%] right-[-20%] h-[35vh] rounded-[100%] bg-[#00f2ff]/20 blur-[80px]"
+            className="absolute bottom-[-2vh] left-[-20%] right-[-20%] h-[35vh] rounded-[100%] bg-[#00D4FF]/20 blur-[80px]"
             style={{ animation: 'fogDrift 12s ease-in-out infinite' }}
           />
         </div>

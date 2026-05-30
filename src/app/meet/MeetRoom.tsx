@@ -363,8 +363,8 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
 
   if (!serverUrl) {
     return (
-      <div className="parable-glass-panel border-[#00f2ff]/20 px-6 py-8 text-center text-sm text-white/70 md:max-w-2xl md:px-10 md:py-10 md:text-base">
-        <p className="font-semibold uppercase tracking-wider text-[#00f2ff]/90 md:text-sm">
+      <div className="parable-glass-panel border-[#00D4FF]/20 px-6 py-8 text-center text-sm text-white/70 md:max-w-2xl md:px-10 md:py-10 md:text-base">
+        <p className="font-semibold uppercase tracking-wider text-[#00D4FF]/90 md:text-sm">
           Video service not configured
         </p>
         <p className="mt-2 text-white/50 md:mt-3">
@@ -529,7 +529,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
 
           <div className="flex w-full max-w-lg flex-col gap-4 self-center md:max-w-2xl md:gap-5 lg:max-w-3xl">
             {connecting ? (
-              <p className="text-sm text-[#00f2ff]/80 md:text-base">Connecting…</p>
+              <p className="text-sm text-[#00D4FF]/80 md:text-base">Connecting…</p>
             ) : (
               <p className="text-xs text-white/50 md:text-sm">When you&apos;re ready, continue to device setup.</p>
             )}
@@ -539,7 +539,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 type="button"
                 onClick={continueFromWelcome}
                 disabled={connecting}
-                className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40 md:py-5 md:text-base md:tracking-[0.2em]"
+                className="w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00D4FF] shadow-[0_0_24px_rgba(0, 212, 255,0.15)] hover:bg-[#00D4FF]/20 disabled:opacity-40 md:py-5 md:text-base md:tracking-[0.2em]"
               >
                 Continue to microphone &amp; camera
               </button>
@@ -551,7 +551,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 <button
                   type="button"
                   onClick={backToLobby}
-                  className="text-xs font-semibold uppercase tracking-wider text-[#00f2ff] hover:underline"
+                  className="text-xs font-semibold uppercase tracking-wider text-[#00D4FF] hover:underline"
                 >
                   ← Edit details
                 </button>
@@ -590,7 +590,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                   setMasterKey('');
                   setUniversalBypassKey('');
                 }}
-                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff] md:mt-1.5 md:h-5 md:w-5"
+                className="mt-1 h-4 w-4 shrink-0 border-[#00D4FF]/40 text-[#00D4FF] md:mt-1.5 md:h-5 md:w-5"
               />
               <span className="text-left text-sm text-white/70 md:text-base md:leading-snug">
                 Investor — use the <strong className="text-white/85">email</strong> from your booking confirmation
@@ -606,7 +606,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                   setWorkEmail('');
                   setUniversalBypassKey('');
                 }}
-                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff] md:mt-1.5 md:h-5 md:w-5"
+                className="mt-1 h-4 w-4 shrink-0 border-[#00D4FF]/40 text-[#00D4FF] md:mt-1.5 md:h-5 md:w-5"
               />
               <span className="text-left text-sm text-white/70 md:text-base md:leading-snug">
                 Parable team — <strong className="text-white/85">host key</strong> (room suffix is in your confirmation email)
@@ -626,7 +626,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                   const raw = initialRoomSuffix?.trim();
                   setRoomSlug(raw ? raw.replace(/^investor-/i, '') : 'scheduled-call');
                 }}
-                className="mt-1 h-4 w-4 shrink-0 border-[#00f2ff]/40 text-[#00f2ff] md:mt-1.5 md:h-5 md:w-5"
+                className="mt-1 h-4 w-4 shrink-0 border-[#00D4FF]/40 text-[#00D4FF] md:mt-1.5 md:h-5 md:w-5"
               />
               <span className="text-left text-sm text-white/70 md:text-base md:leading-snug">
                 Parable — <strong className="text-white/85">master access</strong> (one key only — no booking or other fields)
@@ -649,7 +649,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 autoCapitalize="off"
                 autoCorrect="off"
                 placeholder="Enter your access key"
-                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00f2ff]/50 md:px-5 md:py-3.5 md:text-base"
+                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00D4FF]/50 md:px-5 md:py-3.5 md:text-base"
               />
               <span className="mt-1 block text-[10px] text-white/35 md:text-xs md:leading-relaxed">
                 Joins the default scheduled room automatically. This option is only active when your host has configured a
@@ -673,7 +673,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                   autoCorrect="off"
                   inputMode="text"
                   placeholder="Paste the full key from your email"
-                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00f2ff]/50 md:px-5 md:py-3.5 md:text-base"
+                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 font-mono text-sm text-white outline-none focus:border-[#00D4FF]/50 md:px-5 md:py-3.5 md:text-base"
                 />
                 <span className="mt-1 block text-[10px] text-white/35 md:text-xs md:leading-relaxed">
                   Use the exact key from your confirmation message — punctuation and symbols (e.g. !) are allowed.
@@ -688,7 +688,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Host name"
                   autoComplete="name"
-                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50 md:px-5 md:py-3.5 md:text-base"
+                  className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00D4FF]/50 md:px-5 md:py-3.5 md:text-base"
                 />
               </label>
             </>
@@ -701,7 +701,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
                 onChange={(e) => setWorkEmail(e.target.value)}
                 autoComplete="email"
                 placeholder="you@firm.com"
-                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50 md:px-5 md:py-3.5 md:text-base"
+                className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00D4FF]/50 md:px-5 md:py-3.5 md:text-base"
               />
             </label>
           ) : null}
@@ -713,14 +713,14 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder="Jane Investor"
-            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00f2ff]/50 md:px-5 md:py-3.5 md:text-base"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm text-white outline-none focus:border-[#00D4FF]/50 md:px-5 md:py-3.5 md:text-base"
           />
         </label>
       )}
 
       {!(scheduledVerification && scheduledJoinMode === 'bypass') ? (
         <div className="block text-left">
-          <span className="text-[10px] font-black uppercase tracking-wider text-[#00f2ff]/75 md:text-xs">
+          <span className="text-[10px] font-black uppercase tracking-wider text-[#00D4FF]/75 md:text-xs">
             Host / meeting ID
           </span>
           <p className="mt-1 text-[10px] leading-relaxed text-white/38 md:text-xs md:leading-relaxed">
@@ -738,7 +738,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             Suffix (after investor-)
           </p>
           <div className="mt-1.5 flex items-center gap-2 md:gap-3">
-            <span className="shrink-0 rounded-lg border border-[#00f2ff]/30 bg-black/40 px-3 py-3 font-mono text-xs text-[#00f2ff] md:px-4 md:py-4 md:text-sm">
+            <span className="shrink-0 rounded-lg border border-[#00D4FF]/30 bg-black/40 px-3 py-3 font-mono text-xs text-[#00D4FF] md:px-4 md:py-4 md:text-sm">
               investor-
             </span>
             <input
@@ -752,21 +752,21 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
               className={`min-w-0 flex-1 rounded-xl border px-4 py-3 font-mono text-sm outline-none md:px-5 md:py-3.5 md:text-base ${
                 scheduledVerification && scheduledJoinMode === 'investor'
                   ? 'cursor-not-allowed border-white/10 bg-black/50 text-white/80'
-                  : 'border-white/15 bg-black/60 text-white focus:border-[#00f2ff]/50'
+                  : 'border-white/15 bg-black/60 text-white focus:border-[#00D4FF]/50'
               }`}
             />
           </div>
-          <div className="mt-3 flex flex-col gap-2 rounded-xl border border-[#00f2ff]/20 bg-black/40 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between md:px-4 md:py-3 lg:px-5 lg:py-4">
+          <div className="mt-3 flex flex-col gap-2 rounded-xl border border-[#00D4FF]/20 bg-black/40 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between md:px-4 md:py-3 lg:px-5 lg:py-4">
             <div className="min-w-0 flex-1">
               <span className="text-[10px] font-black uppercase tracking-wider text-white/45 md:text-xs">
                 Full meeting ID
               </span>
-              <p className="mt-1 break-all font-mono text-sm text-[#00f2ff]/95 md:text-base lg:text-lg">{fullRoomName}</p>
+              <p className="mt-1 break-all font-mono text-sm text-[#00D4FF]/95 md:text-base lg:text-lg">{fullRoomName}</p>
             </div>
             <button
               type="button"
               onClick={() => void copyFullMeetingId()}
-              className="shrink-0 rounded-lg border border-[#00f2ff]/35 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#00f2ff] hover:bg-[#00f2ff]/10 md:px-4 md:py-2.5 md:text-xs"
+              className="shrink-0 rounded-lg border border-[#00D4FF]/35 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#00D4FF] hover:bg-[#00D4FF]/10 md:px-4 md:py-2.5 md:text-xs"
             >
               {copiedMeetingId ? 'Copied' : 'Copy ID'}
             </button>
@@ -797,7 +797,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
         type="button"
         onClick={startWelcome}
         disabled={!canJoin}
-        className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.15)] hover:bg-[#00f2ff]/20 disabled:opacity-40 md:py-5 md:text-base md:tracking-[0.2em] lg:text-lg"
+        className="w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#00D4FF] shadow-[0_0_24px_rgba(0, 212, 255,0.15)] hover:bg-[#00D4FF]/20 disabled:opacity-40 md:py-5 md:text-base md:tracking-[0.2em] lg:text-lg"
       >
         Welcome to Parable
       </button>

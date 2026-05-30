@@ -5,9 +5,9 @@ import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 const CONTACT = process.env.NEXT_PUBLIC_INVESTOR_CONTACT_EMAIL?.trim() || 'investors@parableinvestments.com';
 
 const section = 'mb-10 md:mb-12';
-const h2 = 'mb-4 text-[10px] font-black uppercase tracking-[0.32em] text-[#00f2ff]/85';
+const h2 = 'mb-4 text-[10px] font-black uppercase tracking-[0.32em] text-[#00D4FF]/85';
 const p = 'text-sm leading-relaxed text-white/60 md:text-[15px]';
-const ul = 'ml-1 list-outside list-decimal space-y-3 pl-4 text-sm leading-relaxed text-white/60 marker:text-[#00f2ff]/70 md:pl-5 md:text-[15px]';
+const ul = 'ml-1 list-outside list-decimal space-y-3 pl-4 text-sm leading-relaxed text-white/60 marker:text-[#00D4FF]/70 md:pl-5 md:text-[15px]';
 const kbd = 'inline rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[12px] text-white/75';
 
 export const metadata = {
@@ -20,7 +20,7 @@ export default function FirstTimeSiteGuidePage() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-[#030304] text-white">
       <div
-        className="pointer-events-none fixed inset-0 z-[1] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(0,242,255,0.14),transparent_55%)]"
+        className="pointer-events-none fixed inset-0 z-[1] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(0, 212, 255,0.14),transparent_55%)]"
         aria-hidden
       />
       <InvestorAtmosphere sparkleCount={48} />
@@ -29,13 +29,13 @@ export default function FirstTimeSiteGuidePage() {
         <header className="mb-10 border-b border-white/[0.08] pb-8 text-center">
           <Link
             href="/"
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00f2ff]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[#00f2ff]/85 backdrop-blur-md transition hover:border-[#00f2ff]/45"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[#00D4FF]/85 backdrop-blur-md transition hover:border-[#00D4FF]/45"
           >
             <span aria-hidden>←</span> Landing
           </Link>
           <div className="mt-2 flex flex-col items-center">
             <ParableLogoMark className="w-full max-w-[10rem] opacity-95" />
-            <p className="mt-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#00f2ff]/75">Investor</p>
+            <p className="mt-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#00D4FF]/75">Investor</p>
             <h1 className="mt-2 text-balance text-2xl font-black uppercase leading-tight tracking-tight sm:text-3xl">
               First-time visitor guide
             </h1>
@@ -61,7 +61,7 @@ export default function FirstTimeSiteGuidePage() {
                 you are ready.
               </li>
               <li>
-                After you are cleared → you will land on the <Link className="text-[#00f2ff] underline-offset-2 hover:underline" href="/start">investor hub (choice hub)</Link> at <span className={kbd}>/start</span>.
+                After you are cleared → you will land on the <Link className="text-[#00D4FF] underline-offset-2 hover:underline" href="/start">investor hub (choice hub)</Link> at <span className={kbd}>/start</span>.
               </li>
               <li>
                 From <span className={kbd}>/start</span> → open the <strong className="text-white/80">Investor portal</strong>{' '}
@@ -88,7 +88,7 @@ export default function FirstTimeSiteGuidePage() {
               The investor hub (<span className="font-mono">/start</span>)
             </h2>
             <p className={p + ' mb-3'}>After clearance, the hub groups the main next steps, including:</p>
-            <ul className="ml-1 list-outside list-disc space-y-2.5 pl-4 text-sm leading-relaxed text-white/60 marker:text-[#00f2ff]/60 md:pl-5 md:text-[15px]">
+            <ul className="ml-1 list-outside list-disc space-y-2.5 pl-4 text-sm leading-relaxed text-white/60 marker:text-[#00D4FF]/60 md:pl-5 md:text-[15px]">
               <li>
                 <strong className="text-white/80">Open the strategic deck</strong> in the <strong>Investor portal</strong> — the
                 primary read for materials hosted on this site.
@@ -144,7 +144,7 @@ export default function FirstTimeSiteGuidePage() {
               or ad blockers are off</strong> for this domain. For access or email issues, email the team at{' '}
               <a
                 href={`mailto:${CONTACT}?subject=${encodeURIComponent('PARABLE investor – site help')}`}
-                className="text-[#00f2ff] underline-offset-2 hover:underline"
+                className="text-[#00D4FF] underline-offset-2 hover:underline"
               >
                 {CONTACT}
               </a>
@@ -166,7 +166,7 @@ export default function FirstTimeSiteGuidePage() {
         <footer className="mt-12 border-t border-white/[0.08] pt-8 text-center">
           <Link
             href="/start"
-            className="inline-flex min-h-11 min-w-[12rem] items-center justify-center rounded-2xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-6 py-2.5 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20"
+            className="inline-flex min-h-11 min-w-[12rem] items-center justify-center rounded-2xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-6 py-2.5 text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/20"
           >
             Go to investor hub →
           </Link>

@@ -97,7 +97,7 @@ export function MeetPreJoinSetupPanel({
 
   return (
     <div className="rounded-xl border border-white/10 bg-[#141416]/95 px-4 py-3 text-left shadow-inner">
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00f2ff]/80">Preview settings</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/80">Preview settings</p>
       <p className="mt-1 text-[11px] leading-relaxed text-white/45">
         Use the microphone and camera controls in the preview above to choose devices. Background effects keep you in
         focus and only change the backdrop; uploads are cropped to fit (16∶9).
@@ -146,7 +146,7 @@ export function MeetPreJoinSetupPanel({
             onClick={() => onBgModeChange('none')}
             className={`rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide ${
               bgMode === 'none'
-                ? 'border-[#00f2ff]/50 bg-[#00f2ff]/15 text-[#00f2ff]'
+                ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
                 : 'border-white/20 text-white/75 hover:bg-white/10'
             }`}
           >
@@ -162,7 +162,7 @@ export function MeetPreJoinSetupPanel({
             onClick={() => onBgModeChange('blur')}
             className={`rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide ${
               bgMode === 'blur'
-                ? 'border-[#00f2ff]/50 bg-[#00f2ff]/15 text-[#00f2ff]'
+                ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
                 : 'border-white/20 text-white/75 hover:bg-white/10'
             }`}
           >
@@ -176,7 +176,7 @@ export function MeetPreJoinSetupPanel({
               onClick={() => onBlurStrengthChange(s)}
               className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold capitalize ${
                 bgMode === 'blur' && blurStrength === s
-                  ? 'border-[#00f2ff]/40 bg-[#00f2ff]/10 text-[#00f2ff]'
+                  ? 'border-[#00D4FF]/40 bg-[#00D4FF]/10 text-[#00D4FF]'
                   : 'border-white/15 text-white/55 hover:bg-white/5 disabled:opacity-35'
               }`}
             >
@@ -195,7 +195,7 @@ export function MeetPreJoinSetupPanel({
               onClick={() => onPreset(p.id)}
               className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold ${
                 bgMode === 'preset' && selectedPresetId === p.id
-                  ? 'border-[#00f2ff]/50 bg-[#00f2ff]/15 text-[#00f2ff]'
+                  ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
                   : 'border-white/20 text-white/75 hover:bg-white/10'
               }`}
             >

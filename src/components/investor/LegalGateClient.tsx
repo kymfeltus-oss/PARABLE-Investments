@@ -69,7 +69,7 @@ export function LegalGateClient() {
       />
 
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-12 pb-28 md:py-16 md:pb-32">
-        <Link href="/" className="parable-eyebrow mb-10 inline-block hover:text-[#00f2ff]">
+        <Link href="/" className="parable-eyebrow mb-10 inline-block hover:text-[#00D4FF]">
           ← Back to landing
         </Link>
 
@@ -80,7 +80,7 @@ export function LegalGateClient() {
           className="text-center"
         >
           <ParableLogoMark className="mx-auto mb-10 max-w-[200px] opacity-95 md:max-w-xs" />
-          <p className="parable-eyebrow mb-4 text-[#00f2ff]/80">Legal gate</p>
+          <p className="parable-eyebrow mb-4 text-[#00D4FF]/80">Legal gate</p>
           <h1 className="mb-3 font-serif text-2xl font-light italic tracking-wide text-white/95 md:text-3xl md:leading-snug">
             Sanctuary access
           </h1>
@@ -97,11 +97,11 @@ export function LegalGateClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.45 }}
-              className="mt-14 rounded-2xl border border-[#00f2ff]/25 bg-black/50 px-6 py-12 text-center shadow-[0_0_60px_rgba(0,242,255,0.08)] backdrop-blur-xl md:px-10"
+              className="mt-14 rounded-2xl border border-[#00D4FF]/25 bg-black/50 px-6 py-12 text-center shadow-[0_0_60px_rgba(0, 212, 255,0.08)] backdrop-blur-xl md:px-10"
             >
               <p className="font-serif text-xl text-white md:text-2xl">Verification sent</p>
               <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55">
-                We emailed a secure magic link to <span className="text-[#00f2ff]/90">{email}</span>. Open it on this
+                We emailed a secure magic link to <span className="text-[#00D4FF]/90">{email}</span>. Open it on this
                 device to finish signing in and open the next step.
               </p>
               <p className="mt-6 text-xs text-white/35">Did not arrive? Check spam or promotions, then try again.</p>
@@ -116,7 +116,7 @@ export function LegalGateClient() {
             >
               <div className="rounded-2xl border border-white/[0.12] bg-white/[0.04] p-1 shadow-[0_8px_48px_rgba(0,0,0,0.55)] backdrop-blur-2xl md:p-1.5">
                 <div className="rounded-[14px] bg-black/35 px-4 py-6 md:px-8 md:py-8">
-                  <p className="text-center font-sans text-[13px] font-semibold leading-snug tracking-wide text-[#00f2ff]/95 md:text-sm">
+                  <p className="text-center font-sans text-[13px] font-semibold leading-snug tracking-wide text-[#00D4FF]/95 md:text-sm">
                     {LEGAL_GATE_DISPLAY_TITLE}
                   </p>
                   <div className="mt-6 max-h-[min(48vh,440px)] overflow-y-auto border-t border-white/10 pt-6 pr-1 text-left text-[13px] leading-relaxed text-white/65 md:text-[14px] md:leading-[1.65]">
@@ -148,7 +148,7 @@ export function LegalGateClient() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@company.com"
-                    className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:border-[#00f2ff]/45 focus:outline-none focus:ring-2 focus:ring-[#00f2ff]/15"
+                    className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:border-[#00D4FF]/45 focus:outline-none focus:ring-2 focus:ring-[#00D4FF]/15"
                   />
                 </label>
 
@@ -157,7 +157,7 @@ export function LegalGateClient() {
                     type="checkbox"
                     checked={ack}
                     onChange={(e) => setAck(e.target.checked)}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
+                    className="mt-1 h-4 w-4 shrink-0 rounded border-[#00D4FF]/40 text-[#00D4FF] focus:ring-[#00D4FF]"
                   />
                   <span className="text-left text-sm text-white/65">
                     I have read and agree to the terms above. I understand that continuing will log my email, IP, and
@@ -182,7 +182,7 @@ export function LegalGateClient() {
                   onClick={onAccess}
                   whileHover={{ scale: canSubmit ? 1.01 : 1 }}
                   whileTap={{ scale: canSubmit ? 0.99 : 1 }}
-                  className="w-full rounded-xl border border-[#00f2ff]/35 bg-gradient-to-b from-[#00f2ff]/15 to-[#00f2ff]/5 py-4 text-sm font-black uppercase tracking-[0.28em] text-[#00f2ff] shadow-[0_0_32px_rgba(0,242,255,0.15)] transition disabled:cursor-not-allowed disabled:opacity-35"
+                  className="w-full rounded-xl border border-[#00D4FF]/35 bg-gradient-to-b from-[#00D4FF]/15 to-[#00D4FF]/5 py-4 text-sm font-black uppercase tracking-[0.28em] text-[#00D4FF] shadow-[0_0_32px_rgba(0, 212, 255,0.15)] transition disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   {submitting ? 'Sending…' : 'Access sanctuary'}
                 </motion.button>

@@ -111,7 +111,7 @@ export function LandingHeroBackgroundVideo({ onEnded }: LandingHeroBackgroundVid
   }, [candidates.length]);
 
   if (reduceMotion) {
-    return <div className="fixed inset-0 z-0 bg-[#070708]" aria-hidden />;
+    return <div className="fixed inset-0 z-0 bg-[#030712]" aria-hidden />;
   }
 
   return (
@@ -121,7 +121,7 @@ export function LandingHeroBackgroundVideo({ onEnded }: LandingHeroBackgroundVid
           key={activeSrc}
           ref={videoRef}
           suppressHydrationWarning
-          className="absolute inset-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full bg-[#070708] object-contain object-center md:object-cover"
+          className="absolute inset-0 box-border max-h-full max-w-full min-h-0 min-w-0 h-full w-full bg-[#030712] object-contain object-center md:object-cover"
           src={activeSrc}
           autoPlay
           muted={muted}
@@ -134,7 +134,7 @@ export function LandingHeroBackgroundVideo({ onEnded }: LandingHeroBackgroundVid
       </div>
       {/* Descript (and similar) trial watermarks are baked into the MP4 — mask BR on small screens until you re-export clean video. */}
       <div
-        className="pointer-events-none absolute bottom-0 right-0 z-[1] h-[min(30vh,10rem)] w-[min(56vw,15rem)] bg-gradient-to-tl from-[#070708] from-[10%] via-[#070708]/92 to-transparent md:hidden"
+        className="pointer-events-none absolute bottom-0 right-0 z-[1] h-[min(30vh,10rem)] w-[min(56vw,15rem)] bg-gradient-to-tl from-[#030712] from-[10%] via-[#030712]/92 to-transparent md:hidden"
         aria-hidden
       />
       <div

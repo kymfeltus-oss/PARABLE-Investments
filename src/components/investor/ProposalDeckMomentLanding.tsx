@@ -24,23 +24,23 @@ export function ProposalDeckMomentLanding() {
     <div className="relative min-h-dvh w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere sparkleCount={64} />
       <div
-        className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0,242,255,0.07)_0%,transparent_55%,rgba(0,0,0,0.92)_100%)]"
+        className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0, 212, 255,0.07)_0%,transparent_55%,rgba(0,0,0,0.92)_100%)]"
         aria-hidden
       />
 
       <div className="relative z-20 mx-auto flex w-full max-w-5xl flex-col px-4 py-8 pb-16 md:py-12">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.2em]">
-          <Link href="/investor/portal/proposal" className="text-[#00f2ff]/80 transition hover:text-[#00f2ff]">
+          <Link href="/investor/portal/proposal" className="text-[#00D4FF]/80 transition hover:text-[#00D4FF]">
             ← Proposal overview
           </Link>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-white/45">
-            <Link href="/investor/portal/hub" className="hover:text-[#00f2ff]/85">
+            <Link href="/investor/portal/hub" className="hover:text-[#00D4FF]/85">
               Investor hub
             </Link>
             <span className="text-white/20" aria-hidden>
               ·
             </span>
-            <span className="text-[#00f2ff]/70">Confidential deck</span>
+            <span className="text-[#00D4FF]/70">Confidential deck</span>
           </div>
         </div>
 
@@ -50,14 +50,14 @@ export function ProposalDeckMomentLanding() {
           transition={fade.transition}
           className="text-center"
         >
-          <p className="parable-eyebrow text-[#00f2ff]/90">The strategic story</p>
+          <p className="parable-eyebrow text-[#00D4FF]/90">The strategic story</p>
         </motion.header>
 
         <motion.div
           initial={fade.initial}
           animate={fade.animate}
           transition={{ ...fade.transition, delay: 0.05 }}
-          className="relative mx-auto mt-6 w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0,242,255,0.1)]"
+          className="relative mx-auto mt-6 w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0, 212, 255,0.1)]"
         >
           <div className="relative min-h-[min(52vh,28rem)] w-full sm:min-h-[32rem]">
             <Image
@@ -73,7 +73,7 @@ export function ProposalDeckMomentLanding() {
               aria-hidden
             />
             <div
-              className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,242,255,0.12)_0%,transparent_55%)]"
+              className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0, 212, 255,0.12)_0%,transparent_55%)]"
               aria-hidden
             />
             <div className="relative z-10 flex min-h-[min(52vh,28rem)] flex-col justify-end px-5 py-8 text-left sm:min-h-[32rem] sm:px-10 sm:py-12 md:justify-center md:py-14">
@@ -83,7 +83,7 @@ export function ProposalDeckMomentLanding() {
               </p>
               <h1 className="mt-4 text-balance font-black uppercase leading-[1.02] tracking-[0.06em] sm:tracking-[0.08em]">
                 <span className="block text-2xl text-white/95 sm:text-4xl md:text-5xl">This is the moment</span>
-                <span className="mt-1 block max-w-4xl bg-gradient-to-b from-white via-[#c4fffe] to-[#00f2ff] bg-clip-text text-3xl text-transparent sm:mt-2 sm:text-5xl md:text-6xl">
+                <span className="mt-1 block max-w-4xl bg-gradient-to-b from-white via-[#c4fffe] to-[#00D4FF] bg-clip-text text-3xl text-transparent sm:mt-2 sm:text-5xl md:text-6xl">
                   we&apos;ve been waiting for
                 </span>
               </h1>
@@ -94,7 +94,7 @@ export function ProposalDeckMomentLanding() {
               <div className="mt-7 flex w-full max-w-2xl flex-col gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4">
                 <Link
                   href="/investor/portal/proposal/deck"
-                  className="inline-flex w-full min-w-0 items-center justify-center gap-2.5 rounded-xl bg-[#00f2ff] px-6 py-3.5 text-sm shadow-[0_0_32px_rgba(0,242,255,0.35)] transition hover:brightness-105 sm:w-auto sm:px-8 sm:py-4"
+                  className="inline-flex w-full min-w-0 items-center justify-center gap-2.5 rounded-xl bg-[#00D4FF] px-6 py-3.5 text-sm shadow-[0_0_32px_rgba(0, 212, 255,0.35)] transition hover:brightness-105 sm:w-auto sm:px-8 sm:py-4"
                 >
                   <span className="text-base font-extralight text-black/45" aria-hidden>
                     →
@@ -103,7 +103,7 @@ export function ProposalDeckMomentLanding() {
                 </Link>
                 <Link
                   href={hrefWithFromProposal('/book/moment', true)}
-                  className="inline-flex w-full min-w-0 items-center justify-center rounded-xl border border-[#00f2ff]/45 bg-black/30 px-6 py-3.5 text-sm font-bold tracking-tight text-[#00f2ff] transition hover:border-[#00f2ff]/80 hover:bg-[#00f2ff]/5 sm:w-auto sm:px-8 sm:py-4"
+                  className="inline-flex w-full min-w-0 items-center justify-center rounded-xl border border-[#00D4FF]/45 bg-black/30 px-6 py-3.5 text-sm font-bold tracking-tight text-[#00D4FF] transition hover:border-[#00D4FF]/80 hover:bg-[#00D4FF]/5 sm:w-auto sm:px-8 sm:py-4"
                 >
                   Book a meeting
                 </Link>
@@ -119,7 +119,7 @@ export function ProposalDeckMomentLanding() {
           className="mt-8 text-center text-xs text-white/35"
         >
           Prefer the overview?{' '}
-          <Link href="/investor/portal/proposal" className="text-[#00f2ff]/60 hover:text-[#00f2ff]">
+          <Link href="/investor/portal/proposal" className="text-[#00D4FF]/60 hover:text-[#00D4FF]">
             Return to proposal overview
           </Link>
         </motion.p>

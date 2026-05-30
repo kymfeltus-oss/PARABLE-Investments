@@ -106,7 +106,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
       animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
     >
-      <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00f2ff]/85">
+      <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00D4FF]/85">
         {compact ? 'Meeting record — name & email' : 'Step 1 — Register'}
       </h2>
       <p className="mt-2 text-sm text-white/50">
@@ -131,7 +131,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00D4FF]/45"
             placeholder="Jane Investor"
             autoComplete="name"
           />
@@ -142,7 +142,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00f2ff]/45"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-sm outline-none focus:border-[#00D4FF]/45"
             placeholder="you@firm.com"
             autoComplete="email"
           />
@@ -152,7 +152,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
             type="checkbox"
             checked={ack}
             onChange={(e) => setAck(e.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
+            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00D4FF]/40 text-[#00D4FF] focus:ring-[#00D4FF]"
           />
           <span className="text-left text-sm text-white/65">
             I confirm this investor meeting request is subject to the same confidentiality obligations as my Parable NDA /
@@ -165,7 +165,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
           type="button"
           disabled={!canRegister}
           onClick={onRegister}
-          className="w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35"
+          className="w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/20 disabled:cursor-not-allowed disabled:opacity-35"
         >
           {submitting ? 'Saving…' : compact ? 'Save & show confirmation options' : 'Confirm & go to calendar'}
         </button>
@@ -180,10 +180,10 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere />
-      <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0,242,255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
+      <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0, 212, 255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
 
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-10 pb-28 md:py-14">
-        <Link href="/start" className="parable-eyebrow mb-4 inline-block hover:text-[#00f2ff]">
+        <Link href="/start" className="parable-eyebrow mb-4 inline-block hover:text-[#00D4FF]">
           ← Choice hub
         </Link>
         <ReturnToProposalDeck className="mb-8" />
@@ -191,7 +191,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
         <ParableLogoMark className="mx-auto mb-8 max-w-[200px] opacity-95 md:max-w-xs" />
 
         <div className="text-center">
-          <p className="parable-eyebrow mb-2 text-[#00f2ff]/85">Investor relations</p>
+          <p className="parable-eyebrow mb-2 text-[#00D4FF]/85">Investor relations</p>
           <h1 className="text-2xl font-black uppercase tracking-[0.18em] text-white md:text-3xl md:tracking-[0.22em]">
             Book a meeting
           </h1>

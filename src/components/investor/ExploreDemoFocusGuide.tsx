@@ -64,7 +64,7 @@ export function ExploreDemoFocusGuide() {
       <div className="text-center">
         <h2
           id="demo-focus-heading"
-          className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00f2ff]/75"
+          className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00D4FF]/75"
         >
           Five pillars — what to explore
         </h2>
@@ -78,19 +78,19 @@ export function ExploreDemoFocusGuide() {
         {areas.map((area) => (
           <article
             key={area.n}
-            className="rounded-xl border border-[#00f2ff]/20 bg-black/45 px-5 py-6 shadow-[0_0_32px_rgba(0,242,255,0.06)] backdrop-blur-sm md:px-6 md:py-7"
+            className="rounded-xl border border-[#00D4FF]/20 bg-black/45 px-5 py-6 shadow-[0_0_32px_rgba(0, 212, 255,0.06)] backdrop-blur-sm md:px-6 md:py-7"
           >
             <div className="flex items-start gap-3">
-              <span className="font-mono text-[11px] font-bold tabular-nums text-[#00f2ff]/55">{area.n}</span>
+              <span className="font-mono text-[11px] font-bold tabular-nums text-[#00D4FF]/55">{area.n}</span>
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-black uppercase tracking-[0.12em] text-[#00f2ff] sm:text-[15px]">
+                <h3 className="text-sm font-black uppercase tracking-[0.12em] text-[#00D4FF] sm:text-[15px]">
                   {area.title}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-white/60 sm:text-sm">{area.lead}</p>
                 <ul className="mt-4 space-y-2.5 border-t border-white/[0.08] pt-4 text-left text-[12px] leading-relaxed text-white/50 sm:text-[13px]">
                   {area.bullets.map((b) => (
                     <li key={b} className="flex gap-2.5">
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#00f2ff]/70" aria-hidden />
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#00D4FF]/70" aria-hidden />
                       <span>{b}</span>
                     </li>
                   ))}

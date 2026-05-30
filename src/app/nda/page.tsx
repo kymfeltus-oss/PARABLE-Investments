@@ -116,7 +116,7 @@ function NdaForm() {
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
       <InvestorAtmosphere sparkleCount={40} />
       <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:max-w-4xl md:px-8 md:py-14 md:pb-28 lg:max-w-5xl lg:px-10">
-        <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00f2ff]">
+        <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00D4FF]">
           ← Back to landing
         </Link>
 
@@ -124,7 +124,7 @@ function NdaForm() {
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <p className="parable-eyebrow mb-3 text-center">Step 2 of 3</p>
-          <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00f2ff] md:text-2xl md:tracking-[0.22em] lg:text-3xl">
+          <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00D4FF] md:text-2xl md:tracking-[0.22em] lg:text-3xl">
             Confidentiality &amp; non-compete
           </h1>
           <p className="mb-10 text-center text-sm text-white/45 md:text-base">
@@ -155,7 +155,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.printedName
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.printedName ? (
@@ -175,7 +175,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.signature
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.signature ? (
@@ -196,7 +196,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.email
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00f2ff]/50 focus:ring-[#00f2ff]/30'
+                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.email ? (
@@ -210,7 +210,7 @@ function NdaForm() {
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00f2ff]/40 text-[#00f2ff] focus:ring-[#00f2ff]"
+            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00D4FF]/40 text-[#00D4FF] focus:ring-[#00D4FF]"
           />
           <span className="text-left text-sm text-white/70">
             I have read and agree to the confidentiality, restricted use, and non-competition terms above, including
@@ -228,7 +228,7 @@ function NdaForm() {
           type="button"
           disabled={submitting}
           onClick={onContinue}
-          className={`mt-8 w-full rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00f2ff] shadow-[0_0_24px_rgba(0,242,255,0.12)] transition hover:bg-[#00f2ff]/20 disabled:cursor-not-allowed disabled:opacity-35 ${
+          className={`mt-8 w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00D4FF] shadow-[0_0_24px_rgba(0, 212, 255,0.12)] transition hover:bg-[#00D4FF]/20 disabled:cursor-not-allowed disabled:opacity-35 ${
             !canSubmit && !submitting ? 'opacity-55' : ''
           }`}
         >

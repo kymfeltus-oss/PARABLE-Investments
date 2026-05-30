@@ -23,7 +23,7 @@ export function InvestorHubContinueLink() {
       <div className="flex justify-center" suppressHydrationWarning>
         <Link
           href="/start"
-          className="rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-8 py-3.5 text-center text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20"
+          className="rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-8 py-3.5 text-center text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/20"
         >
           Continue to hub
         </Link>
@@ -35,7 +35,7 @@ export function InvestorHubContinueLink() {
     <div className="flex flex-col gap-3 sm:flex-row sm:justify-center" suppressHydrationWarning>
       <Link
         href="/nda?next=/start"
-        className="rounded-xl border border-[#00f2ff]/40 bg-[#00f2ff]/10 px-6 py-3.5 text-center text-sm font-black uppercase tracking-[0.2em] text-[#00f2ff] transition hover:bg-[#00f2ff]/20"
+        className="rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-6 py-3.5 text-center text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/20"
       >
         Continue to NDA
       </Link>

@@ -30,9 +30,9 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
   const hasUrl = prototypeUrl.length > 0;
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#050506] text-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#0A1018] text-white">
       <div
-        className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_90%_50%_at_50%_-10%,rgba(0,242,255,0.12),transparent_55%)]"
+        className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_90%_50%_at_50%_-10%,rgba(0, 212, 255,0.12),transparent_55%)]"
         aria-hidden
       />
       <InvestorAtmosphere sparkleCount={40} />
@@ -41,7 +41,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
             href="/start"
-            className="inline-flex items-center gap-2 rounded-full border border-[#00f2ff]/20 bg-black/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#00f2ff]/80 backdrop-blur-sm transition hover:border-[#00f2ff]/40 hover:text-[#00f2ff]"
+            className="inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/20 bg-black/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#00D4FF]/80 backdrop-blur-sm transition hover:border-[#00D4FF]/40 hover:text-[#00D4FF]"
           >
             <span aria-hidden>←</span> Choice hub
           </Link>
@@ -49,7 +49,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
             {!hasUrl ? (
               <Link
                 href="/parable-demo"
-                className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55 hover:text-[#00f2ff]"
+                className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55 hover:text-[#00D4FF]"
               >
                 Full-page preview →
               </Link>
@@ -59,7 +59,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
                 href={prototypeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[10px] font-black uppercase tracking-[0.22em] text-[#00f2ff]/80 hover:text-[#00f2ff]"
+                className="text-[10px] font-black uppercase tracking-[0.22em] text-[#00D4FF]/80 hover:text-[#00D4FF]"
               >
                 Open app in new tab →
               </a>
@@ -68,10 +68,10 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
         </div>
 
         <div className="mt-10 md:mt-12">
-          <p className="text-center text-[10px] font-black uppercase tracking-[0.38em] text-[#00f2ff]/65">
+          <p className="text-center text-[10px] font-black uppercase tracking-[0.38em] text-[#00D4FF]/65">
             {hasUrl ? 'Live product' : 'App preview'}
           </p>
-          <h1 className="mt-3 text-center text-balance text-xl font-black uppercase tracking-[0.12em] text-[#00f2ff] drop-shadow-[0_0_20px_rgba(0,242,255,0.2)] sm:text-2xl sm:tracking-[0.14em]">
+          <h1 className="mt-3 text-center text-balance text-xl font-black uppercase tracking-[0.12em] text-[#00D4FF] drop-shadow-[0_0_20px_rgba(0, 212, 255,0.2)] sm:text-2xl sm:tracking-[0.14em]">
             {hasUrl ? 'Parable app (staging / demo)' : 'Explore the Parable app'}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-center text-sm leading-relaxed text-white/55">
@@ -84,7 +84,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
             ) : (
               <>
                 This repository ships the investor portal only. The preview below walks the <strong className="font-semibold text-white/75">five pillars</strong> in a phone-frame shell (logo, hub atmosphere, bottom nav). For <strong className="font-semibold text-white/75">pixel-identical</strong> parity, point{' '}
-                <code className="rounded bg-white/10 px-1 py-0.5 font-mono text-[11px] text-[#00f2ff]/85">
+                <code className="rounded bg-white/10 px-1 py-0.5 font-mono text-[11px] text-[#00D4FF]/85">
                   NEXT_PUBLIC_PARABLE_PROTOTYPE_URL
                 </code>{' '}
                 at your deployed Parable app and redeploy—then the live product embed appears here automatically.
@@ -105,19 +105,19 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
                 href={prototypeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-[#00f2ff]/45 bg-[#00f2ff]/12 px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-[#00f2ff] shadow-[0_0_28px_rgba(0,242,255,0.12)] transition hover:bg-[#00f2ff]/20"
+                className="inline-flex items-center justify-center rounded-xl border border-[#00D4FF]/45 bg-[#00D4FF]/12 px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-[#00D4FF] shadow-[0_0_28px_rgba(0, 212, 255,0.12)] transition hover:bg-[#00D4FF]/20"
               >
                 Open Parable app in new tab
               </a>
             </div>
             <div className="parable-glass-panel mt-6 overflow-hidden p-0 md:mt-8">
-              <div className="border-b border-[#00f2ff]/15 bg-black/40 px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.2em] text-white/45">
+              <div className="border-b border-[#00D4FF]/15 bg-black/40 px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.2em] text-white/45">
                 Live embed — if blank, open in new tab (CSP may block cross-origin frames)
               </div>
               <iframe
                 title="Parable application"
                 src={prototypeUrl}
-                className="h-[min(88dvh,920px)] w-full min-h-[480px] bg-[#070708]"
+                className="h-[min(88dvh,920px)] w-full min-h-[480px] bg-[#030712]"
                 loading="lazy"
                 allow="fullscreen; clipboard-read; clipboard-write; microphone; camera"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -128,7 +128,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
 
         {!hasUrl ? (
           <div className="parable-glass-panel mt-10 overflow-hidden p-0 md:mt-12">
-            <div className="border-b border-[#00f2ff]/15 bg-black/40 px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.2em] text-white/45">
+            <div className="border-b border-[#00D4FF]/15 bg-black/40 px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.2em] text-white/45">
               Five-pillar preview — Live · Hybrid · Studio · Gather · Money (not the deployed app)
             </div>
             <div className="p-4 md:p-6">
@@ -154,7 +154,7 @@ export function ExplorePrototypeBody({ prototypeUrl }: Props) {
         {!hasUrl ? (
           <p className="mx-auto mt-8 max-w-2xl text-pretty text-center text-[11px] leading-relaxed text-white/35 md:mt-10">
             Deployed app: set{' '}
-            <code className="rounded bg-white/10 px-1 py-0.5 font-mono text-[10px] text-[#00f2ff]/80">NEXT_PUBLIC_PARABLE_PROTOTYPE_URL</code>{' '}
+            <code className="rounded bg-white/10 px-1 py-0.5 font-mono text-[10px] text-[#00D4FF]/80">NEXT_PUBLIC_PARABLE_PROTOTYPE_URL</code>{' '}
             (HTTPS). Allow this origin in <code className="font-mono text-[10px]">frame-ancestors</code> for embedding.
           </p>
         ) : null}

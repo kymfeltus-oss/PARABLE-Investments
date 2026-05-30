@@ -18,7 +18,7 @@ export default async function InvestorPage2() {
       <InvestorAtmosphere />
       <div className="relative z-20 mx-auto max-w-2xl px-4 py-14 pb-28 md:max-w-3xl md:px-8 md:py-20 lg:max-w-4xl lg:px-10">
         <ParableLogoMark className="mx-auto mb-10 max-w-[180px] opacity-90 md:max-w-xs lg:max-w-sm" />
-        <p className="parable-eyebrow mb-3 text-center text-[#00f2ff]/80">Verified</p>
+        <p className="parable-eyebrow mb-3 text-center text-[#00D4FF]/80">Verified</p>
         <h1 className="mb-4 text-center text-2xl font-black uppercase tracking-[0.14em] text-white md:text-3xl">
           Welcome in
         </h1>

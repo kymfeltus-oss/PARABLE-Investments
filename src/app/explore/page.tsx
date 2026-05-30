@@ -3,7 +3,7 @@ import { NdaGate } from '@/components/investor/NdaGate';
 import { ExplorePrototypeBody } from '@/components/investor/ExplorePrototypeBody';
 
 export const metadata: Metadata = {
-  title: 'Explore prototype | Parable Investments',
+  title: 'Explore prototype | Parable ERP',
   description: 'Interactive Parable app prototype for qualified investors.',
 };
 

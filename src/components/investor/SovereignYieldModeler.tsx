@@ -111,7 +111,7 @@ export function SovereignYieldModeler() {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #050505;
+          background: #030712;
           border: 2px solid ${ACCENT};
           box-shadow: 0 0 14px rgba(0,255,255,0.55), 0 0 28px rgba(0,255,255,0.25);
           cursor: pointer;
@@ -120,7 +120,7 @@ export function SovereignYieldModeler() {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #050505;
+          background: #030712;
           border: 2px solid ${ACCENT};
           box-shadow: 0 0 14px rgba(0,255,255,0.55), 0 0 28px rgba(0,255,255,0.25);
           cursor: pointer;
@@ -138,7 +138,7 @@ export function SovereignYieldModeler() {
       <div
         className="rounded-2xl border p-5 shadow-[0_0_50px_rgba(0,255,255,0.06)] backdrop-blur-xl md:p-7"
         style={{
-          backgroundColor: '#050505',
+          backgroundColor: '#030712',
           borderColor: 'rgba(0, 255, 255, 0.2)',
           boxShadow: `inset 0 1px 0 rgba(0,255,255,0.08), 0 0 48px -12px rgba(0,255,255,0.12)`,
         }}
