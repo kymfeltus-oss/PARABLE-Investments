@@ -1,55 +1,121 @@
 @import "tailwindcss";
 
 @theme {
-  /* Backgrounds */
-  --color-parable-space: #030712;
-  --color-parable-midnight: #0a1018;
-  --color-parable-slate: #0f1419;
-  --color-parable-navy: #111827;
+  /* ── Brand v2 canonical (cinematic kingdom OS) ── */
+  --color-parable-black: #000000;
+  --color-parable-soft-black: #020205;
+  --color-parable-cyan: #00f2ff;
+  --color-parable-cyan-bright: #00eaff;
+  --color-parable-cyan-deep: #007aff;
+  --color-parable-blue: #1268ff;
+  --color-parable-blue-deep: #061bff;
+  --color-parable-violet: #7d2cff;
+  --color-parable-purple: #bc00dd;
+  --color-parable-magenta: #d100ff;
+  --color-parable-gold: #f7b733;
+  --color-parable-gold-soft: #ffcc58;
+  --color-parable-success: #28f5a3;
+  --color-parable-danger: #ff3b5c;
 
-  /* Primary PARABLE blue */
-  --color-parable-cyan: #00d4ff;
-  --color-parable-blue: #00b8ff;
-  --color-parable-azure: #1ea7ff;
+  /* Legacy Tailwind names → v2 values (bridge until Phase 4 sweep) */
+  --color-parable-space: #000000;
+  --color-parable-midnight: #020205;
+  --color-parable-slate: rgba(5, 8, 18, 0.72);
+  --color-parable-navy: rgba(2, 4, 12, 0.92);
+  --color-parable-azure: #1268ff;
+  --color-parable-deep-violet: #7d2cff;
+  --color-parable-warning: #f7b733;
+  --color-parable-alert: #ff3b5c;
+  --color-parable-streaming-pink: #d100ff;
 
-  /* Purple */
-  --color-parable-purple: #8b5cf6;
-  --color-parable-violet: #a855f7;
-  --color-parable-deep-violet: #7c3aed;
-
-  /* Accents */
-  --color-parable-success: #10b981;
-  --color-parable-warning: #f59e0b;
-  --color-parable-alert: #ef4444;
-  --color-parable-streaming-pink: #ff4fd8;
-
-  /* Legacy alias */
-  --color-cyber: #00d4ff;
-  --color-sanctuary: #030712;
-  --color-shell: #030712;
+  --color-cyber: #00f2ff;
+  --color-sanctuary: #000000;
+  --color-shell: #000000;
 
   --font-headline: var(--font-bebas), "Bebas Neue", system-ui, sans-serif;
   --font-subhead: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
   --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
   --font-parable: var(--font-headline);
+
+  --shadow-cyan-glow: 0 0 42px rgba(0, 242, 255, 0.32);
+  --shadow-purple-glow: 0 0 42px rgba(188, 0, 221, 0.32);
+  --shadow-premium-glow: 0 0 28px rgba(0, 242, 255, 0.24), 0 0 88px rgba(188, 0, 221, 0.18);
 }
 
 :root {
-  --parable-bg-deep: #030712;
-  --parable-bg-midnight: #0a1018;
-  --parable-bg-slate: #0f1419;
-  --parable-bg-navy: #111827;
-  --parable-cyan: #00d4ff;
-  --parable-blue: #00b8ff;
-  --parable-azure: #1ea7ff;
-  --parable-purple: #8b5cf6;
-  --parable-violet: #a855f7;
-  --parable-deep-violet: #7c3aed;
-  --parable-white: #ffffff;
-  --parable-white-soft: #f8fafc;
-  --parable-gradient: linear-gradient(90deg, #00d4ff 0%, #1ea7ff 35%, #8b5cf6 70%, #a855f7 100%);
-  --parable-logo-a-gradient: linear-gradient(180deg, #00d4ff 0%, #1ea7ff 50%, #8b5cf6 100%);
-  background-color: var(--parable-bg-deep);
+  /* ── Brand v2 canonical tokens ── */
+  --bg-black: #000000;
+  --bg-black-soft: #020205;
+  --bg-panel: rgba(5, 8, 18, 0.72);
+  --bg-panel-strong: rgba(2, 4, 12, 0.92);
+
+  --white: #ffffff;
+  --white-soft: rgba(255, 255, 255, 0.78);
+  --white-muted: rgba(255, 255, 255, 0.56);
+  --white-faint: rgba(255, 255, 255, 0.28);
+
+  --cyan: #00f2ff;
+  --cyan-bright: #00eaff;
+  --cyan-deep: #007aff;
+
+  --blue: #1268ff;
+  --blue-deep: #061bff;
+
+  --violet: #7d2cff;
+  --purple: #bc00dd;
+  --magenta: #d100ff;
+
+  --gold: #f7b733;
+  --gold-soft: #ffcc58;
+
+  --danger-red: #ff3b5c;
+  --success-green: #28f5a3;
+
+  --gradient-primary: linear-gradient(
+    90deg,
+    #00f2ff 0%,
+    #1268ff 42%,
+    #7d2cff 72%,
+    #d100ff 100%
+  );
+  --gradient-title: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #00f2ff 38%,
+    #7d2cff 68%,
+    #ffffff 100%
+  );
+  --gradient-cyan-purple: linear-gradient(
+    135deg,
+    rgba(0, 242, 255, 0.28),
+    rgba(188, 0, 221, 0.24)
+  );
+  --gradient-gold: linear-gradient(90deg, #f7b733, #ffcc58, #ffffff);
+
+  /* PitchLock tenant scope (overridden per [projectSlug]/layout.tsx) */
+  --bg-canvas: var(--bg-black);
+  --border-grid: rgba(0, 242, 255, 0.14);
+  --color-accent: var(--cyan);
+  --color-success: var(--success-green);
+  --text-baseline: var(--white-soft);
+
+  /* ── Bridge aliases (remove in Phase 5 after component sweep) ── */
+  --parable-bg-deep: var(--bg-black);
+  --parable-bg-midnight: var(--bg-black-soft);
+  --parable-bg-slate: var(--bg-panel);
+  --parable-bg-navy: var(--bg-panel-strong);
+  --parable-cyan: var(--cyan);
+  --parable-blue: var(--blue);
+  --parable-azure: var(--blue);
+  --parable-purple: var(--purple);
+  --parable-violet: var(--violet);
+  --parable-deep-violet: var(--violet);
+  --parable-white: var(--white);
+  --parable-white-soft: var(--white-soft);
+  --parable-gradient: var(--gradient-primary);
+  --parable-logo-a-gradient: linear-gradient(180deg, #00f2ff 0%, #1268ff 50%, #7d2cff 100%);
+
+  background-color: var(--bg-black);
 }
 
 html {
@@ -64,8 +130,8 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  background-color: var(--parable-bg-deep);
-  color: var(--parable-white-soft);
+  background-color: var(--bg-black);
+  color: var(--white-soft);
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100dvh;

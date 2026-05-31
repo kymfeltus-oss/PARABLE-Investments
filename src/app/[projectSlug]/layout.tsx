@@ -1,4 +1,5 @@
-import type { ReactNode, CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { PITCHLOCK_FLAGSHIP_THEME } from '@/lib/brand';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 type Props = {
@@ -7,12 +8,12 @@ type Props = {
 };
 
 const FALLBACK_TOKENS = {
-  theme_bg: '#080A0C',
-  theme_panel: '#0B0E11',
-  theme_border: '#191F24',
-  theme_accent: '#00F2FF',
-  theme_success: '#00E165',
-  theme_text: '#EFF1F6',
+  theme_bg: PITCHLOCK_FLAGSHIP_THEME.theme_bg,
+  theme_panel: PITCHLOCK_FLAGSHIP_THEME.theme_panel,
+  theme_border: PITCHLOCK_FLAGSHIP_THEME.theme_border,
+  theme_accent: PITCHLOCK_FLAGSHIP_THEME.theme_accent,
+  theme_success: PITCHLOCK_FLAGSHIP_THEME.theme_success,
+  theme_text: PITCHLOCK_FLAGSHIP_THEME.theme_text,
 };
 
 export default async function ScopedTenantLayout({ children, params }: Props) {

@@ -20,13 +20,13 @@ create table if not exists public.pitchlock_projects (
   footer_left text,
   footer_right text,
 
-  -- Canonical design tokens (CSS custom properties applied by [projectSlug]/layout.tsx)
-  theme_bg text default '#080A0C',       -- --bg-canvas  (Premium Dark Canvas)
-  theme_panel text default '#0B0E11',    -- --bg-panel   (Deep High-Contrast Panel)
-  theme_border text default '#191F24',   -- --border-grid (Subtle Structural Border)
-  theme_accent text default '#00F2FF',   -- --color-accent (Glowing Cyber Cyan / Parable Teal)
-  theme_success text default '#00E165',  -- --color-success (High-Velocity Kick Green)
-  theme_text text default '#EFF1F6',     -- --text-baseline (Ultra-Crisp Soft Off-White)
+  -- Canonical design tokens (Brand v2 — applied by [projectSlug]/layout.tsx)
+  theme_bg text default '#000000',
+  theme_panel text default 'rgba(5, 8, 18, 0.72)',
+  theme_border text default 'rgba(0, 242, 255, 0.14)',
+  theme_accent text default '#00F2FF',
+  theme_success text default '#28F5A3',
+  theme_text text default 'rgba(255, 255, 255, 0.78)',
 
   created_at timestamptz not null default now()
 );
@@ -54,7 +54,12 @@ values (
   'Building the infrastructure layer of the global faith economy.',
   'Faith. Finance. Technology.',
   'United For Kingdom Impact.',
-  '#080A0C', '#0B0E11', '#191F24', '#00F2FF', '#00E165', '#EFF1F6'
+  '#000000',
+  'rgba(5, 8, 18, 0.72)',
+  'rgba(0, 242, 255, 0.14)',
+  '#00F2FF',
+  '#28F5A3',
+  'rgba(255, 255, 255, 0.78)'
 )
 on conflict (slug) do nothing;
 
