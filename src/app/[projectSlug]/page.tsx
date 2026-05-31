@@ -61,8 +61,8 @@ export default async function TenantLandingPage({ params }: Props) {
 
         <div className="flex w-full max-w-sm flex-col space-y-4">
           <Link
-            href={`/${projectSlug}/investor`}
-            className="w-full rounded-xl bg-gradient-to-r from-[var(--color-accent)] to-purple-600 py-4 text-center text-sm font-bold tracking-wide text-[var(--bg-canvas)] uppercase shadow-xl shadow-[var(--color-accent)]/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            href={`/${projectSlug}/gate`}
+            className="block w-full rounded-xl bg-gradient-to-r from-[var(--color-accent)] via-[var(--color-accent)] to-purple-600 py-4 text-center font-mono text-xs font-black tracking-widest text-[var(--bg-canvas)] uppercase shadow-xl shadow-[var(--color-accent)]/20 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
           >
             Enter Secure Portal
           </Link>
