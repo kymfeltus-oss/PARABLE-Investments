@@ -1,3 +1,7 @@
+import { BRAND_V2 } from '@/lib/brand';
+
+const MAIL_ACCENT = BRAND_V2.cyan.primary;
+
 /** Escape text for HTML body. */
 function esc(s: string): string {
   return s
@@ -56,7 +60,7 @@ export function buildInvestorMeetingConfirmationHtml(p: MeetingConfirmationHtmlI
 <p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8b919c;">Pick a time</p>
 <p style="margin:0;font-size:15px;line-height:1.55;color:#d1d5dd;">
 When you&apos;re ready, choose a slot on our calendar:<br/>
-<a href="${escAttr(p.schedulingUrl)}" style="color:#38bdf8;text-decoration:underline;text-underline-offset:3px;">${esc(p.schedulingUrl)}</a>
+<a href="${escAttr(p.schedulingUrl)}" style="color:${MAIL_ACCENT};text-decoration:underline;text-underline-offset:3px;">${esc(p.schedulingUrl)}</a>
 </p>
 </td></tr>`
     : '';
@@ -84,7 +88,7 @@ If you join as <strong style="color:#f5e6d3;">Parable team</strong>, use this ho
       )
     : '';
 
-  const meetLinkHtml = `<a href="${escAttr(p.meetUrl)}" style="color:#38bdf8;text-decoration:underline;text-underline-offset:3px;word-break:break-all;">${esc(p.meetUrl)}</a>`;
+  const meetLinkHtml = `<a href="${escAttr(p.meetUrl)}" style="color:${MAIL_ACCENT};text-decoration:underline;text-underline-offset:3px;word-break:break-all;">${esc(p.meetUrl)}</a>`;
 
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -158,7 +162,7 @@ ${field(
 <p style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#94a3b8;">
 We attached <strong style="color:#e2e8f0;">${esc(p.icsFilename)}</strong> — a placeholder reminder (${p.reminderOffsetHours} hours from now). After you book, your real meeting time will come from your calendar.
 </p>
-<a href="${escAttr(p.googleCalendarUrl)}" style="font-size:14px;font-weight:600;color:#38bdf8;text-decoration:underline;text-underline-offset:3px;">Add to Google Calendar</a>
+<a href="${escAttr(p.googleCalendarUrl)}" style="font-size:14px;font-weight:600;color:${MAIL_ACCENT};text-decoration:underline;text-underline-offset:3px;">Add to Google Calendar</a>
 </td>
 </tr>
 ${schedulingBlock}

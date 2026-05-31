@@ -67,79 +67,6 @@ function useBootSequence(skipAnimation: boolean) {
   return { progress, lineIndex, ready };
 }
 
-function FaithIndexHud({ reducedMotion }: { reducedMotion: boolean | null }) {
-  return (
-    <motion.div
-      className="intro-hud intro-hud-left glass-card pointer-events-none hidden select-none border-[var(--cyan)]/25 bg-black/40 px-3 py-2.5 sm:block sm:px-4 sm:py-3"
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.8, duration: 0.7 }}
-    >
-      <p className="type-section-label mb-1 text-[10px] text-[var(--cyan)]/90">Faith Index</p>
-      <div className="flex items-end gap-2">
-        <span className="font-[family-name:var(--font-tech)] text-2xl font-bold leading-none text-white">
-          {reducedMotion ? '87.4' : <AnimatedMetric target={87.4} decimals={1} />}
-        </span>
-        <span className="mb-0.5 text-xs font-semibold text-[var(--success-green)]">+12.8%</span>
-      </div>
-      <div className="intro-hud-sparkline mt-2" aria-hidden />
-    </motion.div>
-  );
-}
-
-function KingdomImpactHud({ reducedMotion }: { reducedMotion: boolean | null }) {
-  return (
-    <motion.div
-      className="intro-hud intro-hud-right glass-card pointer-events-none hidden select-none border-[var(--purple)]/25 bg-black/40 px-3 py-2.5 sm:block sm:px-4 sm:py-3"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 1, duration: 0.7 }}
-    >
-      <p className="type-section-label mb-1 text-[10px] text-[var(--purple)]/90">Kingdom Impact</p>
-      <div className="flex items-end gap-2">
-        <span className="font-[family-name:var(--font-tech)] text-2xl font-bold leading-none text-white">
-          {reducedMotion ? '+94%' : <AnimatedMetric target={94} suffix="%" />}
-        </span>
-      </div>
-      <div className="intro-hud-bars mt-2" aria-hidden />
-    </motion.div>
-  );
-}
-
-function AnimatedMetric({
-  target,
-  decimals = 0,
-  suffix = '',
-}: {
-  target: number;
-  decimals?: number;
-  suffix?: string;
-}) {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    const start = performance.now();
-    const duration = 2200;
-
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) ** 3;
-      setValue(target * eased);
-      if (t < 1) requestAnimationFrame(tick);
-    };
-
-    const frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [target]);
-
-  return (
-    <>
-      {value.toFixed(decimals)}
-      {suffix}
-    </>
-  );
-}
-
 function ProgressRing({ progress }: { progress: number }) {
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
@@ -171,9 +98,9 @@ function ProgressRing({ progress }: { progress: number }) {
 }
 
 export function InfoIntroCinematicPage({
-  enterHref = '/info',
-  backHref = '/start',
-  backLabel = '← Choice hub',
+  enterHref = '/parable-seed',
+  backHref = '/guide',
+  backLabel = 'Investor guide',
 }: InfoIntroCinematicPageProps) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -199,7 +126,7 @@ export function InfoIntroCinematicPage({
 
   return (
     <div
-      className={`intro-cinematic app-background relative flex h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] flex-col overflow-hidden text-white ${entering ? 'intro-cinematic-exiting' : ''}`}
+      className={`intro-cinematic relative flex h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] flex-col overflow-hidden bg-black text-white ${entering ? 'intro-cinematic-exiting' : ''}`}
     >
       <div className="intro-cinematic-image-wrap pointer-events-none absolute inset-0 z-0">
         <Image
@@ -212,14 +139,13 @@ export function InfoIntroCinematicPage({
         />
       </div>
 
-      <div className="intro-cinematic-stars pointer-events-none absolute inset-0 z-[1]" aria-hidden />
-      <div className="intro-cinematic-sweep pointer-events-none absolute inset-0 z-[2]" aria-hidden />
-      <div className="intro-cinematic-cross-glow pointer-events-none absolute inset-0 z-[3]" aria-hidden />
-      <div className="intro-cinematic-grid-scan pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-[38vh]" aria-hidden />
+      <div className="intro-cinematic-orb intro-cinematic-orb-cyan pointer-events-none absolute z-[1]" aria-hidden />
+      <div className="intro-cinematic-orb intro-cinematic-orb-purple pointer-events-none absolute z-[1]" aria-hidden />
+      <div className="intro-cinematic-orb intro-cinematic-orb-magenta pointer-events-none absolute z-[1]" aria-hidden />
+      <div className="intro-cinematic-stars pointer-events-none absolute inset-0 z-[2]" aria-hidden />
+      <div className="intro-cinematic-sweep pointer-events-none absolute inset-0 z-[3]" aria-hidden />
+      <div className="intro-cinematic-cross-glow pointer-events-none absolute inset-0 z-[4]" aria-hidden />
       <div className="intro-cinematic-vignette pointer-events-none absolute inset-0 z-[5]" aria-hidden />
-
-      <FaithIndexHud reducedMotion={reducedMotion} />
-      <KingdomImpactHud reducedMotion={reducedMotion} />
 
       <header className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6">
         <Link href={backHref} className="nav-link rounded-lg bg-black/45 px-3 py-2 backdrop-blur-md hover:text-[var(--cyan)]">

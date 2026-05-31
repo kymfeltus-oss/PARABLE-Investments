@@ -13,7 +13,7 @@ export default function InfoPageBody() {
           </Link>
           <div className="flex flex-wrap items-center gap-4">
             <Link
-              href="/info/intro"
+              href="/"
               className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--cyan)]/70 hover:text-[var(--cyan)]"
             >
               Welcome intro

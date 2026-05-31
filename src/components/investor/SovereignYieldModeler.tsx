@@ -175,7 +175,7 @@ export function SovereignYieldModeler() {
                   </span>
                 </label>
                 <span
-                  className={`${yieldMono.className} shrink-0 text-sm font-semibold tabular-nums text-[#00FFFF]`}
+                  className={`${yieldMono.className} shrink-0 text-sm font-semibold tabular-nums text-[var(--cyan)]`}
                   style={{ textShadow: '0 0 16px rgba(0,255,255,0.35)' }}
                 >
                   {adoption.toFixed(1)}%
@@ -205,7 +205,7 @@ export function SovereignYieldModeler() {
                   </span>
                 </label>
                 <span
-                  className={`${yieldMono.className} shrink-0 text-sm font-semibold tabular-nums text-[#00FFFF]`}
+                  className={`${yieldMono.className} shrink-0 text-sm font-semibold tabular-nums text-[var(--cyan)]`}
                   style={{ textShadow: '0 0 16px rgba(0,255,255,0.35)' }}
                 >
                   {recovery.toFixed(1)}%
@@ -231,7 +231,7 @@ export function SovereignYieldModeler() {
               background: 'linear-gradient(160deg, rgba(0,255,255,0.07), rgba(0,0,0,0.5))',
             }}
           >
-            <ZapWatermark className="pointer-events-none absolute -right-2 -top-2 h-28 w-28 rotate-12 text-[#00FFFF]/[0.06]" />
+            <ZapWatermark className="pointer-events-none absolute -right-2 -top-2 h-28 w-28 rotate-12 text-[var(--cyan)]/[0.06]" />
             <p className="mb-2 text-[8px] font-bold uppercase leading-tight tracking-[0.22em] text-white/55 md:text-[9px] md:tracking-[0.26em]">
               Annual net operating income (NOI)
             </p>
@@ -244,7 +244,7 @@ export function SovereignYieldModeler() {
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-white/32">Platform operational overhead (20%)</span>
-                <span className="text-[#00FFFF]/55">−{metrics.formattedOverhead}</span>
+                <span className="text-[var(--cyan)]/55">−{metrics.formattedOverhead}</span>
               </div>
             </div>
             <h3
@@ -260,7 +260,7 @@ export function SovereignYieldModeler() {
                 background: 'rgba(0,255,255,0.06)',
               }}
             >
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#00FFFF]/90 md:text-[11px]">
+              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-[var(--cyan)]/90 md:text-[11px]">
                 Acquisition payback
               </span>
               <span
@@ -271,7 +271,7 @@ export function SovereignYieldModeler() {
             </div>
             <p className="mx-auto mt-3 max-w-[18rem] text-[9px] leading-relaxed text-white/45 md:max-w-md md:text-[10px] md:leading-relaxed">
               At 1% market penetration, the $5M upfront acquisition cost is recovered in{' '}
-              <span className={`${yieldMono.className} font-semibold text-[#00FFFF]/90`}>
+              <span className={`${yieldMono.className} font-semibold text-[var(--cyan)]/90`}>
                 {metrics.paybackAt1PctLabel}
               </span>{' '}
               months.

@@ -1,10 +1,6 @@
-import { NdaGate } from '@/components/investor/NdaGate';
-import { InfoIntroCinematicPage } from '@/components/investor/InfoIntroCinematicPage';
+import { redirect } from 'next/navigation';
 
-export default function InfoIntroRoutePage() {
-  return (
-    <NdaGate>
-      <InfoIntroCinematicPage />
-    </NdaGate>
-  );
+/** Legacy bookmark — intro now lives at `/`. */
+export default function InfoIntroRedirectPage() {
+  redirect('/');
 }

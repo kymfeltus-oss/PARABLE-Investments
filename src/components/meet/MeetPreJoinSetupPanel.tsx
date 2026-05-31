@@ -96,7 +96,7 @@ export function MeetPreJoinSetupPanel({
   }, [micCheckOpen]);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#141416]/95 px-4 py-3 text-left shadow-inner">
+    <div className="glass-card border-[var(--cyan)]/15 bg-black/55 px-4 py-3 text-left shadow-inner">
       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--cyan)]/80">Preview settings</p>
       <p className="mt-1 text-[11px] leading-relaxed text-white/45">
         Use the microphone and camera controls in the preview above to choose devices. Background effects keep you in
