@@ -107,9 +107,9 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-white/[0.12] bg-black/40 p-6 shadow-[0_8px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl md:p-8"
+      className="type-legal glass-card p-6 md:p-8"
     >
-      <h2 className="text-xs font-black uppercase tracking-[0.28em] text-[#00D4FF]/85">
+      <h2 className="type-section-label text-[#00D4FF]/85">
         {compact ? 'Meeting record — name & email' : 'Step 1 — Register'}
       </h2>
       <p className="mt-2 text-sm text-white/50">
@@ -168,7 +168,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
           type="button"
           disabled={!canRegister}
           onClick={onRegister}
-          className="w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/20 disabled:cursor-not-allowed disabled:opacity-35"
+          className="primary-button primary-button-outline type-nav disabled:cursor-not-allowed disabled:opacity-35"
         >
           {submitting ? 'Saving…' : compact ? 'Save & show confirmation options' : 'Confirm & go to calendar'}
         </button>
@@ -181,7 +181,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+    <div className="type-legal relative min-h-screen w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere />
       <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0, 212, 255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
 
@@ -194,8 +194,8 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
         <ParableLogoMark className="mx-auto mb-8 max-w-[200px] opacity-95 md:max-w-xs" />
 
         <div className="text-center">
-          <p className="parable-eyebrow mb-2 text-[#00D4FF]/85">Investor relations</p>
-          <h1 className="text-2xl font-black uppercase tracking-[0.18em] text-white md:text-3xl md:tracking-[0.22em]">
+          <p className="type-section-label mb-2 text-[#00D4FF]/85">Investor relations</p>
+          <h1 className="type-hero text-white md:text-3xl">
             Book a meeting
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">

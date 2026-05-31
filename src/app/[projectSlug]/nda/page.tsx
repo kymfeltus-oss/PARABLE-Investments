@@ -116,7 +116,7 @@ function NdaForm() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
+    <div className="type-legal relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
       <InvestorAtmosphere sparkleCount={40} />
       <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:max-w-4xl md:px-8 md:py-14 md:pb-28 lg:max-w-5xl lg:px-10">
         <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00D4FF]">
@@ -126,8 +126,8 @@ function NdaForm() {
         <ParableLogoMark className="mx-auto mb-8 max-w-xs opacity-90 md:mb-10 md:max-w-md lg:max-w-lg" />
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <p className="parable-eyebrow mb-3 text-center">Step 2 of 3</p>
-          <h1 className="mb-2 text-center text-xl font-black uppercase tracking-[0.18em] text-[#00D4FF] md:text-2xl md:tracking-[0.22em] lg:text-3xl">
+          <p className="type-section-label mb-3 text-center">Step 2 of 3</p>
+          <h1 className="type-hero gradient-text mb-2 text-center md:text-2xl lg:text-3xl">
             Confidentiality &amp; non-compete
           </h1>
           <p className="mb-10 text-center text-sm text-white/45 md:text-base">
@@ -135,7 +135,7 @@ function NdaForm() {
           </p>
         </motion.div>
 
-        <div className="parable-glass-panel max-h-[min(56vh,520px)] overflow-y-auto px-5 py-6 text-left text-sm leading-relaxed text-white/65 md:max-h-[min(60vh,640px)] md:px-8 md:py-8 md:text-[15px] lg:text-base">
+        <div className="type-legal parable-glass-panel max-h-[min(56vh,520px)] overflow-y-auto px-5 py-6 text-left text-sm text-white/65 md:max-h-[min(60vh,640px)] md:px-8 md:py-8 md:text-[15px] lg:text-base">
           {paragraphs.map((block, i) => (
             <p key={i} className={block.startsWith('Disclaimer:') ? 'mt-4 text-white/45' : i === 0 ? 'font-semibold text-white/90' : 'mt-4'}>
               {block}
@@ -231,7 +231,7 @@ function NdaForm() {
           type="button"
           disabled={submitting}
           onClick={onContinue}
-          className={`mt-8 w-full rounded-xl border border-[#00D4FF]/40 bg-[#00D4FF]/10 py-4 text-sm font-black uppercase tracking-[0.25em] text-[#00D4FF] shadow-[0_0_24px_rgba(0, 212, 255,0.12)] transition hover:bg-[#00D4FF]/20 disabled:cursor-not-allowed disabled:opacity-35 ${
+          className={`primary-button primary-button-outline type-nav mt-8 disabled:cursor-not-allowed disabled:opacity-35 ${
             !canSubmit && !submitting ? 'opacity-55' : ''
           }`}
         >

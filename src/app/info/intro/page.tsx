@@ -1,10 +1,10 @@
 import { NdaGate } from '@/components/investor/NdaGate';
-import { InfoIntroVideoPage } from '@/components/investor/InfoIntroVideoPage';
+import { InfoIntroCinematicPage } from '@/components/investor/InfoIntroCinematicPage';
 
 export default function InfoIntroRoutePage() {
   return (
     <NdaGate>
-      <InfoIntroVideoPage />
+      <InfoIntroCinematicPage />
     </NdaGate>
   );
 }

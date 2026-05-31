@@ -35,39 +35,35 @@ export default async function TenantLandingPage({ params }: Props) {
   const footerRight = project.footer_right || 'United For Kingdom Impact.';
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 select-none">
-      {/* Neon glow accents */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-accent)]/10 blur-[120px]" />
-      <div className="pointer-events-none absolute top-1/3 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-purple-600/10 blur-[100px]" />
-
-      <div className="relative z-10 flex w-full max-w-2xl flex-col items-center rounded-2xl border border-[var(--border-grid)] bg-[var(--bg-panel)] p-12 text-center shadow-2xl">
+    <div className="app-background relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 select-none">
+      <div className="relative z-10 flex w-full max-w-2xl flex-col items-center glass-card p-12 text-center shadow-2xl">
         <div className="mb-8 space-y-2">
-          <h2 className="font-mono text-xs font-semibold tracking-[0.3em] text-[var(--color-accent)] uppercase">
+          <h2 className="type-section-label text-[var(--color-accent)]">
             {presenter} Presents
           </h2>
-          <h1 className="text-4xl font-black tracking-tight text-[var(--text-baseline)] uppercase sm:text-5xl">
+          <h1 className="type-hero text-[var(--text-baseline)]">
             {headline}
           </h1>
-          <p className="mt-4 font-mono text-sm tracking-wide text-[var(--color-accent)] italic">
+          <p className="type-section-label mt-4 italic text-[var(--color-accent)]">
             &ldquo;{tagline}&rdquo;
           </p>
         </div>
 
         <div className="mb-8 h-[2px] w-16 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent" />
 
-        <p className="mb-12 max-w-md text-lg leading-relaxed font-medium text-[var(--text-baseline)]/80">
+        <p className="type-body mb-12 max-w-md text-lg text-[var(--text-baseline)]/80">
           {valueStatement}
         </p>
 
         <div className="flex w-full max-w-sm flex-col space-y-4">
           <Link
             href={`/${projectSlug}/gate`}
-            className="block w-full rounded-xl bg-gradient-to-r from-[var(--color-accent)] via-[var(--color-accent)] to-purple-600 py-4 text-center font-mono text-xs font-black tracking-widest text-[var(--bg-canvas)] uppercase shadow-xl shadow-[var(--color-accent)]/20 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+            className="primary-button type-nav text-[var(--bg-canvas)] shadow-xl shadow-[var(--color-accent)]/20 hover:scale-[1.03] active:scale-[0.98]"
           >
             Enter Secure Portal
           </Link>
 
-          <div className="flex items-center justify-center space-x-6 pt-4 font-mono text-[10px] tracking-widest text-[var(--text-baseline)]/40 uppercase">
+          <div className="type-nav flex items-center justify-center space-x-6 pt-4 text-[var(--text-baseline)]/40">
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
               Stream
@@ -86,7 +82,7 @@ export default async function TenantLandingPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="absolute bottom-8 right-0 left-0 z-10 space-x-4 text-center font-mono text-[11px] text-[var(--text-baseline)]/30">
+      <div className="absolute bottom-8 right-0 left-0 z-10 space-x-4 text-center type-nav text-[11px] text-[var(--text-baseline)]/30">
         <span>{footerLeft}</span>
         <span>|</span>
         <span className="text-[var(--color-accent)]/50">{footerRight}</span>

@@ -1,20 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Bebas_Neue, Inter, Montserrat } from "next/font/google";
+import { Inter, Orbitron, Rajdhani } from "next/font/google";
 import "./globals.css";
 import { INVESTOR_SITE_URL } from "@/lib/investor-site";
 
-const bebasNeue = Bebas_Neue({
+const orbitron = Orbitron({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-bebas",
+  weight: ["500", "600", "700", "800", "900"],
+  variable: "--font-orbitron",
   display: "swap",
 });
 
-const montserrat = Montserrat({
+const rajdhani = Rajdhani({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-rajdhani",
   display: "swap",
 });
 
@@ -58,13 +58,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`dark h-full ${bebasNeue.variable} ${montserrat.variable} ${inter.variable}`}
+      className={`dark h-full ${orbitron.variable} ${rajdhani.variable} ${inter.variable}`}
     >
       <head>
         <link rel="preload" href="/logo/PARABLE%20LOGO.SVG" as="image" />
       </head>
       <body
-        className={`${inter.className} theme-streaming min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-[#F8FAFC] antialiased`}
+        className={`${inter.className} type-body theme-streaming min-h-dvh w-full max-w-[100vw] overflow-x-hidden text-[var(--white-soft)] antialiased`}
         data-git-sha={process.env.NEXT_PUBLIC_GIT_SHA ?? ""}
       >
         {children}

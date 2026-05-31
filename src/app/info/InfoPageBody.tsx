@@ -18,7 +18,7 @@ export default function InfoPageBody() {
               href="/info/intro"
               className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00D4FF]/70 hover:text-[#00D4FF]"
             >
-              Welcome video
+              Welcome intro
             </Link>
             <Link href="/" className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 hover:text-white/55">
               Landing

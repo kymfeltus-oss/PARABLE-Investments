@@ -41,16 +41,8 @@ export function InvestorPortalHub() {
     : { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
-    <div className="relative min-h-dvh w-full max-w-[100vw] overflow-x-hidden bg-[#030406] pb-14 pt-[max(0.75rem,env(safe-area-inset-top))] text-white sm:pb-20 sm:pt-[max(1rem,env(safe-area-inset-top))]">
-      <div
-        className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_85%_50%_at_50%_-5%,rgba(0, 212, 255,0.1),transparent_58%)]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none fixed inset-0 z-[6] bg-[radial-gradient(circle_at_0%_100%,rgba(0, 212, 255,0.05),transparent_45%)]"
-        aria-hidden
-      />
-      <InvestorAtmosphere sparkleCount={36} />
+    <div className="relative min-h-dvh w-full max-w-[100vw] overflow-x-hidden bg-black pb-14 pt-[max(0.75rem,env(safe-area-inset-top))] text-white sm:pb-20 sm:pt-[max(1rem,env(safe-area-inset-top))]">
+      <InvestorAtmosphere sparkleCount={16} />
 
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:max-w-7xl lg:px-10">
         {/* Command chrome */}
