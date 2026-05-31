@@ -11,10 +11,12 @@ import {
   getInvestorAgreementBodyParagraphs,
   LEGAL_GATE_DISPLAY_TITLE,
 } from '@/lib/investor-agreement-text';
+import { useProjectSlug } from '@/lib/pitchlock/use-project-slug';
 
 export function LegalGateClient() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
+  const projectSlug = useProjectSlug();
 
   const paragraphs = useMemo(() => getInvestorAgreementBodyParagraphs(), []);
   const [email, setEmail] = useState('');
@@ -39,6 +41,7 @@ export function LegalGateClient() {
           email: email.trim().toLowerCase(),
           acknowledged: true,
           browserFingerprint,
+          projectSlug,
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
@@ -52,7 +55,7 @@ export function LegalGateClient() {
       setError('Network error. Check your connection and try again.');
       setSubmitting(false);
     }
-  }, [canSubmit, email]);
+  }, [canSubmit, email, projectSlug]);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">

@@ -12,6 +12,7 @@ import { getInvestorBookingEmailHint } from '@/lib/investor-booking-email-hint';
 import { writeBookMeetingSession } from '@/lib/book-meeting-session';
 import { ReturnToProposalDeck } from '@/components/investor/ReturnToProposalDeck';
 import { hrefWithFromProposal } from '@/lib/proposal-deck-return';
+import { useProjectSlug } from '@/lib/pitchlock/use-project-slug';
 
 export type BookMeetingWizardProps = {
   /** When true, only the form card (parent supplies page chrome). Used on `/book` before session exists. */
@@ -23,6 +24,7 @@ export type BookMeetingWizardProps = {
 export function BookMeetingWizard({ compact = false, onRegistered }: BookMeetingWizardProps = {}) {
   const router = useRouter();
   const sp = useSearchParams();
+  const projectSlug = useProjectSlug();
   const fromProposal = sp.get('fromProposal') === '1';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -55,6 +57,7 @@ export function BookMeetingWizard({ compact = false, onRegistered }: BookMeeting
           email: email.trim().toLowerCase(),
           acknowledged: true,
           deferEmailUntilAfterSlot: true,
+          projectSlug,
         }),
       });
       const data = (await res.json()) as {

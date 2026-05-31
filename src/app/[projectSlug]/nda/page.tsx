@@ -18,6 +18,7 @@ import {
   sanitizeNextPath,
   setInvestorNdaAccepted,
 } from '@/lib/investor-nda-storage';
+import { useProjectSlug } from '@/lib/pitchlock/use-project-slug';
 
 function subscribeNdaStorage() {
   return () => {};
@@ -26,6 +27,7 @@ function subscribeNdaStorage() {
 function NdaForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const projectSlug = useProjectSlug();
   const nextPath = sanitizeNextPath(searchParams.get('next'));
   const alreadySigned = useSyncExternalStore(
     subscribeNdaStorage,
@@ -74,6 +76,7 @@ function NdaForm() {
           printedName: printedName.trim(),
           signature: signature.trim(),
           email: email.trim().toLowerCase(),
+          projectSlug,
         }),
       });
       const data = (await res.json().catch(() => ({}))) as {
@@ -93,7 +96,7 @@ function NdaForm() {
       setError('Network error. Check your connection and try again.');
       setSubmitting(false);
     }
-  }, [agreed, submitting, printedName, signature, email, nextPath, router]);
+  }, [agreed, submitting, printedName, signature, email, nextPath, router, projectSlug]);
 
   useEffect(() => {
     if (alreadySigned) {

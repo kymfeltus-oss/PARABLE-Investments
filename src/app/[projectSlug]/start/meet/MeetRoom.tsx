@@ -18,6 +18,7 @@ import { MeetParticipantSettings } from '@/components/meet/MeetParticipantSettin
 import { MeetPreJoinSetupPanel } from '@/components/meet/MeetPreJoinSetupPanel';
 import { LiveMeetingVideoBackdrop } from '@/components/meet/LiveMeetingVideoBackdrop';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import { useProjectSlug } from '@/lib/pitchlock/use-project-slug';
 import {
   BLUR_STRENGTH,
   type BlurStrength,
@@ -54,6 +55,7 @@ type Props = {
 
 export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerification }: Props) {
   const router = useRouter();
+  const projectSlug = useProjectSlug();
   const [displayName, setDisplayName] = useState('');
   const [workEmail, setWorkEmail] = useState('');
   const [roomSlug, setRoomSlug] = useState(() => {
@@ -215,6 +217,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
             body: JSON.stringify({
               email: em,
               roomSuffix: roomSlug.replace(/^investor-/i, ''),
+              projectSlug,
             }),
           });
           const verifyData = (await verifyRes.json()) as { error?: string; participantName?: string };
@@ -256,6 +259,7 @@ export default function MeetRoom({ serverUrl, initialRoomSuffix, scheduledVerifi
     displayName,
     fullRoomName,
     masterKey,
+    projectSlug,
     roomSlug,
     scheduledJoinMode,
     scheduledVerification,
