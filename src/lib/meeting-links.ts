@@ -4,7 +4,7 @@ export function getPublicSiteOrigin(): string {
   if (explicit) return explicit;
   const vercel = process.env.VERCEL_URL?.trim();
   if (vercel) return `https://${vercel.replace(/^https?:\/\//, '')}`;
-  return 'http://localhost:3003';
+  return 'http://localhost:3004';
 }
 
 /**

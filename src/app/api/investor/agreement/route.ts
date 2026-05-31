@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvestorAgreementPlainText, INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
 import { validateNdaFields } from '@/lib/investor-agreement-validation';
+import { resolveProjectId } from '@/lib/pitchlock/resolve-project';
 import { sendNdaSignaturePdfCopies } from '@/lib/send-nda-signature-pdfs';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
@@ -21,12 +22,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { printedName?: string; signature?: string; email?: string } = {};
+  let body: { printedName?: string; signature?: string; email?: string; projectSlug?: string } = {};
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
   }
+
+  const { projectId } = await resolveProjectId(admin, body.projectSlug);
 
   const printedName = trimField(body.printedName, 200);
   const signature = trimField(body.signature, 200);
@@ -52,6 +55,7 @@ export async function POST(req: NextRequest) {
     email,
     client_ip: clientIp,
     user_agent: userAgent,
+    project_id: projectId,
   });
 
   if (error) {

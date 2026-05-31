@@ -1,4 +1,4 @@
-# Parable Investments
+# Parable ERP
 
 Static investor site (Next.js). **Routes:** `/` landing → optional **`/investor`** (Legal Gate + magic link; **`/investor/page-2`** requires auth) → **`/nda`** (e-sign + `investor_agreements`) → **`/start`** (hub) → **`/explore`** (optional embedded Parable app prototype; set `NEXT_PUBLIC_PARABLE_PROTOTYPE_URL`) → **`/book`** (embedded calendar first, then inline name/email + NDA acknowledgment for the meeting record; confirmation email uses that address; **`/nda`** stores an email hint in this browser when you sign) → **`/info`** and **`/meet`** (LiveKit). Legacy **`/book/register`** redirects to **`/book`**.
 
@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3003](http://localhost:3003).
+Open [http://localhost:3004](http://localhost:3004).
 
 ### Git LFS (videos in `public/videos/`)
 
@@ -48,7 +48,7 @@ Room names are restricted to `investor-*` (e.g. `investor-team-call`). The stati
 
 1. Create a Supabase project (or use an existing one).
 2. Run **`supabase/schema-legal-signatures.sql`**, **`supabase/schema-investor-agreements.sql`**, and **`supabase/schema-meeting-nda-evidence.sql`** in the SQL editor. If the meeting table already existed without per-room data, also run **`supabase/schema-meeting-nda-evidence-room-suffix-migration.sql`** once.
-3. **Auth → URL configuration:** set **Site URL** to your production origin (e.g. `https://parableinvestments.com`). Under **Redirect URLs**, add `https://your-domain.com/auth/callback` (and `http://localhost:3003/auth/callback` for local dev).
+3. **Auth → URL configuration:** set **Site URL** to your production origin (e.g. `https://parableinvestments.com`). Under **Redirect URLs**, add `https://your-domain.com/auth/callback` (and `http://localhost:3004/auth/callback` for local dev).
 4. In Vercel (and `.env.local`), set:
    - **`NEXT_PUBLIC_SUPABASE_URL`**
    - **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**

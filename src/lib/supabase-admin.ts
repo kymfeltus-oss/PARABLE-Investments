@@ -30,3 +30,23 @@ export function getSupabaseAdmin(): SupabaseClient | null {
   }
   return cached;
 }
+
+let drilldownReadonlyClient: SupabaseClient | null = null;
+
+/**
+ * Drill-down / audit reads: prefer `SUPABASE_DRILLDOWN_READONLY_KEY` (DB role limited to SELECT on GL tables).
+ * If unset, falls back to the service-role client — **this module only issues read (`.select`) calls** for drill-down.
+ */
+export function getSupabaseDrilldownReadClient(): SupabaseClient | null {
+  const url = getSupabaseUrl();
+  const readKey = cleanSupabaseEnv(process.env.SUPABASE_DRILLDOWN_READONLY_KEY);
+  if (url && readKey) {
+    if (!drilldownReadonlyClient) {
+      drilldownReadonlyClient = createClient(url, readKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+    }
+    return drilldownReadonlyClient;
+  }
+  return getSupabaseAdmin();
+}

@@ -1,5 +1,5 @@
 {
-  "name": "parable-investments",
+  "name": "parable-erp",
   "version": "0.1.0",
   "private": true,
   "browserslist": [
@@ -11,9 +11,9 @@
     "not dead"
   ],
   "scripts": {
-    "dev": "next dev -p 3003",
+    "dev": "next dev -p 3004",
     "build": "next build",
-    "start": "next start -p 3003",
+    "start": "next start -p 3004",
     "deploy:local": "npm run build && npm run start",
     "lint": "eslint src",
     "email:preview": "npx --yes tsx scripts/build-meeting-email-preview.ts"

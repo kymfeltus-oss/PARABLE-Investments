@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
+import { resolveProjectId } from '@/lib/pitchlock/resolve-project';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 function normalizeSuffix(raw: string): string {
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
     masterKey?: string;
     participantName?: string;
     universalBypassKey?: string;
+    projectSlug?: string;
   };
   try {
     body = await req.json();
@@ -117,11 +119,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data, error } = await admin
+  const { projectId } = await resolveProjectId(admin, body.projectSlug);
+
+  let lookup = admin
     .from('meeting_nda_evidence')
     .select('name')
     .eq('email', email)
-    .eq('room_suffix', n)
+    .eq('room_suffix', n);
+  // Tenant isolation: scope to the project when its registry row resolves.
+  if (projectId) {
+    lookup = lookup.eq('project_id', projectId);
+  }
+
+  const { data, error } = await lookup
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();

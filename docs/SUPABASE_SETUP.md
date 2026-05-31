@@ -79,6 +79,10 @@ Restart the dev server (`npm run dev`) after changing env vars.
 
 If you see **“Agreement storage is not configured”** when submitting the NDA, complete this once.
 
+**Parable Investments** Supabase project: `https://rgoydmzjiktwlxufwtre.supabase.co` — the `investor_agreements` table is usually already present; the error almost always means **env vars are missing** on the machine or Vercel deployment serving the site.
+
+Check: `GET /api/investor/agreement/status` (returns `configured`, `hasUrl`, `hasServiceKey`, `tableReachable` — no secrets).
+
 ### 7a. Service role key (server only)
 
 1. In Supabase: **Project Settings** → **API**.

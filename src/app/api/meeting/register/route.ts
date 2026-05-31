@@ -4,11 +4,18 @@ import { isValidInvestorEmail } from '@/lib/investor-agreement-validation';
 import { getScheduledMeetUrl } from '@/lib/meeting-links';
 import { sendParableInvestorMeetingConfirmation } from '@/lib/meeting-confirmation-mail';
 import { generateInvestorRoomSuffix } from '@/lib/investor-room-suffix';
+import { resolveProjectId } from '@/lib/pitchlock/resolve-project';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { mapMeetingNdaInsertError } from '@/lib/map-meeting-insert-error';
 
 export async function POST(req: NextRequest) {
-  let body: { name?: string; email?: string; acknowledged?: boolean; deferEmailUntilAfterSlot?: boolean };
+  let body: {
+    name?: string;
+    email?: string;
+    acknowledged?: boolean;
+    deferEmailUntilAfterSlot?: boolean;
+    projectSlug?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -43,6 +50,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { projectId } = await resolveProjectId(admin, body.projectSlug);
+
   const forwarded = req.headers.get('x-forwarded-for');
   const clientIp = forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
   const userAgent = req.headers.get('user-agent')?.slice(0, 512) || null;
@@ -64,6 +73,7 @@ export async function POST(req: NextRequest) {
         client_ip: clientIp,
         user_agent: userAgent,
         room_suffix: roomSuffix,
+        project_id: projectId,
       })
       .select('id')
       .single();

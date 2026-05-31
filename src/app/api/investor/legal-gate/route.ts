@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { INVESTOR_AGREEMENT_VERSION } from '@/lib/investor-agreement-text';
+import { resolveProjectId } from '@/lib/pitchlock/resolve-project';
 import { getSupabaseAdmin, getSupabaseUrl } from '@/lib/supabase-admin';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,12 +21,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { email?: string; acknowledged?: boolean; browserFingerprint?: string };
+  let body: { email?: string; acknowledged?: boolean; browserFingerprint?: string; projectSlug?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
   }
+
+  const { slug: projectSlug, projectId } = await resolveProjectId(admin, body.projectSlug);
 
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 320) : '';
   if (!email || !EMAIL_RE.test(email)) {
@@ -46,6 +49,7 @@ export async function POST(req: NextRequest) {
     nda_version: INVESTOR_AGREEMENT_VERSION,
     ip_address: ip,
     browser_info: browserFingerprint || null,
+    project_id: projectId,
   });
 
   if (insertError) {
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent('/investor/page-2')}`;
+  const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(`/${projectSlug}/investor/page-2`)}`;
 
   const { error: otpError } = await supabaseAuth.auth.signInWithOtp({
     email,

@@ -7,7 +7,7 @@ How to use the app, what the main features are, and practical workflows.
 ## 1. Getting started
 
 1. **Open the app**  
-   - Local dev default: **http://localhost:3003** (see `package.json`).  
+   - Local dev default: **http://localhost:3004** (see `package.json`).  
    - Production: your deployed URL (e.g. AWS Amplify / Vercel).
 
 2. **First screen**  

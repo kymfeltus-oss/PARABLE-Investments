@@ -9,9 +9,9 @@ When you finish implementing requested changes in this repo:
 
 1. Run `npm run lint` (and `npm run build` if the change is non-trivial).
 2. **Local production (default — no GitHub):** run **`npm run deploy:local`**  
-   - Runs `next build` then serves **`http://localhost:3003`** like production.  
+   - Runs `next build` then serves **`http://localhost:3004`** like production. 
    - Stop the server with **Ctrl+C** in the terminal.
-3. **Day-to-day dev (hot reload):** `npm run dev` — same port **3003**.
+3. **Day-to-day dev (hot reload):** `npm run dev` — same port **3004**.
 
 ## GitHub (default for this project)
 

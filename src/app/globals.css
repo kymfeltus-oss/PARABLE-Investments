@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* Tremor UI — include component sources for Tailwind v4 class extraction */
-@source "../../node_modules/@tremor/react/dist/**/*.js";
-
 @theme {
   /* Backgrounds */
   --color-parable-space: #030712;
