@@ -64,15 +64,14 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
     return (
       <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
         <InvestorAtmosphere />
-        <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0, 212, 255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
         <div className="relative z-20 mx-auto max-w-3xl px-4 py-10 pb-28 md:py-14">
           <ReturnToProposalDeck className="mb-4" />
-          <Link href="/start" className="parable-eyebrow mb-6 inline-block hover:text-[#00D4FF]">
+          <Link href="/start" className="parable-eyebrow mb-6 inline-block hover:text-[var(--cyan)]">
             ← Choice hub
           </Link>
           <ParableLogoMark className="mx-auto mb-8 max-w-[200px] opacity-95 md:max-w-xs" />
           <div className="text-center">
-            <p className="parable-eyebrow mb-2 text-[#00D4FF]/85">Investor relations</p>
+            <p className="parable-eyebrow mb-2 text-[var(--cyan)]/85">Investor relations</p>
             <h1 className="text-2xl font-black uppercase tracking-[0.18em] text-white md:text-3xl md:tracking-[0.22em]">
               Book a meeting
             </h1>
@@ -110,19 +109,18 @@ export function BookMeetingFinishClient({ embedSrc }: Props) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
       <InvestorAtmosphere />
-      <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(ellipse_at_top,rgba(0, 212, 255,0.06)_0%,transparent_50%,rgba(0,0,0,0.85)_100%)]" />
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-10 pb-28 md:py-14">
         <ReturnToProposalDeck className="mb-4" />
         <button
           type="button"
           onClick={restartBooking}
-          className="parable-eyebrow mb-8 block text-left hover:text-[#00D4FF]"
+          className="parable-eyebrow mb-8 block text-left hover:text-[var(--cyan)]"
         >
           ← New booking
         </button>
         <ParableLogoMark className="mx-auto mb-8 max-w-[200px] opacity-95 md:max-w-xs" />
         <div className="text-center">
-          <p className="parable-eyebrow mb-2 text-[#00D4FF]/85">Investor relations</p>
+          <p className="parable-eyebrow mb-2 text-[var(--cyan)]/85">Investor relations</p>
           <h1 className="text-2xl font-black uppercase tracking-[0.18em] text-white md:text-3xl md:tracking-[0.22em]">
             Choose a time
           </h1>

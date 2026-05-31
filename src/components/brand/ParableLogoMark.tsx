@@ -32,7 +32,7 @@ export function ParableLogoMark({
         height={300}
         decoding="async"
         loading="eager"
-        className={`w-full object-contain drop-shadow-[0_0_30px_rgba(0,212,255,0.75)] ${intrinsic ? 'h-auto' : 'h-full'}`}
+        className={`w-full object-contain drop-shadow-[0_0_30px_rgba(0, 242, 255,0.75)] ${intrinsic ? 'h-auto' : 'h-full'}`}
       />
     </div>
   );

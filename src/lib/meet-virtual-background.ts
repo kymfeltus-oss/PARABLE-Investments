@@ -86,7 +86,7 @@ export function createPresetBackgroundDataUrl(preset: MeetBgPresetId): string {
       g.addColorStop(1, '#04080a');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = 'rgba(0, 212, 255, 0.06)';
+      ctx.fillStyle = 'rgba(0, 242, 255, 0.06)';
       ctx.fillRect(0, 0, w, h);
       break;
     }

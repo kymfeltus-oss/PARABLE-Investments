@@ -30,11 +30,11 @@ export function ReturnToProposalDeck({ className = '' }: Props) {
 
   return (
     <div
-      className={`rounded-xl border border-[#00D4FF]/20 bg-[#00D4FF]/[0.07] px-4 py-3 text-left text-[11px] leading-snug sm:text-xs ${className}`}
+      className={`rounded-xl border border-[var(--cyan)]/20 bg-[var(--cyan)]/[0.07] px-4 py-3 text-left text-[11px] leading-snug sm:text-xs ${className}`}
     >
       <Link
         href={PROPOSAL_DECK_HREF}
-        className="block font-bold uppercase tracking-[0.14em] text-[#00D4FF] transition hover:text-[#00D4FF]/90"
+        className="block font-bold uppercase tracking-[0.14em] text-[var(--cyan)] transition hover:text-[var(--cyan)]/90"
       >
         ← Return to strategic proposal
       </Link>

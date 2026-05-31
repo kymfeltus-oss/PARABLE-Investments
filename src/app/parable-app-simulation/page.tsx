@@ -14,14 +14,14 @@ export default function ParableAppSimulationPage() {
     <NdaGate>
       <div className="relative min-h-screen bg-black text-white">
         <div
-          className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0, 212, 255,0.08),transparent_50%)]"
+          className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0, 242, 255,0.08),transparent_50%)]"
           aria-hidden
         />
         <div className="relative z-10 border-b border-white/10 bg-black/80 px-4 py-3 backdrop-blur-sm">
           <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
             <Link
               href="/start"
-              className="text-[10px] font-black uppercase tracking-[0.22em] text-[#00D4FF]/80 hover:text-[#00D4FF]"
+              className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--cyan)]/80 hover:text-[var(--cyan)]"
             >
               ← Investor hub
             </Link>

@@ -14,15 +14,15 @@ export const metadata: Metadata = {
 
 export default function InvestorFinancialCalculatorPage() {
   return (
-    <div className="relative min-h-dvh bg-[#0A1018] px-4 pb-16 pt-8 text-white sm:px-6 sm:pt-10 md:px-8 lg:px-10">
+    <div className="relative min-h-dvh bg-[var(--bg-black-soft)] px-4 pb-16 pt-8 text-white sm:px-6 sm:pt-10 md:px-8 lg:px-10">
       <div className="mx-auto w-full max-w-2xl md:max-w-4xl lg:max-w-5xl">
         <Link
           href="/start"
-          className="inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/20 bg-black/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#00D4FF]/80 backdrop-blur-sm transition hover:border-[#00D4FF]/40 hover:bg-black/55 hover:text-[#00D4FF]"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--cyan)]/20 bg-black/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[var(--cyan)]/80 backdrop-blur-sm transition hover:border-[var(--cyan)]/40 hover:bg-black/55 hover:text-[var(--cyan)]"
         >
           <span aria-hidden>←</span> Back to hub
         </Link>
-        <h1 className="mt-8 text-2xl font-black uppercase tracking-[0.12em] text-[#00D4FF] drop-shadow-[0_0_20px_rgba(0, 212, 255,0.18)] sm:text-3xl">
+        <h1 className="mt-8 text-2xl font-black uppercase tracking-[0.12em] text-[var(--cyan)] drop-shadow-[0_0_20px_rgba(0, 242, 255,0.18)] sm:text-3xl">
           Financial calculator
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/50">

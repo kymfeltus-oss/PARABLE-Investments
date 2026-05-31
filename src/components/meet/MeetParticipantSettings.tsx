@@ -274,7 +274,7 @@ export function MeetParticipantSettings() {
             onClick={() => void applyBackground('none')}
             className={`rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide ${
               bgMode === 'none'
-                ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
+                ? 'border-[var(--cyan)]/50 bg-[var(--cyan)]/15 text-[var(--cyan)]'
                 : 'border-white/20 text-white/75 hover:bg-white/10'
             }`}
           >
@@ -290,7 +290,7 @@ export function MeetParticipantSettings() {
             onClick={() => void applyBackground('blur')}
             className={`rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide ${
               bgMode === 'blur'
-                ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
+                ? 'border-[var(--cyan)]/50 bg-[var(--cyan)]/15 text-[var(--cyan)]'
                 : 'border-white/20 text-white/75 hover:bg-white/10'
             }`}
           >
@@ -304,7 +304,7 @@ export function MeetParticipantSettings() {
               onClick={() => applyBlurStrength(s)}
               className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold capitalize ${
                 bgMode === 'blur' && blurStrength === s
-                  ? 'border-[#00D4FF]/40 bg-[#00D4FF]/10 text-[#00D4FF]'
+                  ? 'border-[var(--cyan)]/40 bg-[var(--cyan)]/10 text-[var(--cyan)]'
                   : 'border-white/15 text-white/55 hover:bg-white/5 disabled:opacity-35'
               }`}
             >
@@ -323,7 +323,7 @@ export function MeetParticipantSettings() {
               onClick={() => void applyBackground('preset', { preset: p.id })}
               className={`rounded-md border px-2.5 py-1.5 text-[10px] font-semibold ${
                 bgMode === 'preset' && presetId === p.id
-                  ? 'border-[#00D4FF]/50 bg-[#00D4FF]/15 text-[#00D4FF]'
+                  ? 'border-[var(--cyan)]/50 bg-[var(--cyan)]/15 text-[var(--cyan)]'
                   : 'border-white/20 text-white/75 hover:bg-white/10'
               }`}
             >

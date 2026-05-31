@@ -37,7 +37,7 @@ function EmailOutcomeBlock({
   showDeferredHint: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-[#00D4FF]/25 bg-[#00D4FF]/[0.06] px-5 py-6 text-center md:px-8">
+    <div className="rounded-2xl border border-[var(--cyan)]/25 bg-[var(--cyan)]/[0.06] px-5 py-6 text-center md:px-8">
       {viewStatus === 'deferred' && showDeferredHint ? (
         <>
           <p className="font-serif text-lg text-white md:text-xl">Parable confirmation email</p>
@@ -71,7 +71,7 @@ function EmailOutcomeBlock({
               the calendar above if needed, or email{' '}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="font-medium text-[#00D4FF]/90 underline decoration-[#00D4FF]/40 underline-offset-2 hover:text-[#00D4FF]"
+                className="font-medium text-[var(--cyan)]/90 underline decoration-[var(--cyan)]/40 underline-offset-2 hover:text-[var(--cyan)]"
               >
                 {SUPPORT_EMAIL}
               </a>
@@ -90,7 +90,7 @@ function EmailOutcomeBlock({
             use &quot;Try again&quot; or contact{' '}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="font-medium text-[#00D4FF]/90 underline decoration-[#00D4FF]/40 underline-offset-2 hover:text-[#00D4FF]"
+              className="font-medium text-[var(--cyan)]/90 underline decoration-[var(--cyan)]/40 underline-offset-2 hover:text-[var(--cyan)]"
             >
               {SUPPORT_EMAIL}
             </a>
@@ -113,7 +113,7 @@ function EmailOutcomeBlock({
             still saved. Contact{' '}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="font-medium text-[#00D4FF]/90 underline decoration-[#00D4FF]/40 underline-offset-2 hover:text-[#00D4FF]"
+              className="font-medium text-[var(--cyan)]/90 underline decoration-[var(--cyan)]/40 underline-offset-2 hover:text-[var(--cyan)]"
             >
               {SUPPORT_EMAIL}
             </a>{' '}
@@ -210,19 +210,19 @@ export function BookMeetingPostRegisterView({
 
       {roomSuffix || roomLabel || meetUrl ? (
         <div className="rounded-2xl border border-white/[0.1] bg-black/35 p-5 text-left md:p-6">
-          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[#00D4FF]/85">Your video meeting</h2>
+          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[var(--cyan)]/85">Your video meeting</h2>
           <p className="mt-1 text-sm text-white/50">
             This room is for <strong className="text-white/80">this</strong> booking. It is also in your Parable
             confirmation email.
           </p>
           {roomLabel ? <p className="mt-4 text-[10px] font-bold uppercase tracking-wider text-white/40">Host / meeting ID (full)</p> : null}
-          {roomLabel ? <p className="mt-1 break-all font-mono text-sm text-[#00D4FF]/90">{roomLabel}</p> : null}
+          {roomLabel ? <p className="mt-1 break-all font-mono text-sm text-[var(--cyan)]/90">{roomLabel}</p> : null}
           {roomSuffix ? <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-white/40">Room suffix (after investor-)</p> : null}
           {roomSuffix ? <p className="mt-1 font-mono text-sm text-white/80">{roomSuffix}</p> : null}
           {meetUrl ? (
             <a
               href={meetUrl}
-              className="mt-4 inline-block text-sm font-medium text-[#00D4FF] underline decoration-[#00D4FF]/50 underline-offset-2 hover:text-[#00D4FF]/90"
+              className="mt-4 inline-block text-sm font-medium text-[var(--cyan)] underline decoration-[var(--cyan)]/50 underline-offset-2 hover:text-[var(--cyan)]/90"
             >
               Open meet link
             </a>
@@ -242,7 +242,7 @@ export function BookMeetingPostRegisterView({
             type="button"
             disabled={sending}
             onClick={() => void onSendConfirmation()}
-            className="w-full max-w-md rounded-xl border border-[#00D4FF]/50 bg-[#00D4FF]/15 py-4 text-sm font-black uppercase tracking-[0.2em] text-[#00D4FF] transition hover:bg-[#00D4FF]/25 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full max-w-md rounded-xl border border-[var(--cyan)]/50 bg-[var(--cyan)]/15 py-4 text-sm font-black uppercase tracking-[0.2em] text-[var(--cyan)] transition hover:bg-[var(--cyan)]/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {sending
               ? 'Sending…'
@@ -260,19 +260,19 @@ export function BookMeetingPostRegisterView({
           <button
             type="button"
             onClick={onRegisterAgain}
-            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00D4FF]/80"
+            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[var(--cyan)]/80"
           >
             ← Register again
           </button>
         ) : (
           <Link
             href={registerAgainHref}
-            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00D4FF]/80"
+            className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[var(--cyan)]/80"
           >
             ← Register again
           </Link>
         )}
-        <Link href={backHref} className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#00D4FF]/80">
+        <Link href={backHref} className="text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[var(--cyan)]/80">
           {backLabel}
         </Link>
       </div>

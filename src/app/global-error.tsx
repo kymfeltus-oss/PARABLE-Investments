@@ -12,7 +12,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, minHeight: '100dvh', background: '#030712', color: '#fff', fontFamily: 'system-ui' }}>
+      <body style={{ margin: 0, minHeight: '100dvh', background: '#000000', color: '#fff', fontFamily: 'system-ui' }}>
         <div
           style={{
             display: 'flex',
@@ -35,9 +35,9 @@ export default function GlobalError({
             type="button"
             onClick={() => reset()}
             style={{
-              border: '1px solid rgba(0, 212, 255, 0.4)',
-              background: 'rgba(0, 212, 255, 0.1)',
-              color: '#00D4FF',
+              border: '1px solid rgba(0, 242, 255, 0.4)',
+              background: 'rgba(0, 242, 255, 0.1)',
+              color: '#00f2ff',
               padding: '0.5rem 1.25rem',
               borderRadius: '0.5rem',
               cursor: 'pointer',

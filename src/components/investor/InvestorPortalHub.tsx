@@ -27,7 +27,7 @@ const fadeUp = {
 };
 
 const channelRowClass =
-  'group flex w-full items-start gap-3 rounded-xl border border-transparent bg-black/20 px-3 py-3.5 text-left transition hover:border-[#00D4FF]/25 hover:bg-[#00D4FF]/[0.06] sm:gap-4 sm:px-4 sm:py-4';
+  'group flex w-full items-start gap-3 rounded-xl border border-transparent bg-black/20 px-3 py-3.5 text-left transition hover:border-[var(--cyan)]/25 hover:bg-[var(--cyan)]/[0.06] sm:gap-4 sm:px-4 sm:py-4';
 
 /**
  * Post–flash investor **operations hub**: dashboard layout (primary deck + channel rail), not a second “start” grid.
@@ -55,7 +55,7 @@ export function InvestorPortalHub() {
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
             <Link
               href="/start"
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.12] bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/85 backdrop-blur-sm transition hover:border-[#00D4FF]/35 hover:text-[#00D4FF] sm:text-[10px]"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.12] bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--cyan)]/85 backdrop-blur-sm transition hover:border-[var(--cyan)]/35 hover:text-[var(--cyan)] sm:text-[10px]"
             >
               <span aria-hidden>←</span> Home
             </Link>
@@ -65,7 +65,7 @@ export function InvestorPortalHub() {
               className="hidden opacity-90 sm:block"
             />
             <p className="min-w-0 font-mono text-[10px] uppercase tracking-[0.18em] text-white/40 sm:text-[11px]">
-              <span className="text-[#00D4FF]/80">Hub</span>
+              <span className="text-[var(--cyan)]/80">Hub</span>
               <span className="mx-2 text-white/25" aria-hidden>
                 ·
               </span>
@@ -74,7 +74,7 @@ export function InvestorPortalHub() {
           </div>
           <Link
             href="/investor/portal/proposal?replayIntro=1"
-            className="shrink-0 rounded-lg border border-white/[0.1] bg-black/40 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/50 transition hover:border-[#00D4FF]/30 hover:text-[#00D4FF]/90 sm:text-[10px]"
+            className="shrink-0 rounded-lg border border-white/[0.1] bg-black/40 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/50 transition hover:border-[var(--cyan)]/30 hover:text-[var(--cyan)]/90 sm:text-[10px]"
           >
             Rewatch intro
           </Link>
@@ -89,7 +89,7 @@ export function InvestorPortalHub() {
               transition={{ ...trans, delay: reduceMotion ? 0 : 0.05 }}
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-[#00D4FF]/30 bg-[#00D4FF]/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#00D4FF]">
+                <span className="rounded-full border border-[var(--cyan)]/30 bg-[var(--cyan)]/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[var(--cyan)]">
                   NDA cleared
                 </span>
                 <span className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/45">
@@ -97,8 +97,8 @@ export function InvestorPortalHub() {
                 </span>
               </div>
               <h1 className="mt-4 text-balance font-black uppercase leading-tight tracking-[0.12em] text-white sm:tracking-[0.14em]">
-                <span className="block text-[10px] font-mono font-bold tracking-[0.35em] text-[#00D4FF]/70">Operations</span>
-                <span className="mt-2 block text-2xl text-[#00D4FF] drop-shadow-[0_0_24px_rgba(0, 212, 255,0.2)] sm:text-3xl md:text-4xl">
+                <span className="block text-[10px] font-mono font-bold tracking-[0.35em] text-[var(--cyan)]/70">Operations</span>
+                <span className="mt-2 block text-2xl text-[var(--cyan)] drop-shadow-[0_0_24px_rgba(0, 242, 255,0.2)] sm:text-3xl md:text-4xl">
                   Investor control room
                 </span>
               </h1>
@@ -116,16 +116,16 @@ export function InvestorPortalHub() {
             >
               <Link
                 href="/investor/portal/proposal"
-                className="group relative block overflow-hidden rounded-2xl border border-[#00D4FF]/30 bg-gradient-to-br from-[#061018]/95 via-black/90 to-black p-6 shadow-[0_0_0_1px_rgba(0, 212, 255,0.06)_inset,0_24px_80px_rgba(0,0,0,0.55)] transition hover:border-[#00D4FF]/50 hover:shadow-[0_0_48px_rgba(0, 212, 255,0.12)] sm:rounded-3xl sm:p-8 md:p-10"
+                className="group relative block overflow-hidden rounded-2xl border border-[var(--cyan)]/30 bg-gradient-to-br from-[#061018]/95 via-black/90 to-black p-6 shadow-[0_0_0_1px_rgba(0, 242, 255,0.06)_inset,0_24px_80px_rgba(0,0,0,0.55)] transition hover:border-[var(--cyan)]/50 hover:shadow-[0_0_48px_rgba(0, 242, 255,0.12)] sm:rounded-3xl sm:p-8 md:p-10"
               >
                 <div
-                  className="pointer-events-none absolute -right-16 top-0 h-48 w-48 rounded-full bg-[#00D4FF]/15 blur-3xl transition group-hover:bg-[#00D4FF]/22"
+                  className="pointer-events-none absolute -right-16 top-0 h-48 w-48 rounded-full bg-[var(--cyan)]/15 blur-3xl transition group-hover:bg-[var(--cyan)]/22"
                   aria-hidden
                 />
-                <div className="absolute right-5 top-5 text-[#00D4FF]/45 transition group-hover:text-[#00D4FF]/75 sm:right-6 sm:top-6">
+                <div className="absolute right-5 top-5 text-[var(--cyan)]/45 transition group-hover:text-[var(--cyan)]/75 sm:right-6 sm:top-6">
                   <DocIcon className="h-8 w-8 sm:h-9 sm:w-9" />
                 </div>
-                <span className="relative text-[10px] font-black uppercase tracking-[0.32em] text-[#00D4FF]/90">
+                <span className="relative text-[10px] font-black uppercase tracking-[0.32em] text-[var(--cyan)]/90">
                   Primary objective
                 </span>
                 <span className="relative mt-2 block text-xl font-bold tracking-tight text-white sm:text-2xl md:text-3xl">
@@ -134,7 +134,7 @@ export function InvestorPortalHub() {
                 <span className="relative mt-3 block max-w-lg text-sm leading-relaxed text-white/50 md:text-[15px]">
                   Full-screen Gamma-class embed on this origin—your main diligence surface after clearance.
                 </span>
-                <span className="relative mt-6 inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/40 bg-[#00D4FF]/15 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] text-[#00D4FF] transition group-hover:gap-3 sm:text-xs">
+                <span className="relative mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--cyan)]/40 bg-[var(--cyan)]/15 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] text-[var(--cyan)] transition group-hover:gap-3 sm:text-xs">
                   Open proposal <span aria-hidden>→</span>
                 </span>
               </Link>
@@ -147,7 +147,7 @@ export function InvestorPortalHub() {
               transition={{ ...trans, delay: reduceMotion ? 0 : 0.14 }}
             >
               Need the public choice grid again?{' '}
-              <Link href="/start" className="font-semibold text-[#00D4FF]/80 underline decoration-[#00D4FF]/25 underline-offset-4 hover:text-[#00D4FF]">
+              <Link href="/start" className="font-semibold text-[var(--cyan)]/80 underline decoration-[var(--cyan)]/25 underline-offset-4 hover:text-[var(--cyan)]">
                 Return to /start
               </Link>
               .
@@ -164,7 +164,7 @@ export function InvestorPortalHub() {
           >
             <div className="rounded-2xl border border-white/[0.1] bg-black/40 p-1 shadow-[0_0_40px_rgba(0,0,0,0.4)] backdrop-blur-md sm:rounded-3xl">
               <div className="border-b border-white/[0.06] px-4 py-3 sm:px-5 sm:py-3.5">
-                <h2 id="hub-channels-heading" className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#00D4FF]/85">
+                <h2 id="hub-channels-heading" className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--cyan)]/85">
                   Channels
                 </h2>
                 <p className="mt-1 text-[11px] leading-snug text-white/40">Live links—same order as your workflow.</p>
@@ -174,14 +174,14 @@ export function InvestorPortalHub() {
                   const label = item.id === 'portal' ? 'Welcome flash reel' : item.title;
                   const row = (
                     <>
-                      <span className="mt-0.5 shrink-0 rounded-lg border border-[#00D4FF]/20 bg-[#00D4FF]/[0.07] p-2 text-[#00D4FF]/80 transition group-hover:border-[#00D4FF]/40 group-hover:text-[#00D4FF] [&_svg]:h-5 [&_svg]:w-5">
+                      <span className="mt-0.5 shrink-0 rounded-lg border border-[var(--cyan)]/20 bg-[var(--cyan)]/[0.07] p-2 text-[var(--cyan)]/80 transition group-hover:border-[var(--cyan)]/40 group-hover:text-[var(--cyan)] [&_svg]:h-5 [&_svg]:w-5">
                         {item.icon}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block text-[13px] font-bold tracking-tight text-white/95 sm:text-sm">{label}</span>
                         <span className="mt-0.5 block text-[11px] leading-snug text-white/45 sm:text-[12px]">{item.body}</span>
                       </span>
-                      <span className="shrink-0 pt-1 text-[#00D4FF]/50 transition group-hover:translate-x-0.5 group-hover:text-[#00D4FF]" aria-hidden>
+                      <span className="shrink-0 pt-1 text-[var(--cyan)]/50 transition group-hover:translate-x-0.5 group-hover:text-[var(--cyan)]" aria-hidden>
                         →
                       </span>
                     </>

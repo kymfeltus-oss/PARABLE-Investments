@@ -119,7 +119,7 @@ function NdaForm() {
     <div className="type-legal relative min-h-screen w-full overflow-hidden bg-black text-white" suppressHydrationWarning>
       <InvestorAtmosphere sparkleCount={40} />
       <div className="relative z-20 mx-auto max-w-2xl px-4 py-10 pb-24 md:max-w-4xl md:px-8 md:py-14 md:pb-28 lg:max-w-5xl lg:px-10">
-        <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[#00D4FF]">
+        <Link href="/" className="parable-eyebrow mb-8 inline-block hover:text-[var(--cyan)]">
           ← Back to landing
         </Link>
 
@@ -158,7 +158,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.printedName
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
+                  : 'border-white/15 focus:border-[var(--cyan)]/50 focus:ring-[var(--cyan)]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.printedName ? (
@@ -178,7 +178,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.signature
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
+                  : 'border-white/15 focus:border-[var(--cyan)]/50 focus:ring-[var(--cyan)]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.signature ? (
@@ -199,7 +199,7 @@ function NdaForm() {
               className={`w-full rounded-lg border bg-black/60 px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 ${
                 showFieldErrors && fieldErrors.email
                   ? 'border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20'
-                  : 'border-white/15 focus:border-[#00D4FF]/50 focus:ring-[#00D4FF]/30'
+                  : 'border-white/15 focus:border-[var(--cyan)]/50 focus:ring-[var(--cyan)]/30'
               }`}
             />
             {showFieldErrors && fieldErrors.email ? (
@@ -213,7 +213,7 @@ function NdaForm() {
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 rounded border-[#00D4FF]/40 text-[#00D4FF] focus:ring-[#00D4FF]"
+            className="mt-1 h-4 w-4 shrink-0 rounded border-[var(--cyan)]/40 text-[var(--cyan)] focus:ring-[var(--cyan)]"
           />
           <span className="text-left text-sm text-white/70">
             I have read and agree to the confidentiality, restricted use, and non-competition terms above, including

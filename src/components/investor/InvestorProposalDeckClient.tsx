@@ -23,28 +23,28 @@ function InvestorProposalDeckClientInner({ clientIp, gammaProposalUrl, onVercel 
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
           <Link
             href="/investor/portal/proposal/moment"
-            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00D4FF]/75 hover:text-[#00D4FF]"
+            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--cyan)]/75 hover:text-[var(--cyan)]"
           >
             ← The moment
           </Link>
           <Link
             href="/investor/portal/proposal"
-            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00D4FF]/80"
+            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[var(--cyan)]/80"
           >
             Overview
           </Link>
           <Link
             href="/investor/portal/hub"
-            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00D4FF]/80"
+            className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[var(--cyan)]/80"
           >
             Hub
           </Link>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-x-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-          <Link href="/investor/portal/proposal?replayIntro=1" className="hover:text-[#00D4FF]/80">
+          <Link href="/investor/portal/proposal?replayIntro=1" className="hover:text-[var(--cyan)]/80">
             Rewatch intro
           </Link>
-          <Link href={INVESTOR_FINANCIAL_CALCULATOR_PATH} className="hover:text-[#00D4FF]/80">
+          <Link href={INVESTOR_FINANCIAL_CALCULATOR_PATH} className="hover:text-[var(--cyan)]/80">
             Calculator
           </Link>
         </div>

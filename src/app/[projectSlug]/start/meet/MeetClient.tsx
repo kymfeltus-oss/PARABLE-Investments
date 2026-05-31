@@ -11,7 +11,7 @@ import { ParableLogoMark } from '@/components/brand/ParableLogoMark';
 const MeetRoom = dynamic(() => import('./MeetRoom'), {
   ssr: false,
   loading: () => (
-    <div className="parable-glass-panel border-[#00D4FF]/20 px-8 py-10 text-center">
+    <div className="parable-glass-panel border-[var(--cyan)]/20 px-8 py-10 text-center">
       <p className="text-sm font-medium text-white/80">Loading meeting room…</p>
       <p className="mt-2 text-xs text-white/40">If this stays here, check that JavaScript is enabled.</p>
     </div>
@@ -66,19 +66,19 @@ export default function MeetClient({ serverUrl, initialRoomSuffix, scheduledVeri
 
           <Link
             href="/start"
-            className="parable-eyebrow mb-8 hover:text-[#00D4FF] md:mb-10 md:text-[11px] md:tracking-[0.32em]"
+            className="parable-eyebrow mb-8 hover:text-[var(--cyan)] md:mb-10 md:text-[11px] md:tracking-[0.32em]"
           >
             ← Choice hub
           </Link>
 
-          <h1 className="mb-3 text-center text-lg font-black uppercase tracking-[0.25em] text-[#00D4FF] drop-shadow-[0_0_12px_rgba(0, 212, 255,0.35)] md:mb-4 md:text-2xl md:tracking-[0.32em] lg:text-3xl lg:tracking-[0.28em]">
+          <h1 className="mb-3 text-center text-lg font-black uppercase tracking-[0.25em] text-[var(--cyan)] drop-shadow-[0_0_12px_rgba(0, 242, 255,0.35)] md:mb-4 md:text-2xl md:tracking-[0.32em] lg:text-3xl lg:tracking-[0.28em]">
             Parable meeting
           </h1>
           <div className="mb-10 md:mb-12" aria-hidden />
 
           <div className="w-full max-w-4xl">
             {!livekitConfigReady ? (
-              <div className="parable-glass-panel border-[#00D4FF]/20 px-8 py-10 text-center">
+              <div className="parable-glass-panel border-[var(--cyan)]/20 px-8 py-10 text-center">
                 <p className="text-sm font-medium text-white/80">Checking video service…</p>
                 <p className="mt-2 text-xs text-white/40">Loading server configuration.</p>
               </div>

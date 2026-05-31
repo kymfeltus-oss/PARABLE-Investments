@@ -21,31 +21,31 @@ export function InvestorIntroContent() {
       </div>
 
       <div className="parable-glass-panel mb-10 px-6 py-8 md:px-10 md:py-10">
-        <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[#00D4FF]/80">
+        <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[var(--cyan)]/80">
           Objectives for this meeting
         </h3>
         <ul className="mt-5 space-y-3 text-left text-sm leading-relaxed text-white/60 md:text-[15px]">
           <li className="flex gap-3">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00D4FF]" />
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cyan)]" />
             Align on the problem: how faith communities and creators reach people in a streaming-first world.
           </li>
           <li className="flex gap-3">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00D4FF]" />
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cyan)]" />
             Share what Parable is building—the product surface, community loop, and differentiation.
           </li>
           <li className="flex gap-3">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00D4FF]" />
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cyan)]" />
             Outline the plan: milestones, capital needs, and how we measure progress.
           </li>
           <li className="flex gap-3">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00D4FF]" />
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cyan)]" />
             Answer your questions and agree on next steps.
           </li>
         </ul>
       </div>
 
       <div className="parable-glass-panel mb-10 px-6 py-8 md:px-10 md:py-10">
-        <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[#00D4FF]/80">Confidentiality</h3>
+        <h3 className="text-xs font-black uppercase tracking-[0.25em] text-[var(--cyan)]/80">Confidentiality</h3>
         <p className="mt-4 text-sm leading-relaxed text-white/50 md:text-[15px]">
           Materials shared in connection with this introduction are provided for evaluation only and are not an offer to
           sell securities. Please treat deck materials, metrics, and product plans as confidential unless we agree
@@ -54,7 +54,7 @@ export function InvestorIntroContent() {
       </div>
 
       <div className="parable-glass-panel px-6 py-8 md:px-10 md:py-10">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-[#00D4FF]/30 to-transparent" />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--cyan)]/30 to-transparent" />
         <dl className="mt-8 grid gap-5 text-left text-xs md:text-sm">
           <div className="flex flex-col gap-1 border-b border-white/10 pb-5 sm:flex-row sm:justify-between sm:gap-6">
             <dt className="font-black uppercase tracking-[0.2em] text-white/40">Prepared for</dt>
@@ -74,13 +74,13 @@ export function InvestorIntroContent() {
       <div className="mt-12 flex flex-col flex-wrap items-center justify-center gap-6 sm:flex-row sm:gap-10">
         <Link
           href="/explore"
-          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#00D4FF]/75 hover:text-[#00D4FF] md:text-[11px]"
+          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--cyan)]/75 hover:text-[var(--cyan)] md:text-[11px]"
         >
           App prototype →
         </Link>
         <Link
           href={getInvestorScheduledMeetHref()}
-          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#00D4FF]/75 hover:text-[#00D4FF] md:text-[11px]"
+          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--cyan)]/75 hover:text-[var(--cyan)] md:text-[11px]"
         >
           Investor video room →
         </Link>

@@ -70,7 +70,7 @@ export function InvestorPortalView({
 
   if (deckImmersive) {
     return (
-      <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col bg-[#030712]">
+      <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col bg-[var(--bg-black)]">
         {frameShell}
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-parable-cyan/10 px-2 py-1 sm:px-3">
           <span className="font-mono text-[9px] uppercase tracking-widest text-gray-500">Secure view</span>
@@ -81,7 +81,7 @@ export function InvestorPortalView({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col bg-[#030712] px-4 py-4 sm:py-6">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col bg-[var(--bg-black)] px-4 py-4 sm:py-6">
       {frameShell}
       <div className="mt-4 flex shrink-0 items-center justify-between border-t border-parable-cyan/10 pt-4">
         <div className="flex flex-col gap-1">

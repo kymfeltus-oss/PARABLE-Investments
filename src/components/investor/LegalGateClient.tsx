@@ -72,7 +72,7 @@ export function LegalGateClient() {
       />
 
       <div className="relative z-20 mx-auto max-w-3xl px-4 py-12 pb-28 md:py-16 md:pb-32">
-        <Link href="/" className="parable-eyebrow mb-10 inline-block hover:text-[#00D4FF]">
+        <Link href="/" className="parable-eyebrow mb-10 inline-block hover:text-[var(--cyan)]">
           ← Back to landing
         </Link>
 
@@ -83,7 +83,7 @@ export function LegalGateClient() {
           className="text-center"
         >
           <ParableLogoMark className="mx-auto mb-10 max-w-[200px] opacity-95 md:max-w-xs" />
-          <p className="type-section-label mb-4 text-[#00D4FF]/80">Legal gate</p>
+          <p className="type-section-label mb-4 text-[var(--cyan)]/80">Legal gate</p>
           <h1 className="type-section-label mb-3 text-lg text-white/95 md:text-xl">
             Sanctuary access
           </h1>
@@ -104,7 +104,7 @@ export function LegalGateClient() {
             >
               <p className="font-serif text-xl text-white md:text-2xl">Verification sent</p>
               <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55">
-                We emailed a secure magic link to <span className="text-[#00D4FF]/90">{email}</span>. Open it on this
+                We emailed a secure magic link to <span className="text-[var(--cyan)]/90">{email}</span>. Open it on this
                 device to finish signing in and open the next step.
               </p>
               <p className="mt-6 text-xs text-white/35">Did not arrive? Check spam or promotions, then try again.</p>
@@ -119,7 +119,7 @@ export function LegalGateClient() {
             >
               <div className="glass-card p-1 md:p-1.5">
                 <div className="rounded-[14px] bg-black/35 px-4 py-6 md:px-8 md:py-8">
-                  <p className="text-center font-sans text-[13px] font-semibold leading-snug tracking-wide text-[#00D4FF]/95 md:text-sm">
+                  <p className="text-center font-sans text-[13px] font-semibold leading-snug tracking-wide text-[var(--cyan)]/95 md:text-sm">
                     {LEGAL_GATE_DISPLAY_TITLE}
                   </p>
                   <div className="type-legal mt-6 max-h-[min(48vh,440px)] overflow-y-auto border-t border-white/10 pt-6 pr-1 text-left text-[13px] text-white/65 md:text-[14px]">
@@ -151,7 +151,7 @@ export function LegalGateClient() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@company.com"
-                    className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:border-[#00D4FF]/45 focus:outline-none focus:ring-2 focus:ring-[#00D4FF]/15"
+                    className="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:border-[var(--cyan)]/45 focus:outline-none focus:ring-2 focus:ring-[var(--cyan)]/15"
                   />
                 </label>
 
@@ -160,7 +160,7 @@ export function LegalGateClient() {
                     type="checkbox"
                     checked={ack}
                     onChange={(e) => setAck(e.target.checked)}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border-[#00D4FF]/40 text-[#00D4FF] focus:ring-[#00D4FF]"
+                    className="mt-1 h-4 w-4 shrink-0 rounded border-[var(--cyan)]/40 text-[var(--cyan)] focus:ring-[var(--cyan)]"
                   />
                   <span className="text-left text-sm text-white/65">
                     I have read and agree to the terms above. I understand that continuing will log my email, IP, and

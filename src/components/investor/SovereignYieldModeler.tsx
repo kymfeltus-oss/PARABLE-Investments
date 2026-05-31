@@ -16,7 +16,7 @@ const UPFRONT = 5_000_000;
 /** Platform operational overhead applied to gross infrastructure yield. */
 const PLATFORM_OVERHEAD = 0.2;
 const PENETRATION_1_PCT = 1;
-const ACCENT = '#00FFFF';
+const ACCENT = '#00F2FF';
 
 function grossAnnual(adoptionPct: number, recoveryPct: number) {
   const giving = GIVING_FLOW * (adoptionPct / 100) * FEE_RATE;
@@ -111,7 +111,7 @@ export function SovereignYieldModeler() {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #030712;
+          background: #000000;
           border: 2px solid ${ACCENT};
           box-shadow: 0 0 14px rgba(0,255,255,0.55), 0 0 28px rgba(0,255,255,0.25);
           cursor: pointer;
@@ -120,7 +120,7 @@ export function SovereignYieldModeler() {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #030712;
+          background: #000000;
           border: 2px solid ${ACCENT};
           box-shadow: 0 0 14px rgba(0,255,255,0.55), 0 0 28px rgba(0,255,255,0.25);
           cursor: pointer;
@@ -138,14 +138,14 @@ export function SovereignYieldModeler() {
       <div
         className="rounded-2xl border p-5 shadow-[0_0_50px_rgba(0,255,255,0.06)] backdrop-blur-xl md:p-7"
         style={{
-          backgroundColor: '#030712',
+          backgroundColor: '#000000',
           borderColor: 'rgba(0, 255, 255, 0.2)',
           boxShadow: `inset 0 1px 0 rgba(0,255,255,0.08), 0 0 48px -12px rgba(0,255,255,0.12)`,
         }}
       >
         <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <ActivityGlyph className="h-5 w-5 shrink-0 text-[#00FFFF]" />
+            <ActivityGlyph className="h-5 w-5 shrink-0 text-[var(--cyan)]" />
             <h2 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/90 md:text-[13px] md:tracking-[0.26em]">
               Net infrastructure margin
             </h2>

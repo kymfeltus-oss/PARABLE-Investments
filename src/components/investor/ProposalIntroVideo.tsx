@@ -102,7 +102,7 @@ export function ProposalIntroVideo() {
   }
 
   return (
-    <div className="relative aspect-video w-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/15 bg-black shadow-[0_0_40px_rgba(0, 212, 255,0.08)]">
+    <div className="relative aspect-video w-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/15 bg-black shadow-[0_0_40px_rgba(0, 242, 255,0.08)]">
       <video
         key={videoSrc}
         className="box-border h-full w-full max-h-full max-w-full object-contain object-center md:object-cover"

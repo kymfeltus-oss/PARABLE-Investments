@@ -222,7 +222,7 @@ export function InfoIntroVideoPage({
       >
         <Link
           href={backHref}
-          className="rounded-lg bg-black/45 px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#00D4FF]/90 backdrop-blur-md transition hover:bg-black/60 hover:text-[#00D4FF]"
+          className="rounded-lg bg-black/45 px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--cyan)]/90 backdrop-blur-md transition hover:bg-black/60 hover:text-[var(--cyan)]"
         >
           {backLabel}
         </Link>
@@ -259,7 +259,7 @@ export function InfoIntroVideoPage({
           type="button"
           onClick={toggleMute}
           aria-pressed={muted}
-          className="text-[11px] font-semibold uppercase tracking-wider text-[#00D4FF]/90 hover:text-[#00D4FF]"
+          className="text-[11px] font-semibold uppercase tracking-wider text-[var(--cyan)]/90 hover:text-[var(--cyan)]"
         >
           {muted ? 'Unmute' : 'Mute'}
         </button>
@@ -273,7 +273,7 @@ export function InfoIntroVideoPage({
               ? 'Watch the full video once to unlock Continue'
               : undefined
           }
-          className="w-full max-w-sm rounded-xl border border-[#00D4FF]/45 bg-[#00D4FF]/15 px-8 py-3.5 text-sm font-black uppercase tracking-[0.16em] text-[#00D4FF] shadow-[0_0_28px_rgba(0, 212, 255,0.2)] backdrop-blur-sm transition hover:bg-[#00D4FF]/25 disabled:pointer-events-none disabled:opacity-35 sm:tracking-[0.18em]"
+          className="w-full max-w-sm rounded-xl border border-[var(--cyan)]/45 bg-[var(--cyan)]/15 px-8 py-3.5 text-sm font-black uppercase tracking-[0.16em] text-[var(--cyan)] shadow-[0_0_28px_rgba(0, 242, 255,0.2)] backdrop-blur-sm transition hover:bg-[var(--cyan)]/25 disabled:pointer-events-none disabled:opacity-35 sm:tracking-[0.18em]"
         >
           {continueButtonLabel}
         </button>

@@ -190,10 +190,10 @@ export function ParablePortalFeatures({
   }));
 
   const shortcutTileClass =
-    'flex h-full min-h-[5.35rem] w-full min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.1] bg-black/45 px-1.5 py-2 text-center transition active:scale-[0.98] hover:border-[#00D4FF]/40 hover:bg-[#00D4FF]/10 sm:min-h-[5.85rem] sm:gap-1.5 sm:rounded-2xl sm:px-2.5 sm:py-3 md:min-h-[6.25rem] md:gap-2 md:px-3 md:py-3.5 lg:min-h-[6.5rem]';
+    'flex h-full min-h-[5.35rem] w-full min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.1] bg-black/45 px-1.5 py-2 text-center transition active:scale-[0.98] hover:border-[var(--cyan)]/40 hover:bg-[var(--cyan)]/10 sm:min-h-[5.85rem] sm:gap-1.5 sm:rounded-2xl sm:px-2.5 sm:py-3 md:min-h-[6.25rem] md:gap-2 md:px-3 md:py-3.5 lg:min-h-[6.5rem]';
 
   const shortcutIconClass =
-    'text-[#00D4FF]/90 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6 md:[&_svg]:h-7 md:[&_svg]:w-7 lg:[&_svg]:h-8 lg:[&_svg]:w-8';
+    'text-[var(--cyan)]/90 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6 md:[&_svg]:h-7 md:[&_svg]:w-7 lg:[&_svg]:h-8 lg:[&_svg]:w-8';
 
   const shortcutLabelClass =
     'max-w-[11.5rem] text-pretty text-[9px] font-bold uppercase leading-snug tracking-[0.04em] text-white/90 sm:max-w-none sm:text-[10px] sm:tracking-[0.05em] md:text-[11px] lg:text-xs';
@@ -201,10 +201,10 @@ export function ParablePortalFeatures({
   if (compact) {
     return (
       <nav
-        className={`rounded-2xl border border-[#00D4FF]/25 bg-black/35 px-3 py-4 shadow-[0_0_32px_rgba(0, 212, 255,0.08)] backdrop-blur-sm sm:px-5 sm:py-5 md:px-7 md:py-6 ${className}`}
+        className={`rounded-2xl border border-[var(--cyan)]/25 bg-black/35 px-3 py-4 shadow-[0_0_32px_rgba(0, 242, 255,0.08)] backdrop-blur-sm sm:px-5 sm:py-5 md:px-7 md:py-6 ${className}`}
         aria-label="Portal shortcuts"
       >
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.26em] text-[#00D4FF]/70 sm:text-[11px] sm:tracking-[0.28em] md:text-xs md:tracking-[0.3em]">
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.26em] text-[var(--cyan)]/70 sm:text-[11px] sm:tracking-[0.28em] md:text-xs md:tracking-[0.3em]">
           PARABLE · This portal — jump to
         </p>
         <ul className="mt-4 grid grid-cols-2 auto-rows-fr gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-2.5 md:mt-6 md:gap-3 lg:grid-cols-6">
@@ -244,10 +244,10 @@ export function ParablePortalFeatures({
       className={`parable-glass-panel px-6 py-8 md:px-10 md:py-10 ${className}`}
       aria-labelledby="parable-portal-features-heading"
     >
-      <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#00D4FF]/75">PARABLE · This portal</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[var(--cyan)]/75">PARABLE · This portal</p>
       <h2
         id="parable-portal-features-heading"
-        className="mt-3 text-lg font-black uppercase tracking-[0.14em] text-[#00D4FF] drop-shadow-[0_0_16px_rgba(0, 212, 255,0.18)] md:text-xl"
+        className="mt-3 text-lg font-black uppercase tracking-[0.14em] text-[var(--cyan)] drop-shadow-[0_0_16px_rgba(0, 242, 255,0.18)] md:text-xl"
       >
         What you can do here
       </h2>
@@ -262,11 +262,11 @@ export function ParablePortalFeatures({
             key={item.id}
             className="flex gap-4 rounded-xl border border-white/[0.07] bg-black/30 px-4 py-4 md:px-5 md:py-5"
           >
-            <div className="shrink-0 text-[#00D4FF]/85">{item.icon}</div>
+            <div className="shrink-0 text-[var(--cyan)]/85">{item.icon}</div>
             <div className="min-w-0">
               {item.kind === 'mailto' ? (
                 <a href={item.href} className="group block">
-                  <h3 className="text-sm font-bold tracking-tight text-white/95 underline decoration-[#00D4FF]/25 decoration-1 underline-offset-4 transition group-hover:text-[#00D4FF] group-hover:decoration-[#00D4FF]/50">
+                  <h3 className="text-sm font-bold tracking-tight text-white/95 underline decoration-[var(--cyan)]/25 decoration-1 underline-offset-4 transition group-hover:text-[var(--cyan)] group-hover:decoration-[var(--cyan)]/50">
                     {item.title}
                   </h3>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-white/55 sm:text-sm">{item.body}</p>

@@ -51,20 +51,20 @@ function InvestorProposalRouteClientInner() {
           <div className="flex w-full flex-wrap items-center justify-between gap-x-5 gap-y-2">
             <Link
               href="/investor/portal/hub"
-              className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00D4FF]/75 hover:text-[#00D4FF]"
+              className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--cyan)]/75 hover:text-[var(--cyan)]"
             >
               ← Investor hub
             </Link>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <Link
                 href="/investor/portal/proposal?replayIntro=1"
-                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00D4FF]/80"
+                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[var(--cyan)]/80"
               >
                 Rewatch intro
               </Link>
               <Link
                 href={INVESTOR_FINANCIAL_CALCULATOR_PATH}
-                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[#00D4FF]/80"
+                className="inline-flex text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 hover:text-[var(--cyan)]/80"
               >
                 Financial calculator
               </Link>
@@ -73,7 +73,7 @@ function InvestorProposalRouteClientInner() {
           <div className="w-full sm:flex sm:justify-end">
             <Link
               href="/investor/portal/proposal/moment"
-              className="inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#00D4FF] py-3.5 text-center text-sm shadow-[0_0_32px_rgba(0, 212, 255,0.22)] transition hover:brightness-105 sm:w-auto sm:min-w-[16rem] sm:px-8"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[var(--cyan)] py-3.5 text-center text-sm shadow-[0_0_32px_rgba(0, 242, 255,0.22)] transition hover:brightness-105 sm:w-auto sm:min-w-[16rem] sm:px-8"
             >
               <span className="text-base font-extralight text-black/45" aria-hidden>
                 →

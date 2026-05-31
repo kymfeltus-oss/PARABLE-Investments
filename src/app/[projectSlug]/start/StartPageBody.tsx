@@ -222,18 +222,18 @@ export default function StartPageBody() {
   ];
 
   const runwayCardClass =
-    'group relative flex h-full min-h-[13.5rem] w-[min(88vw,18.5rem)] shrink-0 snap-center flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-b from-white/[0.06] to-transparent px-5 pb-5 pt-6 shadow-[0_0_0_1px_rgba(0, 212, 255,0.05)_inset,0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl transition duration-300 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[#00D4FF]/70 before:to-transparent before:opacity-50 after:pointer-events-none after:absolute after:-right-4 after:bottom-0 after:text-[5.5rem] after:font-black after:leading-none after:text-[#00D4FF]/[0.07] after:content-[attr(data-step)] hover:-translate-y-1 hover:border-[#00D4FF]/45 hover:shadow-[0_0_48px_rgba(0, 212, 255,0.12)] hover:before:opacity-100 md:min-h-0 md:w-auto md:rounded-3xl md:px-6 md:pb-6 md:pt-7 lg:min-h-[15rem]';
+    'group relative flex h-full min-h-[13.5rem] w-[min(88vw,18.5rem)] shrink-0 snap-center flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-b from-white/[0.06] to-transparent px-5 pb-5 pt-6 shadow-[0_0_0_1px_rgba(0, 242, 255,0.05)_inset,0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl transition duration-300 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[var(--cyan)]/70 before:to-transparent before:opacity-50 after:pointer-events-none after:absolute after:-right-4 after:bottom-0 after:text-[5.5rem] after:font-black after:leading-none after:text-[var(--cyan)]/[0.07] after:content-[attr(data-step)] hover:-translate-y-1 hover:border-[var(--cyan)]/45 hover:shadow-[0_0_48px_rgba(0, 242, 255,0.12)] hover:before:opacity-100 md:min-h-0 md:w-auto md:rounded-3xl md:px-6 md:pb-6 md:pt-7 lg:min-h-[15rem]';
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-[#030304] text-white">
       <style dangerouslySetInnerHTML={{ __html: startKeyframes }} />
 
       <div
-        className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(0, 212, 255,0.18),transparent_55%)]"
+        className="pointer-events-none fixed inset-0 z-[5] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(0, 242, 255,0.18),transparent_55%)]"
         aria-hidden
       />
       <div
-        className="pointer-events-none fixed inset-0 z-[6] bg-[radial-gradient(circle_at_15%_85%,rgba(0, 212, 255,0.07),transparent_42%)]"
+        className="pointer-events-none fixed inset-0 z-[6] bg-[radial-gradient(circle_at_15%_85%,rgba(0, 242, 255,0.07),transparent_42%)]"
         aria-hidden
       />
       <div
@@ -242,13 +242,13 @@ export default function StartPageBody() {
       />
 
       <div
-        className="pointer-events-none fixed left-1/2 top-[-18%] z-[8] h-[min(92vw,34rem)] w-[min(92vw,34rem)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(0, 212, 255,0.28)_0%,transparent_68%)] blur-3xl"
+        className="pointer-events-none fixed left-1/2 top-[-18%] z-[8] h-[min(92vw,34rem)] w-[min(92vw,34rem)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(0, 242, 255,0.28)_0%,transparent_68%)] blur-3xl"
         style={motionOff ? undefined : { animation: 'parable-start-orb 16s ease-in-out infinite' }}
         aria-hidden
       />
 
       <div
-        className="pointer-events-none fixed inset-0 z-[9] opacity-[0.04] mix-blend-overlay [background-image:linear-gradient(rgba(0, 212, 255,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(0, 212, 255,0.25)_1px,transparent_1px)] [background-size:100%_8px,10px_100%] md:opacity-[0.055]"
+        className="pointer-events-none fixed inset-0 z-[9] opacity-[0.04] mix-blend-overlay [background-image:linear-gradient(rgba(0, 242, 255,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(0, 242, 255,0.25)_1px,transparent_1px)] [background-size:100%_8px,10px_100%] md:opacity-[0.055]"
         aria-hidden
       />
 
@@ -265,13 +265,13 @@ export default function StartPageBody() {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[#00D4FF]/85 backdrop-blur-md transition hover:border-[#00D4FF]/45 hover:bg-black/70 hover:text-[#00D4FF] sm:px-4 sm:text-[10px]"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--cyan)]/25 bg-black/50 px-3 py-2 text-[9px] font-black uppercase tracking-[0.26em] text-[var(--cyan)]/85 backdrop-blur-md transition hover:border-[var(--cyan)]/45 hover:bg-black/70 hover:text-[var(--cyan)] sm:px-4 sm:text-[10px]"
             >
               <span aria-hidden>←</span> Landing
             </Link>
             <Link
               href="/guide"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-black/40 px-3 py-2 text-[9px] font-black uppercase tracking-[0.22em] text-white/55 backdrop-blur-md transition hover:border-[#00D4FF]/35 hover:text-[#00D4FF] sm:px-4 sm:text-[10px]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-black/40 px-3 py-2 text-[9px] font-black uppercase tracking-[0.22em] text-white/55 backdrop-blur-md transition hover:border-[var(--cyan)]/35 hover:text-[var(--cyan)] sm:px-4 sm:text-[10px]"
             >
               Site guide
             </Link>
@@ -279,10 +279,10 @@ export default function StartPageBody() {
           <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-black/40 px-3 py-1.5 backdrop-blur-md sm:gap-3 sm:px-4">
             <span className="relative flex h-2 w-2">
               <span
-                className="absolute inline-flex h-full w-full rounded-full bg-[#00D4FF] opacity-60"
+                className="absolute inline-flex h-full w-full rounded-full bg-[var(--cyan)] opacity-60"
                 style={motionOff ? undefined : { animation: 'parable-start-beacon 2.4s ease-in-out infinite' }}
               />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00D4FF] shadow-[0_0_12px_#00D4FF]" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--cyan)] shadow-[0_0_12px_var(--cyan)]" />
             </span>
             <span className="text-[9px] font-black uppercase tracking-[0.22em] text-white/55 sm:text-[10px] sm:tracking-[0.28em]">
               Clearance live
@@ -299,7 +299,7 @@ export default function StartPageBody() {
           <div
             className="pointer-events-none absolute inset-0 -z-10 scale-[1.15] blur-3xl"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(0, 212, 255,0.28) 0%, transparent 70%)',
+              background: 'radial-gradient(ellipse at center, rgba(0, 242, 255,0.28) 0%, transparent 70%)',
             }}
             aria-hidden
           />
@@ -312,16 +312,16 @@ export default function StartPageBody() {
           animate={fadeUp.animate}
           transition={{ ...trans, delay: motionOff ? 0 : 0.1 }}
         >
-          <div className="inline-flex items-center gap-px rounded-full border border-[#00D4FF]/30 bg-black/50 p-1 shadow-[0_0_32px_rgba(0, 212, 255,0.12)] backdrop-blur-md">
-            <span className="rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-[#00D4FF]/90 sm:px-4 sm:text-[10px]">
+          <div className="inline-flex items-center gap-px rounded-full border border-[var(--cyan)]/30 bg-black/50 p-1 shadow-[0_0_32px_rgba(0, 242, 255,0.12)] backdrop-blur-md">
+            <span className="rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-[var(--cyan)]/90 sm:px-4 sm:text-[10px]">
               ✓ NDA
             </span>
             <span className="h-4 w-px bg-white/15" aria-hidden />
-            <span className="rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-[#00D4FF]/90 sm:px-4 sm:text-[10px]">
+            <span className="rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-[var(--cyan)]/90 sm:px-4 sm:text-[10px]">
               ✓ Access
             </span>
             <span className="h-4 w-px bg-white/15" aria-hidden />
-            <span className="rounded-full bg-[#00D4FF]/15 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[#00D4FF] sm:px-4 sm:text-[10px]">
+            <span className="rounded-full bg-[var(--cyan)]/15 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[var(--cyan)] sm:px-4 sm:text-[10px]">
               Step 3 · Go
             </span>
           </div>
@@ -334,12 +334,12 @@ export default function StartPageBody() {
           animate={fadeUp.animate}
           transition={{ ...trans, delay: motionOff ? 0 : 0.14 }}
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.42em] text-[#00D4FF]/75 md:text-[11px] md:tracking-[0.5em]">
+          <p className="text-[10px] font-black uppercase tracking-[0.42em] text-[var(--cyan)]/75 md:text-[11px] md:tracking-[0.5em]">
             Investor gateway
           </p>
           <h1 className="mx-auto mt-4 max-w-4xl text-balance font-black uppercase leading-[0.95] tracking-[0.08em] sm:tracking-[0.1em] md:max-w-5xl">
             <span className="block text-2xl text-white/90 sm:text-3xl md:text-4xl">You&apos;re</span>
-            <span className="mt-1 block bg-gradient-to-b from-white via-[#c4fffe] to-[#00D4FF] bg-clip-text text-3xl text-transparent drop-shadow-[0_0_40px_rgba(0, 212, 255,0.35)] sm:text-4xl md:mt-2 md:text-5xl lg:text-6xl">
+            <span className="mt-1 block bg-gradient-to-b from-white via-[#c4fffe] to-[var(--cyan)] bg-clip-text text-3xl text-transparent drop-shadow-[0_0_40px_rgba(0, 242, 255,0.35)] sm:text-4xl md:mt-2 md:text-5xl lg:text-6xl">
               Cleared
             </span>
           </h1>
@@ -354,7 +354,7 @@ export default function StartPageBody() {
           aria-labelledby="start-featured-heading"
         >
           <div className="mb-4 flex items-center justify-between gap-3 px-1">
-            <h2 id="start-featured-heading" className="text-left text-[10px] font-black uppercase tracking-[0.35em] text-[#00D4FF]/80">
+            <h2 id="start-featured-heading" className="text-left text-[10px] font-black uppercase tracking-[0.35em] text-[var(--cyan)]/80">
               Primary vector · 01
             </h2>
             <span className="hidden text-[10px] font-mono uppercase tracking-wider text-white/35 md:inline">
@@ -362,19 +362,19 @@ export default function StartPageBody() {
             </span>
           </div>
 
-          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] p-px shadow-[0_0_60px_rgba(0, 212, 255,0.12)] lg:max-w-5xl">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] p-px shadow-[0_0_60px_rgba(0, 242, 255,0.12)] lg:max-w-5xl">
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[220%] w-[220%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(0, 212, 255,0)_0deg,rgba(0, 212, 255,0.15)_80deg,rgba(125,211,252,0.35)_180deg,rgba(0, 212, 255,0.12)_260deg,rgba(0, 212, 255,0)_360deg)] opacity-90"
+              className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[220%] w-[220%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(0, 242, 255,0)_0deg,rgba(0, 242, 255,0.15)_80deg,rgba(125,211,252,0.35)_180deg,rgba(0, 242, 255,0.12)_260deg,rgba(0, 242, 255,0)_360deg)] opacity-90"
               style={motionOff ? undefined : { animation: 'parable-start-spin 14s linear infinite' }}
               aria-hidden
             />
             <Link
               href="/investor/portal"
               onPointerDown={hapticTap}
-              className="relative z-10 flex min-h-[17rem] flex-col justify-between overflow-hidden rounded-[1.73rem] bg-gradient-to-br from-[#0a0c12] via-[#0A1018] to-black px-6 py-7 transition duration-300 hover:brightness-[1.03] sm:min-h-[18rem] sm:px-8 sm:py-8 md:min-h-[19rem] md:flex-row md:items-end md:gap-10 md:px-10 md:py-10"
+              className="relative z-10 flex min-h-[17rem] flex-col justify-between overflow-hidden rounded-[1.73rem] bg-gradient-to-br from-[#0a0c12] via-[var(--bg-black-soft)] to-black px-6 py-7 transition duration-300 hover:brightness-[1.03] sm:min-h-[18rem] sm:px-8 sm:py-8 md:min-h-[19rem] md:flex-row md:items-end md:gap-10 md:px-10 md:py-10"
             >
               <div
-                className="pointer-events-none absolute -right-20 top-0 h-64 w-64 rounded-full bg-[#00D4FF]/15 blur-3xl"
+                className="pointer-events-none absolute -right-20 top-0 h-64 w-64 rounded-full bg-[var(--cyan)]/15 blur-3xl"
                 aria-hidden
               />
               <div
@@ -383,7 +383,7 @@ export default function StartPageBody() {
               />
 
               <div className="relative max-w-xl md:pb-1">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/35 bg-[#00D4FF]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-[#00D4FF]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--cyan)]/35 bg-[var(--cyan)]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-[var(--cyan)]">
                   Investor portal
                 </span>
                 <span className="mt-5 block text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl md:text-4xl">
@@ -395,10 +395,10 @@ export default function StartPageBody() {
                 </p>
               </div>
               <div className="relative mt-8 flex shrink-0 flex-col items-start gap-3 md:mt-0 md:items-end">
-                <div className="rounded-2xl border border-[#00D4FF]/25 bg-black/50 p-3 text-[#00D4FF]/80 backdrop-blur-sm md:p-4">
+                <div className="rounded-2xl border border-[var(--cyan)]/25 bg-black/50 p-3 text-[var(--cyan)]/80 backdrop-blur-sm md:p-4">
                   <DocIcon className="h-10 w-10 md:h-12 md:w-12" />
                 </div>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#00D4FF]/40 bg-[#00D4FF]/15 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-[#00D4FF] shadow-[0_0_28px_rgba(0, 212, 255,0.2)] transition group-hover:gap-3 md:text-xs">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--cyan)]/40 bg-[var(--cyan)]/15 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-[var(--cyan)] shadow-[0_0_28px_rgba(0, 242, 255,0.2)] transition group-hover:gap-3 md:text-xs">
                   Launch portal <span aria-hidden>→</span>
                 </span>
               </div>
@@ -431,12 +431,12 @@ export default function StartPageBody() {
                     className={runwayCardClass}
                   >
                     <div className="relative z-10 flex items-start justify-between gap-3">
-                      <span className="font-mono text-[10px] font-bold text-[#00D4FF]/55">{item.step}</span>
-                      <div className="rounded-xl border border-[#00D4FF]/20 bg-[#00D4FF]/[0.07] p-2 text-[#00D4FF]/75 transition group-hover:border-[#00D4FF]/40 group-hover:text-[#00D4FF]">
+                      <span className="font-mono text-[10px] font-bold text-[var(--cyan)]/55">{item.step}</span>
+                      <div className="rounded-xl border border-[var(--cyan)]/20 bg-[var(--cyan)]/[0.07] p-2 text-[var(--cyan)]/75 transition group-hover:border-[var(--cyan)]/40 group-hover:text-[var(--cyan)]">
                         <Icon className="h-6 w-6" />
                       </div>
                     </div>
-                    <span className="relative z-10 mt-4 block text-[10px] font-black uppercase tracking-[0.28em] text-[#00D4FF]/90">
+                    <span className="relative z-10 mt-4 block text-[10px] font-black uppercase tracking-[0.28em] text-[var(--cyan)]/90">
                       {item.eyebrow}
                     </span>
                     <span className="relative z-10 mt-1.5 block text-lg font-bold tracking-tight text-white md:text-xl">
@@ -445,7 +445,7 @@ export default function StartPageBody() {
                     <p className="relative z-10 mt-2 flex-1 text-[13px] leading-relaxed text-white/50 md:text-sm">
                       {item.body}
                     </p>
-                    <span className="relative z-10 mt-5 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#00D4FF] transition group-hover:gap-3 sm:text-[11px]">
+                    <span className="relative z-10 mt-5 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--cyan)] transition group-hover:gap-3 sm:text-[11px]">
                       {item.cta} <span aria-hidden>→</span>
                     </span>
                   </Link>
@@ -469,27 +469,27 @@ export default function StartPageBody() {
           <a
             href={mailtoHref}
             onPointerDown={hapticTap}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#00D4FF]/35 bg-gradient-to-r from-black/80 via-[#061016] to-black/80 px-6 py-8 shadow-[0_0_48px_rgba(0, 212, 255,0.1)] transition hover:border-[#00D4FF]/55 hover:shadow-[0_0_64px_rgba(0, 212, 255,0.16)] md:flex-row md:items-center md:justify-between md:gap-10 md:rounded-3xl md:px-10 md:py-10"
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--cyan)]/35 bg-gradient-to-r from-black/80 via-[#061016] to-black/80 px-6 py-8 shadow-[0_0_48px_rgba(0, 242, 255,0.1)] transition hover:border-[var(--cyan)]/55 hover:shadow-[0_0_64px_rgba(0, 242, 255,0.16)] md:flex-row md:items-center md:justify-between md:gap-10 md:rounded-3xl md:px-10 md:py-10"
           >
             <div
-              className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(ellipse_at_80%_50%,rgba(0, 212, 255,0.12),transparent_65%)]"
+              className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(ellipse_at_80%_50%,rgba(0, 242, 255,0.12),transparent_65%)]"
               aria-hidden
             />
             <div className="relative flex items-start gap-4 md:items-center md:gap-6">
-              <div className="rounded-2xl border border-[#00D4FF]/25 bg-[#00D4FF]/10 p-3 text-[#00D4FF] md:p-4">
+              <div className="rounded-2xl border border-[var(--cyan)]/25 bg-[var(--cyan)]/10 p-3 text-[var(--cyan)] md:p-4">
                 <EnvelopeIcon className="h-8 w-8 md:h-9 md:w-9" />
               </div>
               <div>
-                <span className="font-mono text-[10px] font-bold text-[#00D4FF]/55">06</span>
-                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.3em] text-[#00D4FF]/90">Contact us</p>
+                <span className="font-mono text-[10px] font-bold text-[var(--cyan)]/55">06</span>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--cyan)]/90">Contact us</p>
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55 md:text-[15px]">
                   Direct line:{' '}
-                  <span className="font-medium text-[#00D4FF]/90">{INVESTOR_CONTACT_EMAIL}</span>
+                  <span className="font-medium text-[var(--cyan)]/90">{INVESTOR_CONTACT_EMAIL}</span>
                   <span className="text-white/40"> — same routing as confirmations when configured.</span>
                 </p>
               </div>
             </div>
-            <span className="relative mt-6 inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-[#00D4FF]/40 bg-[#00D4FF]/10 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] text-[#00D4FF] transition group-hover:gap-3 md:mt-0 md:self-center">
+            <span className="relative mt-6 inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-[var(--cyan)]/40 bg-[var(--cyan)]/10 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] text-[var(--cyan)] transition group-hover:gap-3 md:mt-0 md:self-center">
               Compose email <span aria-hidden>→</span>
             </span>
           </a>
@@ -504,7 +504,7 @@ export default function StartPageBody() {
           Need the full click-through mock with no hosted prototype URL?{' '}
           <Link
             href="/parable-demo"
-            className="font-semibold text-[#00D4FF]/85 underline decoration-[#00D4FF]/35 underline-offset-4 hover:text-[#00D4FF] hover:decoration-[#00D4FF]/60"
+            className="font-semibold text-[var(--cyan)]/85 underline decoration-[var(--cyan)]/35 underline-offset-4 hover:text-[var(--cyan)] hover:decoration-[var(--cyan)]/60"
           >
             Open the on-site interactive demo
           </Link>

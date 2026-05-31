@@ -6,7 +6,7 @@ type Props = {
 };
 
 const PILLARS = [
-  { label: 'Stream.', className: 'text-[#00D4FF]' },
+  { label: 'Stream.', className: 'text-[var(--cyan)]' },
   { label: 'Give.', className: 'text-[#A855F7]' },
   { label: 'Account.', className: 'text-[#1EA7FF]' },
   {
