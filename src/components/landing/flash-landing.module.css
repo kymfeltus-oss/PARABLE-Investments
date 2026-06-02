@@ -155,6 +155,13 @@
   background: #000000;
 }
 
+/* Phone portrait: show full flyer (no aggressive crop) */
+@media (max-width: 760px) and (orientation: portrait) {
+  .flashImage {
+    object-fit: contain;
+  }
+}
+
 /* Invisible hotspots over video baked-in portal pills */
 .portalHitLayer {
   position: absolute;
