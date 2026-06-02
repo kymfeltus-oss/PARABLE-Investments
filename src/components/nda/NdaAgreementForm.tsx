@@ -20,7 +20,11 @@ import {
   pitchAccessFieldsAreValid,
   validatePitchAccessAgreementFields,
 } from "@/lib/pitch-access-validation";
-import { setPitchAccessSignedFlag, setLastEmailStatus } from "@/lib/pitch-access-storage";
+import {
+  setInvestorSession,
+  setPitchAccessSignedFlag,
+  setLastEmailStatus,
+} from "@/lib/pitch-access-storage";
 import { resolveSafeRedirectPath } from "@/lib/safe-redirect";
 
 type AgreementContext = {
@@ -223,6 +227,7 @@ function NdaAgreementFormInner() {
       setSuccessMessage(msg);
       // localStorage is UX-only; signed server record is source of truth.
       setPitchAccessSignedFlag();
+      setInvestorSession(investorName.trim(), investorEmail.trim());
       setLastEmailStatus(data.emailStatus ?? "unknown", data.emailError);
 
       window.setTimeout(() => {

@@ -1,6 +1,8 @@
 /** UX-only flags — not legal records. Signed pitch_access_agreements rows are the source of truth. */
 export const PITCH_ACCESS_SIGNED_STORAGE_KEY = "pitchlock_access_agreement_signed_v1";
 export const PITCH_ACCESS_EMAIL_STATUS_KEY = "pitchlock_last_email_status";
+export const PITCH_ACCESS_INVESTOR_NAME_KEY = "pitchlock_investor_name_v1";
+export const PITCH_ACCESS_INVESTOR_EMAIL_KEY = "pitchlock_investor_email_v1";
 
 export type StoredEmailStatus = {
   status: string;
@@ -14,6 +16,28 @@ export function setPitchAccessSignedFlag(): void {
     localStorage.setItem(PITCH_ACCESS_SIGNED_STORAGE_KEY, new Date().toISOString());
   } catch {
     /* ignore quota / private mode */
+  }
+}
+
+/** UX-only — from NDA sign form; not a legal record */
+export function setInvestorSession(name: string, email: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const n = name.trim().slice(0, 200);
+    const e = email.trim().toLowerCase().slice(0, 320);
+    if (n) localStorage.setItem(PITCH_ACCESS_INVESTOR_NAME_KEY, n);
+    if (e) localStorage.setItem(PITCH_ACCESS_INVESTOR_EMAIL_KEY, e);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getInvestorSessionName(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(PITCH_ACCESS_INVESTOR_NAME_KEY);
+  } catch {
+    return null;
   }
 }
 

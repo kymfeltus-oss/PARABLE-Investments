@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { PitchLockLogo } from "@/components/brand/PitchLockLogo";
 
-import { InvestorDashboardExperience } from "@/components/dashboard/InvestorDashboardExperience";
+import { InvestorDashboardLoader } from "@/components/dashboard/InvestorDashboardLoader";
 
 import { EmailDeliveryNotice } from "@/components/nda/EmailDeliveryNotice";
 
@@ -114,27 +115,15 @@ export default function InvestorDashboardPage() {
 
       <EmailDeliveryNotice />
 
-      <InvestorDashboardExperience
-
-        canBook={canBook}
-
-        canJoin={canJoin}
-
-        documentsLocked={
-
-          !canInvestorAccessFeatureForPresenterTier(tier, "documents_vault")
-
-        }
-
-        questionsLocked={!canInvestorAccessFeatureForPresenterTier(tier, "questions")}
-
-        interestLocked={
-
-          !canInvestorAccessFeatureForPresenterTier(tier, "investment_interest")
-
-        }
-
-      />
+      <Suspense fallback={null}>
+        <InvestorDashboardLoader
+          canBook={canBook}
+          canJoin={canJoin}
+          documentsLocked={!canInvestorAccessFeatureForPresenterTier(tier, "documents_vault")}
+          questionsLocked={!canInvestorAccessFeatureForPresenterTier(tier, "questions")}
+          interestLocked={!canInvestorAccessFeatureForPresenterTier(tier, "investment_interest")}
+        />
+      </Suspense>
 
     </DashboardShell>
 

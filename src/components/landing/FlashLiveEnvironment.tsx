@@ -9,7 +9,7 @@ import { hasPitchAccessSignedFlag } from "@/lib/pitch-access-storage";
 import styles from "@/components/landing/flash-animations-preview.module.css";
 
 const INVESTOR_DASHBOARD = "/dashboard/investor";
-const PRESENTER_DASHBOARD = "/dashboard/presenter";
+import { PRESENTER_ACCESS_ROUTE } from "@/lib/presenter-demo-profile";
 const PILLAR_COUNT = 96;
 
 /** Fixed particle coords — no random math at render (hydration-safe). */
@@ -88,7 +88,7 @@ export default function FlashLiveEnvironment({ showDevBanner = true }: FlashLive
   };
 
   const enterPresenterPortal = () => {
-    router.push(PRESENTER_DASHBOARD);
+    router.push(PRESENTER_ACCESS_ROUTE);
   };
 
   return (

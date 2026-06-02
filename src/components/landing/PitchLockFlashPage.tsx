@@ -6,10 +6,11 @@ import FlashPortalHotspots from "@/components/landing/FlashPortalHotspots";
 import FlashSoundToggle from "@/components/landing/FlashSoundToggle";
 import PitchLockFlashHeroMedia from "@/components/landing/PitchLockFlashHeroMedia";
 import { hasPitchAccessSignedFlag } from "@/lib/pitch-access-storage";
+import { PRESENTER_ACCESS_ROUTE } from "@/lib/presenter-demo-profile";
 import styles from "@/components/landing/flash-landing.module.css";
 
 const INVESTOR_DASHBOARD = "/dashboard/investor";
-const PRESENTER_DASHBOARD = "/dashboard/presenter";
+const PRESENTER_PORTAL = PRESENTER_ACCESS_ROUTE;
 
 /**
  * Flash intro — full-screen hero video + invisible hotspots on baked-in portal pills.
@@ -85,12 +86,12 @@ export default function PitchLockFlashPage() {
         hypothesisId: "H-route",
         location: "PitchLockFlashPage.tsx:enterPresenterPortal",
         message: "presenter portal route",
-        data: { dest: PRESENTER_DASHBOARD },
+        data: { dest: PRESENTER_PORTAL },
         timestamp: Date.now(),
       }),
     }).catch(() => {});
     // #endregion
-    router.push(PRESENTER_DASHBOARD);
+    router.push(PRESENTER_PORTAL);
   };
 
   return (

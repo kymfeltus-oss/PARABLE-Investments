@@ -1,0 +1,60 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 4vw, 32px);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pl-text);
+}
+
+.sectionLead {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--pl-muted);
+}
+
+.fieldGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fieldHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--pl-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 639px) {
+  .actions .pl-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

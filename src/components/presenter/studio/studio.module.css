@@ -1,0 +1,309 @@
+/* Pitch Builder Studio — creative workspace (not admin CRM) */
+
+.studio {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.studioAmbient {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.studioGlowCyan {
+  position: absolute;
+  left: -15%;
+  top: 5%;
+  width: min(70vw, 520px);
+  height: min(70vw, 520px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, transparent 70%);
+  filter: blur(48px);
+}
+
+.studioGlowPurple {
+  position: absolute;
+  right: -10%;
+  bottom: 10%;
+  width: min(60vw, 440px);
+  height: min(60vw, 440px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(157, 0, 255, 0.1) 0%, transparent 70%);
+  filter: blur(52px);
+}
+
+.studioInner {
+  position: relative;
+  z-index: 1;
+}
+
+.studioHero {
+  margin-bottom: clamp(32px, 5vw, 48px);
+  padding: clamp(8px, 2vw, 16px) 0;
+}
+
+.studioHeroTitle {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pl-text);
+  line-height: 1.2;
+}
+
+.studioHeroLead {
+  margin: 1rem 0 0;
+  max-width: 40rem;
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+  line-height: 1.8;
+  color: var(--pl-muted);
+}
+
+.publishBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: clamp(20px, 3vw, 28px);
+  padding: clamp(16px, 3vw, 22px) clamp(20px, 4vw, 28px);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  background: rgba(3, 1, 8, 0.55);
+  backdrop-filter: blur(16px);
+}
+
+.publishStatus {
+  flex: 1;
+  min-width: 12rem;
+  font-size: 0.85rem;
+  color: var(--pl-text-secondary);
+}
+
+.publishStatus strong {
+  color: var(--pl-cyan);
+  font-weight: 600;
+}
+
+.moduleGrid {
+  display: grid;
+  gap: clamp(16px, 2.5vw, 22px);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .moduleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .moduleGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.moduleCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 11rem;
+  padding: clamp(22px, 3.5vw, 28px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(3, 1, 8, 0.6) 100%
+  );
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform var(--pl-anim-duration) var(--pl-anim-easing),
+    border-color var(--pl-anim-duration) var(--pl-anim-easing),
+    box-shadow var(--pl-anim-duration) var(--pl-anim-easing);
+}
+
+.moduleCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+.moduleCardCyan:hover {
+  box-shadow: 0 0 32px rgba(0, 240, 255, 0.08);
+}
+
+.moduleCardPurple:hover {
+  border-color: rgba(157, 0, 255, 0.25);
+  box-shadow: 0 0 32px rgba(157, 0, 255, 0.08);
+}
+
+.moduleCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.moduleSubtitle {
+  margin: 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+
+.moduleTitle {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pl-text);
+  line-height: 1.35;
+}
+
+.moduleDesc {
+  margin: 0;
+  flex: 1;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--pl-muted);
+}
+
+.moduleStatus {
+  flex-shrink: 0;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.statusEmpty {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--pl-muted);
+}
+
+.statusProgress {
+  border: 1px solid rgba(157, 0, 255, 0.35);
+  color: var(--pl-purple);
+}
+
+.statusReady {
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: var(--pl-cyan);
+}
+
+.moduleArrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pl-cyan);
+}
+
+/* Module editor pages */
+.editorPage {
+  max-width: 40rem;
+}
+
+.editorHeader {
+  margin-bottom: clamp(24px, 4vw, 36px);
+}
+
+.editorTitle {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.editorLead {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--pl-muted);
+}
+
+.editorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.editorActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 2rem;
+}
+
+.fieldHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--pl-muted);
+}
+
+.feedBanner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--pl-text-secondary);
+}
+
+.feedBannerError {
+  border-color: rgba(255, 77, 141, 0.35);
+  background: rgba(255, 77, 141, 0.08);
+  color: var(--pl-error);
+}
+
+.pipelineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pipelineRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.previewFrame {
+  margin-top: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  background: #000;
+}
+
+.previewFrame iframe {
+  display: block;
+  width: 100%;
+  min-height: 70vh;
+  border: 0;
+}
