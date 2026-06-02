@@ -1,50 +1,41 @@
 ---
-description: Pitch Lock flash landing — desktop-first responsive layout and hotspots
-globs: src/components/landing/PitchLockFlashPage.tsx,src/components/landing/flash-landing*.**
+description: Pitch Lock flash landing — 9∶16 master artwork, contain display, hotspots
+globs: src/components/landing/PitchLockFlashPage.tsx,src/components/landing/flash-landing*.**,src/components/landing/flash-portal-hit-layout.ts,docs/flash-artwork-9x16-spec.md
 alwaysApply: false
 ---
 
 # Pitch Lock flash landing (intro page)
 
-## Reference viewport (source of truth)
+## Master artwork (source of truth)
 
-- **Laptop / desktop landscape** is the design reference: `min-width: 1024px`, stage uses `height: 100dvh` and `width: calc(100dvh * 8 / 9)`, `transform: scale(1.44)` (see `flash-landing.module.css`).
-- **Hotspot positions** (`enterHotspot`, `presenterHotspot`, etc.) are percentage-based on the stage and must be tuned on the reference viewport only.
-- Art asset: `public/brand/pitchlock-flash.mp4` (muted autoplay loop via `PitchLockFlashHeroMedia`).
+- **Canvas:** 2160 × 3840 px, **9∶16**
+- **Spec:** `docs/flash-artwork-9x16-spec.md`
+- **Designer SVG:** `public/brand/flash-artwork-master-9x16.svg`
+- **Safe zone:** 70% × 70% centered — critical content only inside; outer 15% is atmospheric bleed
+- **Required in safe zone:** logo, “Pitch. Protect. Progress.”, status labels, Investor Portal, Presenter Portal
+- **Display:** `object-fit: contain; object-position: center` — never crop the frame
+- **Asset:** `public/brand/pitchlock-flash.mp4` (must match 9∶16 when re-exported)
 
-## Responsive strategy (desktop-first)
+## Layout code
 
-1. **Base CSS** in `flash-landing.module.css` = laptop/desktop (reference).
-2. **Scale down** with `max-width` queries — never treat mobile as the primary design target:
-   - `max-width: 1023px` — tablet / iPad (`scale(1.18)`)
-   - `max-width: 767px` — mobile (`scale(1.06)`)
-   - `max-width: 767px` and `max-aspect-ratio: 8/9` — portrait phone (`scale(1)`)
-3. **`min-width: 1440px`** — large desktop bump (`scale(1.52)`).
-
-## Constants
-
-- Breakpoints and scale tokens: `src/components/landing/flash-landing-layout.ts`
-- Keep scales in sync: change `FLASH_STAGE_SCALE` and matching values in `flash-landing.module.css`.
+- Hotspots: `computeContainPortalLayout()` in `flash-portal-hit-layout.ts`
+- Media aspect constant: `FLASH_MEDIA_ASPECT = 9/16`
+- Re-tune `FLASH_PORTAL_HITS_ON_MEDIA` after final MP4 is locked
 
 ## Portal CTA structure (video hotspots only)
 
-- `FlashPortalHotspots` — transparent `<button>` overlays aligned to pills in `pitchlock-flash.mp4`
-- No HTML neon pills, captions, or `.portalWrapper` duplicates
+- `FlashPortalHotspots` — transparent `<button>` overlays aligned to baked-in portal pills
 - Investor: signed → `/dashboard/investor`, else `/nda?next=/dashboard/investor`; Presenter → `/dashboard/presenter`
+- Sound toggle is HTML in header, not in the artwork
 
 ## Sandbox (do not ship to `/` until finalized)
 
-- Living environment + hotspot portals: `/dev/flash-animations` (`FlashLiveEnvironment` via `FlashAnimationsPreview`)
-- Includes: cyan/purple atmosphere, orbits, particles, scan light, skyline pulse, mouse glow (desktop), flyer hotspots
-- Do not wire sandbox changes into `PitchLockFlashPage` until explicitly requested.
-
-## Routing
-
-- **Investor:** `hasPitchAccessSignedFlag()` → `/dashboard/investor`, else `/nda?next=/dashboard/investor`
-- **Presenter:** `/dashboard/presenter`
+- Living environment: `/dev/flash-animations` (`FlashLiveEnvironment`)
+- Do not wire sandbox experiments into `PitchLockFlashPage` without explicit request
 
 ## Do not
 
-- Add full-screen particle/sparkle overlays on this page unless explicitly requested.
-- Use `next/image` `fill` + styled-jsx `position` overrides on the hero (use `flashImageFrame` + `<img>`).
-- Check `localStorage === "true"` for signed state; use `hasPitchAccessSignedFlag()`.
+- Use `object-fit: cover` on production intro (breaks 9∶16 safe-zone contract)
+- Place critical UI in corners of the master frame
+- Use gold in artwork
+- Check `localStorage === "true"` for signed state; use `hasPitchAccessSignedFlag()`

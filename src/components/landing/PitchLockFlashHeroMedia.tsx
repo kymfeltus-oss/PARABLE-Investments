@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
-/** Hero intro loop — `public/brand/pitchlock-flash.mp4` */
+/**
+ * Hero intro loop — `public/brand/pitchlock-flash.mp4`
+ * Master: 2160×3840 (9∶16). Export per docs/flash-artwork-9x16-spec.md.
+ */
 export const PITCHLOCK_FLASH_VIDEO_SRC = "/brand/pitchlock-flash.mp4";
 
 type PitchLockFlashHeroMediaProps = {

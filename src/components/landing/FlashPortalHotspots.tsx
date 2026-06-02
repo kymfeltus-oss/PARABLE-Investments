@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import {
-  computeCoverPortalLayout,
+  computeContainPortalLayout,
   type PortalHitBoxPx,
 } from "@/components/landing/flash-portal-hit-layout";
 import styles from "@/components/landing/flash-landing.module.css";
@@ -22,7 +22,7 @@ function hitBoxToStyle(box: PortalHitBoxPx): React.CSSProperties {
 }
 
 /**
- * Click targets sized to portal pills in pitchlock-flash.mp4 (object-fit: cover math).
+ * Click targets sized to portal pills in pitchlock-flash.mp4 (9∶16, object-fit: contain).
  */
 export default function FlashPortalHotspots({
   onInvestorPortal,
@@ -41,7 +41,7 @@ export default function FlashPortalHotspots({
     const measure = () => {
       const w = layer.clientWidth;
       const h = layer.clientHeight;
-      const layout = computeCoverPortalLayout(w, h);
+      const layout = computeContainPortalLayout(w, h);
       setInvestorBox(layout.investor);
       setPresenterBox(layout.presenter);
 
@@ -65,9 +65,10 @@ export default function FlashPortalHotspots({
           message: "portal layout measure",
           data: {
             viewport: { w: window.innerWidth, h: window.innerHeight },
-            objectFit: "cover",
+            objectFit: "contain",
+            mediaAspect: "9:16",
             layer: { w, h },
-            cover: layout.cover,
+            frame: layout.frame,
             investor: layout.investor,
             presenter: layout.presenter,
             measured: {

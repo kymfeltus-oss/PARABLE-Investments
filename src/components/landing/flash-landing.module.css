@@ -147,14 +147,14 @@
   pointer-events: none;
 }
 
-/* Override globals.css `video { height: auto }` so hero fills the stage */
+/* 9∶16 master @ 2160×3840 — full frame visible, vertically centered (contain) */
 .flashImageFrame video.flashImage {
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   max-height: none;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
   user-select: none;
   pointer-events: none;

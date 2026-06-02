@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pitch Lock flash master - 2160x3840 @ 9:16. Designer guide; not used in production UI. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 3840" width="2160" height="3840">
+  <defs>
+    <radialGradient id="edgeCyanTL" cx="0%" cy="0%" r="55%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="edgePurpleTR" cx="100%" cy="0%" r="50%">
+      <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#9D00FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="edgeCyanBL" cx="0%" cy="100%" r="50%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="edgePurpleBR" cx="100%" cy="100%" r="55%">
+      <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#9D00FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="42%">
+      <stop offset="0%" stop-color="#030108" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#000000" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="2160" height="3840" fill="#000000"/>
+  <rect width="2160" height="3840" fill="url(#coreGlow)"/>
+
+  <!-- Atmospheric energy - outer 15% band only -->
+  <rect width="2160" height="3840" fill="url(#edgeCyanTL)"/>
+  <rect width="2160" height="3840" fill="url(#edgePurpleTR)"/>
+  <rect width="2160" height="3840" fill="url(#edgeCyanBL)"/>
+  <rect width="2160" height="3840" fill="url(#edgePurpleBR)"/>
+
+  <!-- 70% safe zone -->
+  <rect x="324" y="576" width="1512" height="2688" fill="none" stroke="#00F0FF" stroke-width="4" stroke-dasharray="24 16" opacity="0.5"/>
+  <text x="1080" y="540" text-anchor="middle" fill="#00F0FF" font-family="system-ui,sans-serif" font-size="34" letter-spacing="0.18em" opacity="0.65">SAFE 70% - ALL CRITICAL UI INSIDE</text>
+
+  <!-- Vertically centered cluster (~35% more spacing than legacy 1080x1215) -->
+  <rect x="630" y="1180" width="900" height="220" rx="20" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="12 8" opacity="0.3"/>
+  <text x="1080" y="1310" text-anchor="middle" fill="#FFFFFF" font-family="system-ui,sans-serif" font-size="40" opacity="0.45">PITCH LOCK LOGO</text>
+
+  <text x="1080" y="1580" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui,sans-serif" font-size="44" letter-spacing="0.14em">Pitch. Protect. Progress.</text>
+
+  <rect x="480" y="1780" width="1200" height="64" rx="32" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+  <text x="1080" y="1825" text-anchor="middle" fill="rgba(255,255,255,0.38)" font-family="system-ui,sans-serif" font-size="26" letter-spacing="0.22em">STATUS LABELS</text>
+
+  <rect x="420" y="2180" width="520" height="168" rx="84" fill="none" stroke="#00F0FF" stroke-width="3" opacity="0.55"/>
+  <text x="680" y="2275" text-anchor="middle" fill="#00F0FF" font-family="system-ui,sans-serif" font-size="28" letter-spacing="0.18em" opacity="0.7">INVESTOR PORTAL</text>
+
+  <rect x="1220" y="2180" width="520" height="168" rx="84" fill="none" stroke="#9D00FF" stroke-width="3" opacity="0.55"/>
+  <text x="1480" y="2275" text-anchor="middle" fill="#9D00FF" font-family="system-ui,sans-serif" font-size="28" letter-spacing="0.18em" opacity="0.7">PRESENTER PORTAL</text>
+
+  <!-- Hotspot guides (match flash-portal-hit-layout.ts) -->
+  <rect x="367" y="2246" width="648" height="269" fill="#00F0FF" fill-opacity="0.05" stroke="#00F0FF" stroke-width="2" stroke-dasharray="8 6" opacity="0.35"/>
+  <rect x="1145" y="2246" width="648" height="269" fill="#9D00FF" fill-opacity="0.05" stroke="#9D00FF" stroke-width="2" stroke-dasharray="8 6" opacity="0.35"/>
+
+  <text x="1080" y="3700" text-anchor="middle" fill="rgba(255,255,255,0.32)" font-family="system-ui,sans-serif" font-size="30">2160 x 3840 - 9:16 - object-fit: contain - rebuild from ~1080x1215</text>
+</svg>
