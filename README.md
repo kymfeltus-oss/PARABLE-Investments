@@ -41,9 +41,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Copy `.env.example` to `.env.local` and fill in values when connecting Supabase, Resend, and LiveKit.
 
-### Supabase migration (step 2)
+### Supabase migrations
 
-Run `supabase/migrations/20260531120000_pitch_access_core.sql` in the Supabase SQL editor.
+1. Run `supabase/migrations/20260531120000_pitch_access_core.sql` in the Supabase SQL editor (new projects).
+2. If NDA signing fails with missing-column errors, run **`supabase/migrations/20260602000000_pitch_access_schema_repair.sql`** in the SQL editor (idempotent; adds audit/NDA columns). Wait a minute for the schema cache to refresh, then retry `/nda`.
 
 ### Pitch Access Agreement
 

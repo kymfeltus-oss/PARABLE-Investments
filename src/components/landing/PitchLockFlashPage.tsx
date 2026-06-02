@@ -23,23 +23,26 @@ export default function PitchLockFlashPage() {
     if (!stage) return;
     const log = () => {
       const rect = stage.getBoundingClientRect();
-      const useContain =
-        typeof window !== "undefined" &&
+      const portraitPhone =
         window.matchMedia("(max-width: 760px) and (orientation: portrait)").matches;
+      const mediaAspect = 8 / 9;
+      const stageAspect = rect.width / rect.height;
+      const coverFillHeight = stageAspect < mediaAspect;
       // #region agent log
       fetch("http://127.0.0.1:7329/ingest/f8cf57c3-a1a6-410d-9396-9ae990b1d267", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "4e3863" },
         body: JSON.stringify({
           sessionId: "4e3863",
-          runId: "mobile-fit-v1",
-          hypothesisId: "H-viewport",
+          runId: "mobile-fit-v2",
+          hypothesisId: "H-cover-fill",
           location: "PitchLockFlashPage.tsx:layout",
           message: "flash stage geometry",
           data: {
             inner: { w: window.innerWidth, h: window.innerHeight },
             stage: { w: rect.width, h: rect.height },
-            useContain,
+            portraitPhone,
+            coverFillHeight,
             dpr: window.devicePixelRatio,
           },
           timestamp: Date.now(),

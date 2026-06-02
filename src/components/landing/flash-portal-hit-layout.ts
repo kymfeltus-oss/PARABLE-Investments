@@ -104,7 +104,7 @@ export function computeContainPortalLayout(
   };
 }
 
+/** @deprecated Cover-only layout; kept for tests/tooling if needed. */
 export function shouldUseContainPortalLayout(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(max-width: 760px) and (orientation: portrait)").matches;
+  return false;
 }

@@ -10,17 +10,22 @@ export type InvestorDashboardExperienceProps = {
   interestLocked: boolean;
 };
 
-const PITCH_NAME = "Pitch Lock";
 const FOUNDER_NAME = "Kym Feltus";
 
-const ACTIVITY_ITEMS = [
-  { label: "Access Verified", tone: "cyan" as const },
+const WELCOME_BADGES = [
+  { label: "Verified Access", tone: "cyan" as const },
   { label: "NDA Signed", tone: "cyan" as const },
-  { label: "Documents Available", tone: "muted" as const },
-  { label: "PitchMeeting Ready", tone: "purple" as const },
+  { label: "Presenter Available", tone: "purple" as const },
 ];
 
-function WorkspaceAction({
+const ACTIVITY_ITEMS = [
+  { label: "Access confirmed", tone: "cyan" as const },
+  { label: "Agreement recorded", tone: "muted" as const },
+  { label: "Pitch room available", tone: "cyan" as const },
+  { label: "Meeting tools ready", tone: "purple" as const },
+];
+
+function LoungeAction({
   href,
   label,
   variant = "primary",
@@ -29,7 +34,7 @@ function WorkspaceAction({
 }: {
   href: string;
   label: string;
-  variant?: "primary" | "secondary" | "tile";
+  variant?: "primary" | "secondary" | "soft";
   locked?: boolean;
   className?: string;
 }) {
@@ -38,18 +43,18 @@ function WorkspaceAction({
       ? "pl-btn pl-btn-primary"
       : variant === "secondary"
         ? "pl-btn pl-btn-secondary"
-        : "pl-btn pl-btn-primary";
+        : cn("pl-btn pl-btn-primary", styles.softBtn);
 
   if (locked) {
     return (
-      <span className={cn(btnClass, styles.actionBtn, className)} aria-disabled>
+      <span className={cn(btnClass, styles.loungeBtn, className)} aria-disabled>
         {label}
       </span>
     );
   }
 
   return (
-    <Link href={href} className={cn(btnClass, styles.actionBtn, className)}>
+    <Link href={href} className={cn(btnClass, styles.loungeBtn, className)}>
       {label}
     </Link>
   );
@@ -58,7 +63,7 @@ function WorkspaceAction({
 function TileIcon({ kind }: { kind: "documents" | "questions" | "interest" }) {
   const common = {
     className: styles.tileIconSvg,
-    viewBox: "0 0 48 48",
+    viewBox: "0 0 56 56",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg",
     "aria-hidden": true as const,
@@ -67,8 +72,13 @@ function TileIcon({ kind }: { kind: "documents" | "questions" | "interest" }) {
   if (kind === "documents") {
     return (
       <svg {...common}>
-        <rect x="10" y="8" width="28" height="32" rx="2" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M16 16h16M16 22h12M16 28h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M16 12h24l4 6v26H16V12z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path d="M20 12V8h16v4M22 28h16M22 34h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
@@ -77,12 +87,13 @@ function TileIcon({ kind }: { kind: "documents" | "questions" | "interest" }) {
     return (
       <svg {...common}>
         <path
-          d="M14 18a10 10 0 0118.5 3.5A10 10 0 0124 34h-2"
+          d="M18 22a10 10 0 0118.5 3.5A10 10 0 0126 38h-2"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
         />
-        <circle cx="20" cy="38" r="2" fill="currentColor" />
+        <circle cx="22" cy="42" r="2.5" fill="currentColor" />
+        <path d="M38 18v8M34 22h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
@@ -90,13 +101,13 @@ function TileIcon({ kind }: { kind: "documents" | "questions" | "interest" }) {
   return (
     <svg {...common}>
       <path
-        d="M12 32l8-14 8 8 8-18"
+        d="M14 38l10-18 10 10 12-22"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="36" cy="14" r="4" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="42" cy="16" r="5" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -130,7 +141,7 @@ function ExperienceTile({
       <h3 className={cn("pl-display", styles.tileTitle)}>{title}</h3>
       <p className={styles.tileDesc}>{description}</p>
       <div className={styles.tileFooter}>
-        <WorkspaceAction href={href} label={actionLabel} variant="tile" locked={locked} />
+        <LoungeAction href={href} label={actionLabel} variant="soft" locked={locked} />
         {locked ? <span className="pl-badge pl-badge-purple">Pro</span> : null}
       </div>
     </article>
@@ -145,70 +156,100 @@ export function InvestorDashboardExperience({
   interestLocked,
 }: InvestorDashboardExperienceProps) {
   return (
-    <div className={styles.workspace}>
-      <div className={styles.atmosphere} aria-hidden>
-        <div className={styles.glowCyan} />
-        <div className={styles.glowPurple} />
-        <div className={styles.orbitRing} />
+    <div className={styles.lounge}>
+      <div className={styles.ambient} aria-hidden>
+        <div className={styles.ambientCyan} />
+        <div className={styles.ambientPurple} />
+        <div className={styles.ambientVeil} />
       </div>
 
-      <div className={styles.workspaceInner}>
-        {/* Section 1 — Hero */}
-        <section className={cn(styles.heroSection, "pl-animate-in")} aria-labelledby="inv-hero-title">
-          <p className={cn("pl-label", styles.heroEyebrow)}>Private Investor Access</p>
+      <div className={styles.loungeInner}>
+        {/* 1 — Warm welcome */}
+        <section className={cn(styles.welcome, "pl-animate-in")} aria-labelledby="inv-welcome-title">
+          <p className={cn("pl-label", styles.welcomeEyebrow)}>Your private space</p>
+          <h1 id="inv-welcome-title" className={styles.welcomeTitle}>
+            Welcome to your private pitch access
+          </h1>
+          <p className={styles.welcomeLead}>
+            Your secure access is verified. Explore the pitch, meet the presenter, and review the
+            opportunity at your pace.
+          </p>
+          <ul className={styles.welcomeBadges} aria-label="Access status">
+            {WELCOME_BADGES.map((badge) => (
+              <li key={badge.label}>
+                <span
+                  className={cn(
+                    styles.welcomeBadge,
+                    badge.tone === "cyan" && styles.welcomeBadgeCyan,
+                    badge.tone === "purple" && styles.welcomeBadgePurple,
+                  )}
+                >
+                  <span className={styles.welcomeBadgeDot} aria-hidden />
+                  {badge.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-          <div className={styles.heroMeta}>
-            <div className={styles.heroMetaBlock}>
-              <span className={cn("pl-label", styles.heroMetaLabel)}>Pitch</span>
-              <p id="inv-hero-title" className={styles.pitchName}>
-                {PITCH_NAME}
-              </p>
-            </div>
-            <div className={styles.heroMetaBlock}>
-              <span className={cn("pl-label", styles.heroMetaLabel)}>Founder</span>
-              <p className={styles.founderName}>{FOUNDER_NAME}</p>
-            </div>
-            <div className={styles.heroMetaBlock}>
-              <span className={cn("pl-label", styles.heroMetaLabel)}>Verification</span>
-              <p className={styles.verificationStatus}>
-                <span className={styles.statusPulse} aria-hidden />
-                Verified
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.heroCtaZone}>
-            <Link href="/pitch" className={cn("pl-btn pl-btn-primary", styles.heroCta)}>
+        {/* 2 — Featured pitch room */}
+        <section
+          className={cn(styles.featured, "pl-animate-in-delay-1")}
+          aria-labelledby="inv-featured-title"
+        >
+          <div className={styles.featuredGlow} aria-hidden />
+          <div className={styles.featuredInner}>
+            <p className={cn("pl-label", styles.featuredEyebrow)}>Primary experience</p>
+            <h2 id="inv-featured-title" className={cn("pl-display", styles.featuredTitle)}>
+              Private Pitch Room
+            </h2>
+            <dl className={styles.featuredMeta}>
+              <div className={styles.featuredMetaItem}>
+                <dt className={styles.featuredMetaLabel}>Founder</dt>
+                <dd className={styles.featuredMetaValue}>{FOUNDER_NAME}</dd>
+              </div>
+              <div className={styles.featuredMetaItem}>
+                <dt className={styles.featuredMetaLabel}>Status</dt>
+                <dd className={styles.featuredMetaValue}>
+                  <span className={styles.statusLive} aria-hidden />
+                  Access Verified
+                </dd>
+              </div>
+            </dl>
+            <Link href="/pitch" className={cn("pl-btn pl-btn-primary", styles.featuredCta)}>
               Enter Pitch Room
             </Link>
           </div>
         </section>
 
-        {/* Section 2 — PitchMeeting */}
+        {/* 3 — PitchMeeting lounge */}
         <section
-          className={cn(styles.meetingSection, "pl-animate-in-delay-1")}
-          aria-labelledby="inv-meeting-title"
+          className={cn(styles.concierge, "pl-animate-in-delay-2")}
+          aria-labelledby="inv-concierge-title"
         >
-          <div className={styles.meetingGlow} aria-hidden />
-          <div className={styles.meetingContent}>
-            <div className={styles.meetingCopy}>
-              <h2 id="inv-meeting-title" className={cn("pl-display", styles.meetingTitle)}>
-                PitchMeeting
+          <div className={styles.conciergeAura} aria-hidden />
+          <div className={styles.conciergeInner}>
+            <div className={styles.conciergeCopy}>
+              <p className={cn("pl-label", styles.conciergeEyebrow)}>Concierge</p>
+              <h2 id="inv-concierge-title" className={cn("pl-display", styles.conciergeTitle)}>
+                PitchMeeting Lounge
               </h2>
-              <p className={styles.meetingDesc}>Book private meetings with the founder.</p>
+              <p className={styles.conciergeLead}>
+                Book a private conversation or join your scheduled meeting with the presenter.
+              </p>
             </div>
-            <div className={styles.meetingActions}>
-              <WorkspaceAction
+            <div className={styles.conciergeActions}>
+              <LoungeAction
                 href="/book"
-                label="Book Meeting"
+                label="Book PitchMeeting"
                 variant="primary"
                 locked={!canBook}
-                className={styles.meetingBtnPrimary}
+                className={styles.conciergeBtnPrimary}
               />
-              <div className={styles.meetingJoinRow}>
-                <WorkspaceAction
+              <div className={styles.conciergeJoinWrap}>
+                <LoungeAction
                   href="/meet"
-                  label="Join Meeting"
+                  label="Join PitchMeeting"
                   variant="secondary"
                   locked={!canJoin}
                 />
@@ -218,51 +259,55 @@ export function InvestorDashboardExperience({
           </div>
         </section>
 
-        {/* Section 3 — Experience tiles */}
-        <section className={styles.tilesSection} aria-label="Investor modules">
-          <ExperienceTile
-            kind="documents"
-            title="Document Vault"
-            description="Review shared materials and supporting files for this opportunity."
-            actionLabel="View Documents"
-            href="/documents"
-            locked={documentsLocked}
-            delayClass="pl-animate-in-delay-2"
-          />
-          <ExperienceTile
-            kind="questions"
-            title="Questions"
-            description="Ask the founder in confidence before or after your review."
-            actionLabel="Ask a Question"
-            href="/questions"
-            locked={questionsLocked}
-            delayClass="pl-animate-in-delay-2"
-          />
-          <ExperienceTile
-            kind="interest"
-            title="Investment Interest"
-            description="Signal interest, request follow-up, or continue your review."
-            actionLabel="Update Interest"
-            href="/interest"
-            locked={interestLocked}
-            delayClass="pl-animate-in-delay-3"
-          />
+        {/* 4 — Supporting modules */}
+        <section className={styles.modules} aria-label="Explore at your pace">
+          <p className={cn("pl-label", styles.modulesEyebrow)}>At your pace</p>
+          <div className={styles.modulesGrid}>
+            <ExperienceTile
+              kind="documents"
+              title="Documents Vault"
+              description="Everything shared with you, gathered in one calm place."
+              actionLabel="Open Vault"
+              href="/documents"
+              locked={documentsLocked}
+              delayClass="pl-animate-in-delay-2"
+            />
+            <ExperienceTile
+              kind="questions"
+              title="Questions"
+              description="Ask what matters — privately, directly, on your timeline."
+              actionLabel="Ask a Question"
+              href="/questions"
+              locked={questionsLocked}
+              delayClass="pl-animate-in-delay-2"
+            />
+            <ExperienceTile
+              kind="interest"
+              title="Investment Interest"
+              description="Share your level of interest when you are ready."
+              actionLabel="Express Interest"
+              href="/interest"
+              locked={interestLocked}
+              delayClass="pl-animate-in-delay-3"
+            />
+          </div>
         </section>
 
-        {/* Section 4 — Activity strip */}
-        <section className={cn(styles.activityStrip, "pl-animate-in-delay-3")} aria-label="Status">
-          <ul className={styles.activityPills}>
+        {/* 5 — Recent activity */}
+        <section className={cn(styles.activity, "pl-animate-in-delay-3")} aria-label="Recent activity">
+          <p className={styles.activityLabel}>Recent activity</p>
+          <ul className={styles.activityList}>
             {ACTIVITY_ITEMS.map((item) => (
               <li key={item.label}>
                 <span
                   className={cn(
-                    styles.activityPill,
-                    item.tone === "cyan" && styles.activityPillCyan,
-                    item.tone === "purple" && styles.activityPillPurple,
-                    item.tone === "muted" && styles.activityPillMuted,
+                    styles.activityItem,
+                    item.tone === "cyan" && styles.activityItemCyan,
+                    item.tone === "purple" && styles.activityItemPurple,
+                    item.tone === "muted" && styles.activityItemMuted,
                   )}
                 >
-                  <span className={styles.activityPillDot} aria-hidden />
+                  <span className={styles.activityDot} aria-hidden />
                   {item.label}
                 </span>
               </li>

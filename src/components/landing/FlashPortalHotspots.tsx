@@ -2,9 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import {
-  computeContainPortalLayout,
   computeCoverPortalLayout,
-  shouldUseContainPortalLayout,
   type PortalHitBoxPx,
 } from "@/components/landing/flash-portal-hit-layout";
 import styles from "@/components/landing/flash-landing.module.css";
@@ -43,10 +41,7 @@ export default function FlashPortalHotspots({
     const measure = () => {
       const w = layer.clientWidth;
       const h = layer.clientHeight;
-      const useContain = shouldUseContainPortalLayout();
-      const layout = useContain
-        ? computeContainPortalLayout(w, h)
-        : computeCoverPortalLayout(w, h);
+      const layout = computeCoverPortalLayout(w, h);
       setInvestorBox(layout.investor);
       setPresenterBox(layout.presenter);
 
@@ -64,13 +59,13 @@ export default function FlashPortalHotspots({
         headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "4e3863" },
         body: JSON.stringify({
           sessionId: "4e3863",
-          runId: "mobile-fit-v1",
+          runId: "mobile-fit-v2",
           hypothesisId: "H-layout-mode",
           location: "FlashPortalHotspots.tsx:measure",
           message: "portal layout measure",
           data: {
             viewport: { w: window.innerWidth, h: window.innerHeight },
-            useContain,
+            objectFit: "cover",
             layer: { w, h },
             cover: layout.cover,
             investor: layout.investor,

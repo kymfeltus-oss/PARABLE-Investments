@@ -37,6 +37,10 @@ function isUuid(v: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
 }
 
+function isSchemaColumnError(message: string): boolean {
+  return /schema cache/i.test(message) || /could not find the .* column/i.test(message);
+}
+
 /**
  * Signed server record in pitch_access_agreements is the source of truth.
  * document_snapshot must never be changed after signing.
@@ -156,47 +160,123 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const { data: inserted, error: insertErr } = await admin
-    .from("pitch_access_agreements")
-    .insert({
-      pitch_id: pitchId,
-      presenter_id: presenterId,
-      presenter_email: presenterEmail,
-      presenter_name: presenterNameStored,
-      company_name: companyStored,
-      product_name: productStored,
-      governing_state: stateStored,
-      nda_template_id: ndaTemplateId,
-      investor_name: investorName,
-      investor_email: investorEmail,
-      signature,
-      agreement_version: agreementVersion,
-      document_snapshot: documentSnapshot,
-      document_hash: documentHash,
-      signing_url: signingUrlUsed,
-      consent_checkbox_text: consentText,
-      client_ip: ip,
-      user_agent: userAgent,
-      device_fingerprint: userAgent,
-      signed_at_utc: signedAtUtc,
-      email_status: "not_sent",
-    })
-    .select("id")
-    .single();
+  const fullInsert = {
+    pitch_id: pitchId,
+    presenter_id: presenterId,
+    presenter_email: presenterEmail,
+    presenter_name: presenterNameStored,
+    company_name: companyStored,
+    product_name: productStored,
+    governing_state: stateStored,
+    nda_template_id: ndaTemplateId,
+    investor_name: investorName,
+    investor_email: investorEmail,
+    signature,
+    agreement_version: agreementVersion,
+    document_snapshot: documentSnapshot,
+    document_hash: documentHash,
+    signing_url: signingUrlUsed,
+    consent_checkbox_text: consentText,
+    client_ip: ip,
+    user_agent: userAgent,
+    device_fingerprint: userAgent,
+    signed_at_utc: signedAtUtc,
+    email_status: "not_sent",
+  };
 
-  if (insertErr || !inserted) {
-    console.error("[pitch-access/sign] insert:", insertErr?.message);
+  const legacyInsert = {
+    pitch_id: pitchId,
+    presenter_id: presenterId,
+    investor_name: investorName,
+    investor_email: investorEmail,
+    signature,
+    agreement_version: agreementVersion,
+    document_snapshot: documentSnapshot,
+    client_ip: ip,
+    user_agent: userAgent,
+    email_status: "not_sent",
+  };
+
+  let inserted: { id: string } | null = null;
+  let usedLegacySchema = false;
+
+  const first = await admin.from("pitch_access_agreements").insert(fullInsert).select("id").single();
+
+  if (first.error && isSchemaColumnError(first.error.message)) {
+    const second = await admin
+      .from("pitch_access_agreements")
+      .insert(legacyInsert)
+      .select("id")
+      .single();
+    if (!second.error && second.data) {
+      inserted = second.data as { id: string };
+      usedLegacySchema = true;
+      console.warn(
+        "[pitch-access/sign] used legacy insert — run supabase/migrations/20260602000000_pitch_access_schema_repair.sql on your project",
+      );
+    } else {
+      console.error("[pitch-access/sign] legacy insert:", second.error?.message);
+    }
+  } else if (!first.error && first.data) {
+    inserted = first.data as { id: string };
+  } else if (first.error) {
+    console.error("[pitch-access/sign] insert:", first.error.message);
+  }
+
+  if (!inserted) {
+    const insertMessage = first.error?.message ?? "unknown";
+
+    // #region agent log
+    fetch("http://127.0.0.1:7329/ingest/f8cf57c3-a1a6-410d-9396-9ae990b1d267", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "4e3863" },
+      body: JSON.stringify({
+        sessionId: "4e3863",
+        runId: "nda-sign-fix",
+        hypothesisId: "H-schema",
+        location: "pitch-access/sign/route.ts:insert",
+        message: "agreement insert failed",
+        data: {
+          code: first.error?.code,
+          hint: first.error?.hint,
+          errPreview: insertMessage.slice(0, 200),
+          usedLegacySchema,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
     const devDetail =
-      process.env.NODE_ENV === "development" ? insertErr?.message?.slice(0, 240) : undefined;
+      process.env.NODE_ENV === "development" ? insertMessage.slice(0, 240) : undefined;
+
     return NextResponse.json(
       {
         ok: false,
-        error: "Could not save your agreement. Try again or contact support.",
+        error: isSchemaColumnError(insertMessage)
+          ? "Agreement database is missing required columns. Apply Supabase migrations (see supabase/migrations/20260602000000_pitch_access_schema_repair.sql) in the SQL Editor, then try again."
+          : "Could not save your agreement. Try again or contact support.",
         ...(devDetail ? { debug: devDetail } : {}),
       },
       { status: 500 }
     );
   }
+
+  // #region agent log
+  fetch("http://127.0.0.1:7329/ingest/f8cf57c3-a1a6-410d-9396-9ae990b1d267", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "4e3863" },
+    body: JSON.stringify({
+      sessionId: "4e3863",
+      runId: "nda-sign-fix",
+      hypothesisId: "H-schema",
+      location: "pitch-access/sign/route.ts:insert",
+      message: "agreement insert ok",
+      data: { agreementId: inserted.id, usedLegacySchema },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 
   const agreementId = inserted.id as string;
   const recordHash = computeRecordHash({
@@ -208,13 +288,18 @@ export async function POST(req: NextRequest) {
   });
   const signedRecordUrl = buildSignedRecordUrl(agreementId);
 
-  await admin
-    .from("pitch_access_agreements")
-    .update({
-      record_hash: recordHash,
-      signed_record_url: signedRecordUrl,
-    })
-    .eq("id", agreementId);
+  if (!usedLegacySchema) {
+    const auditUpdate = await admin
+      .from("pitch_access_agreements")
+      .update({
+        record_hash: recordHash,
+        signed_record_url: signedRecordUrl,
+      })
+      .eq("id", agreementId);
+    if (auditUpdate.error) {
+      console.warn("[pitch-access/sign] audit columns update:", auditUpdate.error.message);
+    }
+  }
 
   if (pitchId) {
     await admin

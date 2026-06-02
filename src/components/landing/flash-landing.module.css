@@ -8,7 +8,10 @@
   width: 100%;
   max-width: 100vw;
   height: 100dvh;
+  height: 100svh;
   min-height: 100dvh;
+  min-height: 100svh;
+  min-height: -webkit-fill-available;
   overflow: hidden;
   background: #000000;
 }
@@ -144,10 +147,13 @@
   pointer-events: none;
 }
 
-.flashImage {
+/* Override globals.css `video { height: auto }` so hero fills the stage */
+.flashImageFrame video.flashImage {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: none;
+  max-height: none;
   object-fit: cover;
   object-position: center center;
   user-select: none;
@@ -155,12 +161,6 @@
   background: #000000;
 }
 
-/* Phone portrait: show full flyer (no aggressive crop) */
-@media (max-width: 760px) and (orientation: portrait) {
-  .flashImage {
-    object-fit: contain;
-  }
-}
 
 /* Invisible hotspots over video baked-in portal pills */
 .portalHitLayer {
