@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "../styles/brand.css";
+@import "../styles/responsive.css";
+
+@theme inline {
+  --color-background: var(--pl-black);
+  --color-foreground: var(--pl-text);
+  --color-obsidian-950: var(--pl-surface-obsidian);
+  --color-obsidian-900: var(--pl-card-surface);
+  --color-pl-muted: var(--pl-text-muted);
+  --color-pl-cyan: var(--pl-cyan);
+  --color-pl-purple: var(--pl-purple);
+  --color-pl-error: var(--pl-error);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-montserrat);
+  --font-brand: var(--font-pitch-script);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--pl-black);
+  color: var(--pl-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+  overflow-x: clip;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-x: none;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}

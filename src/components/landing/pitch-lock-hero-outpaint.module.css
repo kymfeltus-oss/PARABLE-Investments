@@ -1,0 +1,348 @@
+/**
+ * Cinematic side extensions for Pitch Lock hero.
+ * Center artwork (children) must remain untouched — wings only fill ultrawide margins.
+ */
+
+.heroOutpaint {
+  --pl-black: #000000;
+  --pl-cyan: #00f0ff;
+  --pl-purple: #9d00ff;
+  --pl-gold: #cca43b;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--pl-black);
+}
+
+.wing {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wingInner {
+  position: absolute;
+  inset: 0;
+}
+
+/* Fade wings into center so edges blend seamlessly */
+.wingLeft .wingFadeEdge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(28%, 140px);
+  z-index: 4;
+  background: linear-gradient(90deg, transparent 0%, var(--pl-black) 92%);
+}
+
+.wingRight .wingFadeEdge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(28%, 140px);
+  z-index: 4;
+  background: linear-gradient(270deg, transparent 0%, var(--pl-black) 92%);
+}
+
+/* ── Left: cyan atmosphere ── */
+.wingLeft .atmosphereBlob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.55;
+  animation: atmosphereDrift 22s ease-in-out infinite alternate;
+}
+
+.wingLeft .blobA {
+  left: -15%;
+  top: 18%;
+  width: 75%;
+  height: 55%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.42) 0%,
+    rgba(0, 240, 255, 0.12) 45%,
+    transparent 72%
+  );
+}
+
+.wingLeft .blobB {
+  left: 5%;
+  bottom: 8%;
+  width: 50%;
+  height: 38%;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.2) 0%, transparent 70%);
+  animation-delay: 4s;
+}
+
+/* ── Right: purple atmosphere ── */
+.wingRight .atmosphereBlob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.55;
+  animation: atmosphereDrift 24s ease-in-out infinite alternate-reverse;
+}
+
+.wingRight .blobA {
+  right: -15%;
+  top: 16%;
+  width: 78%;
+  height: 58%;
+  background: radial-gradient(
+    circle,
+    rgba(157, 0, 255, 0.45) 0%,
+    rgba(217, 0, 255, 0.14) 48%,
+    transparent 72%
+  );
+}
+
+.wingRight .blobB {
+  right: 8%;
+  bottom: 10%;
+  width: 48%;
+  height: 36%;
+  background: radial-gradient(circle, rgba(157, 0, 255, 0.22) 0%, transparent 70%);
+  animation-delay: 3s;
+}
+
+.orbitSvg {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  opacity: 0.55;
+}
+
+.orbitPathCyan {
+  fill: none;
+  stroke: rgba(0, 240, 255, 0.45);
+  stroke-width: 1;
+  stroke-dasharray: 4 14;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.55));
+  animation: orbitDash 18s linear infinite;
+}
+
+.orbitPathPurple {
+  fill: none;
+  stroke: rgba(157, 0, 255, 0.42);
+  stroke-width: 1;
+  stroke-dasharray: 4 14;
+  filter: drop-shadow(0 0 8px rgba(157, 0, 255, 0.5));
+  animation: orbitDash 20s linear infinite reverse;
+}
+
+.orbitPathGold {
+  fill: none;
+  stroke: rgba(204, 164, 59, 0.18);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 16;
+  animation: orbitDash 26s linear infinite;
+}
+
+.lightStreak {
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+  filter: blur(1px);
+  opacity: 0.35;
+  animation: streakDrift 14s ease-in-out infinite alternate;
+}
+
+.wingLeft .streak1 {
+  left: 12%;
+  top: 32%;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.65), transparent);
+}
+
+.wingLeft .streak2 {
+  left: 8%;
+  top: 58%;
+  width: 35%;
+  animation-delay: 3s;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), transparent);
+}
+
+.wingRight .streak1 {
+  right: 10%;
+  top: 28%;
+  width: 44%;
+  background: linear-gradient(270deg, transparent, rgba(217, 0, 255, 0.6), transparent);
+}
+
+.wingRight .streak2 {
+  right: 14%;
+  top: 62%;
+  width: 32%;
+  animation-delay: 2.5s;
+  background: linear-gradient(270deg, transparent, rgba(157, 0, 255, 0.38), transparent);
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: particlePulse 5s ease-in-out infinite;
+}
+
+.particleCyan {
+  background: var(--pl-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.35);
+}
+
+.particlePurple {
+  background: var(--pl-purple);
+  box-shadow: 0 0 10px rgba(157, 0, 255, 0.75), 0 0 20px rgba(157, 0, 255, 0.35);
+}
+
+.particleWhite {
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+.particleSm {
+  width: 2px;
+  height: 2px;
+}
+
+.particleMd {
+  width: 3px;
+  height: 3px;
+}
+
+.particleLg {
+  width: 4px;
+  height: 4px;
+  filter: blur(0.3px);
+}
+
+.dataFragment {
+  position: absolute;
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0.25;
+  animation: fragmentFloat 11s ease-in-out infinite alternate;
+}
+
+.wingLeft .dataFragment {
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.9), transparent);
+}
+
+.wingRight .dataFragment {
+  background: linear-gradient(270deg, transparent, rgba(217, 0, 255, 0.85), transparent);
+}
+
+/* Center: original artwork slot — size unchanged from flash landing reference */
+.heroCenter {
+  position: relative;
+  flex: 0 0 auto;
+  z-index: 10;
+  width: min(100vw, calc(100dvh * 8 / 9));
+  height: min(100dvh, calc(100vw * 9 / 8));
+  max-height: 100dvh;
+  aspect-ratio: 8 / 9;
+  overflow: hidden;
+  background: var(--pl-black);
+}
+
+/* Soft universe haze at center edges only — logo area stays clear */
+.heroCenterAmbient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 68% 72% at 50% 48%, transparent 42%, #000 78%);
+}
+
+.centerParticle {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: particlePulse 6s ease-in-out infinite;
+}
+
+@media (min-aspect-ratio: 8 / 9) {
+  .heroCenter {
+    width: calc(100dvh * 8 / 9);
+    height: 100dvh;
+  }
+}
+
+@media (max-width: 1023px) {
+  .wing {
+    flex: 0 0 12%;
+  }
+}
+
+@media (max-width: 767px) {
+  .wing {
+    display: none;
+  }
+
+  .heroCenter {
+    width: 100vw;
+    height: min(100dvh, calc(100vw * 9 / 8));
+  }
+}
+
+@keyframes atmosphereDrift {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.45;
+  }
+  to {
+    transform: translate(2%, -3%) scale(1.06);
+    opacity: 0.62;
+  }
+}
+
+@keyframes orbitDash {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes streakDrift {
+  from {
+    opacity: 0.2;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0.45;
+    transform: translateX(8px);
+  }
+}
+
+@keyframes particlePulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+@keyframes fragmentFloat {
+  from {
+    opacity: 0.15;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.35;
+    transform: translateY(-6px);
+  }
+}
